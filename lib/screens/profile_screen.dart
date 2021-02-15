@@ -6,6 +6,7 @@ import 'package:sported_app/locator.dart';
 import 'package:sported_app/models/ourUser.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 import 'package:sported_app/widgets/avatar.dart';
+import 'package:sported_app/widgets/manage_profile_info_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String route = "profile-view";
@@ -54,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
-                child:
+                child: ManageProfileInfo()
               ))
         ],
       ),
