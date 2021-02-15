@@ -1,5 +1,8 @@
-class OurUser{
-  String userId;
+class UserModel {
+  String uid;
+  String displayName;
+  String email;
+  String avatarUrl;
 
-  OurUser({this.userId});
+  UserModel({this.uid, this.displayName,this.email, this.avatarUrl});
 }
