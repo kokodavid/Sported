@@ -1,17 +1,13 @@
 import 'dart:io';
 
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:sported_app/models/ourUser.dart';
 import 'package:sported_app/services/auth.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
 
 import '../locator.dart';
 
 class StorageRepo {
-  firebase_storage.FirebaseStorage _storage =
-  firebase_storage.FirebaseStorage.instanceFor(
-      bucket: 'gs://sportedapp-6f6d2.appspot.com');
+  firebase_storage.FirebaseStorage _storage = firebase_storage.FirebaseStorage.instanceFor(bucket: 'gs://sportedapp-6f6d2.appspot.com');
   AuthMethods _authRepo = locator.get<AuthMethods>();
 
   Future<String> uploadFile(File file) async {

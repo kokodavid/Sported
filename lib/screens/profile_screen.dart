@@ -38,28 +38,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: <Widget>[
                   Avatar(
                     avatarUrl: _currentUser?.avatarUrl,
-                    onTap: () async{
-                     File image = await ImagePicker.pickImage(source: ImageSource.gallery);
-                     await locator.get<UserController>().uploadProfilePicture(image);
+                    onTap: () async {
+                      // ignore: deprecated_member_use
+                      File image = await ImagePicker.pickImage(source: ImageSource.gallery);
+                      await locator.get<UserController>().uploadProfilePicture(image);
 
-                     print(image.path.toString());
+                      print(image.path.toString());
                     },
                   ),
                   Text(
-                      "Hi ${_currentUser?.displayName ?? 'nice to see you here.'}"),
+                    "Hi ${_currentUser?.displayName ?? 'nice to see you here.'}",
+                  ),
                 ],
               ),
             ),
           ),
           Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ManageProfileInfo()
-              ))
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ManageProfileInfo(),
+            ),
+          )
         ],
       ),
     );
   }
 }
-
