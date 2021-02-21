@@ -5,14 +5,14 @@ import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/services/database.dart';
 import 'package:sported_app/widgets/form_input_decoration.dart';
 
-class SignUp extends StatefulWidget {
+class SignUpPage extends StatefulWidget {
   final Function toggle;
-  SignUp(this.toggle);
+  SignUpPage(this.toggle);
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpPageState extends State<SignUpPage> {
   bool isLoading = false;
 
   AuthMethods authMethods = new AuthMethods();

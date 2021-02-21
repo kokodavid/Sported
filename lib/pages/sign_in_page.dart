@@ -7,14 +7,14 @@ import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 import 'package:sported_app/widgets/form_input_decoration.dart';
 
-class SignIn extends StatefulWidget {
+class SignInPage extends StatefulWidget {
   final Function toggle;
-  SignIn({this.toggle});
+  SignInPage({this.toggle});
   @override
-  _SignInState createState() => _SignInState();
+  _SignInPageState createState() => _SignInPageState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignInPageState extends State<SignInPage> {
   final formKey = GlobalKey<FormState>();
   AuthMethods authMethods = AuthMethods();
   TextEditingController passWordTextEditingController = new TextEditingController();
