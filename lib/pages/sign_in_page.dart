@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/constants/constants.dart';
@@ -20,7 +21,7 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController emailTextEditingController = new TextEditingController();
 
-  login() async {
+  signMeIn() async {
     try {
       await locator.get<UserController>().signInWithEmailAndPassword(
             email: emailTextEditingController.text,
@@ -136,7 +137,7 @@ class _SignInPageState extends State<SignInPage> {
 
                     SizedBox(height: 16.0.h),
 
-                    //password title
+                    //password field
                     TextFormField(
                       obscureText: true,
                       validator: (val) {
@@ -156,7 +157,21 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
 
-              SizedBox(height: 35.h),
+              SizedBox(height: 16.h),
+
+              //reset password
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "Reset Password",
+                  style: TextStyle(
+                    fontSize: 15.0.sp,
+                    color: Color(0xff8FD974),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 24.h),
 
               //sign in btn
               MaterialButton(
@@ -165,7 +180,7 @@ class _SignInPageState extends State<SignInPage> {
                 minWidth: 1.sw,
                 height: 50.h,
                 onPressed: () {
-                  login();
+                  signMeIn();
                 },
                 child: Text(
                   'Sign In',
@@ -239,28 +254,25 @@ class _SignInPageState extends State<SignInPage> {
 
               //sign up cta
               SizedBox(height: 45.h),
-              GestureDetector(
-                onTap: () => widget.toggle(),
-                child: RichText(
-                  text: TextSpan(
-                    text: 'Don\'t have an account? ',
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: Color(0xff707070),
-                    ),
-                    children: [
-                      TextSpan(
-                        // recognizer: TapGestureRecognizer()..onTap = () async => await widget.toggle(),
-                        text: 'SignUp',
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          color: Color(0xff8FD974),
-                        ),
-                      ),
-                    ],
+              RichText(
+                text: TextSpan(
+                  text: 'Don\'t have an account? ',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    color: Color(0xff707070),
                   ),
+                  children: [
+                    TextSpan(
+                      recognizer: TapGestureRecognizer()..onTap = () async => await widget.toggle(),
+                      text: 'Sign Up',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        color: Color(0xff8FD974),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -271,54 +283,4 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
-  //
-  // @override
-  // Widget build(BuildContext context) {
-  //   return SafeArea(
-  //     child: Scaffold(
-  //       body: SingleChildScrollView(
-  //         child: Container(
-  //           height: MediaQuery.of(context).size.height - 50,
-  //           alignment: Alignment.bottomCenter,
-  //           child: Container(
-  //             padding: EdgeInsets.symmetric(horizontal: 24),
-  //             child: Form(
-  //               key: formKey,
-  //               child: Column(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 children: [
-  //                   //email
-  //                   TextFormField(
-  //                       validator: (val) {
-  //                         return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val)
-  //                             ? null
-  //                             : "Enter a valid Email";
-  //                       },
-  //                       controller: emailTextEditingController,
-  //                       style: simpleTextStyle,
-  //                       decoration: textFieldInputDecoration("Email")),
-  //
-  //                   //pass
-  //                   TextFormField(
-  //                       obscureText: true,
-  //                       validator: (val) {
-  //                         return val.length > 6 ? null : "Please provide a Password with 6+ characters";
-  //                       },
-  //                       controller: passWordTextEditingController,
-  //                       style: simpleTextStyle,
-  //                       decoration: textFieldInputDecoration("Password")),
-  //
-  //                   SizedBox(
-  //                     height: 8,
-  //                   ),
-  //
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }

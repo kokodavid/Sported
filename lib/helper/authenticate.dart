@@ -21,7 +21,7 @@ class _AuthenticateState extends State<Authenticate> {
     if (showSignInScreen) {
       return SignInPage(toggle: toggleView);
     } else {
-      return SignUpPage(toggleView);
+      return SignUpPage(toggle: toggleView);
     }
   }
 }

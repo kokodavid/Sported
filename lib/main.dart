@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       designSize: Size(414, 736),
       allowFontScaling: false,
       builder: () => MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           scaffoldBackgroundColor: Color(0xff18181A),
         ),
