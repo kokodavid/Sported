@@ -1,0 +1,324 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sported_app/constants/constants.dart';
+import 'package:sported_app/locator.dart';
+import 'package:sported_app/screens/profile_screen.dart';
+import 'package:sported_app/services/auth.dart';
+import 'package:sported_app/view_controller/user_controller.dart';
+import 'package:sported_app/widgets/form_input_decoration.dart';
+
+class SignIn extends StatefulWidget {
+  final Function toggle;
+  SignIn({this.toggle});
+  @override
+  _SignInState createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
+  final formKey = GlobalKey<FormState>();
+  AuthMethods authMethods = AuthMethods();
+  TextEditingController passWordTextEditingController = new TextEditingController();
+  TextEditingController emailTextEditingController = new TextEditingController();
+
+  login() async {
+    try {
+      await locator.get<UserController>().signInWithEmailAndPassword(
+            email: emailTextEditingController.text,
+            password: passWordTextEditingController.text,
+          );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+    } catch (e) {
+      print("Something went wrong!");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Padding(
+          padding: EdgeInsets.only(top: 20.0.h, left: 20.0.w, right: 20.0.w, bottom: 20.0.h),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              //title
+              SizedBox(height: 25.h),
+              Text(
+                'SPORTED',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22.0.sp,
+                  color: Colors.white,
+                  letterSpacing: 5,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              SizedBox(height: 40.h),
+
+              //sign in
+              Text(
+                'Sign In',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              SizedBox(height: 30.h),
+
+              //welcome back
+              Text(
+                'Welcome back, you\'ve been missed!',
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xff8FD974),
+                ),
+              ),
+
+              SizedBox(height: 30.h),
+
+              //form
+              Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    //email title
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Email',
+                        style: TextStyle(
+                          color: Color(0xffBBBBBC),
+                          fontSize: 15.0.sp,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 16.0.h),
+
+                    //email field
+                    TextFormField(
+                      controller: emailTextEditingController,
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        color: Color(0xff707070),
+                      ),
+                      decoration: formInputDecoration(
+                        hintText: "company@example.com",
+                        prefixIcon: Icons.mail_outlined,
+                      ),
+                      validator: (val) {
+                        return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val)
+                            ? null
+                            : "Enter a valid Email";
+                      },
+                    ),
+
+                    SizedBox(height: 32.0.h),
+
+                    //password title
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Password',
+                        style: TextStyle(
+                          color: Color(0xffBBBBBC),
+                          fontSize: 15.0.sp,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 16.0.h),
+
+                    //password title
+                    TextFormField(
+                      obscureText: true,
+                      validator: (val) {
+                        return val.length > 6 ? null : "Please provide a Password with 6+ characters";
+                      },
+                      controller: passWordTextEditingController,
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        color: Color(0xff707070),
+                      ),
+                      decoration: formInputDecoration(
+                        hintText: "Password",
+                        prefixIcon: Icons.lock_outlined,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 35.h),
+
+              //sign in btn
+              MaterialButton(
+                color: Color(0xff8FD974),
+                shape: StadiumBorder(),
+                minWidth: 1.sw,
+                height: 50.h,
+                onPressed: () {
+                  login();
+                },
+                child: Text(
+                  'Sign In',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 55.0.h),
+
+              //social sign in
+              Text(
+                'Or Sign In using',
+                style: regularText,
+              ),
+
+              SizedBox(height: 15.0.h),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  //facebook
+                  MaterialButton(
+                    onPressed: () {},
+                    padding: EdgeInsets.symmetric(horizontal: 8.r),
+                    splashColor: Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 19.r,
+                          backgroundColor: Colors.transparent,
+                          child: Image.asset(
+                            'assets/icons/facebook_icon.png',
+                            height: 19.r,
+                            width: 19.r,
+                          ),
+                        ),
+                        SizedBox(width: 4.w),
+                        Text('Facebook', style: regularText),
+                      ],
+                    ),
+                  ),
+
+                  //google
+                  MaterialButton(
+                    onPressed: () {},
+                    padding: EdgeInsets.symmetric(horizontal: 8.r),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          child: Image.asset(
+                            'assets/icons/google_icon.png',
+                            height: 19.r,
+                            width: 19.r,
+                          ),
+                        ),
+                        SizedBox(width: 4.w),
+                        Text('Google', style: regularText),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              //sign up cta
+              SizedBox(height: 45.h),
+              GestureDetector(
+                onTap: () => widget.toggle(),
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Don\'t have an account? ',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: Color(0xff707070),
+                    ),
+                    children: [
+                      TextSpan(
+                        // recognizer: TapGestureRecognizer()..onTap = () async => await widget.toggle(),
+                        text: 'SignUp',
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          color: Color(0xff8FD974),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 5.h),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  //
+  // @override
+  // Widget build(BuildContext context) {
+  //   return SafeArea(
+  //     child: Scaffold(
+  //       body: SingleChildScrollView(
+  //         child: Container(
+  //           height: MediaQuery.of(context).size.height - 50,
+  //           alignment: Alignment.bottomCenter,
+  //           child: Container(
+  //             padding: EdgeInsets.symmetric(horizontal: 24),
+  //             child: Form(
+  //               key: formKey,
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   //email
+  //                   TextFormField(
+  //                       validator: (val) {
+  //                         return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val)
+  //                             ? null
+  //                             : "Enter a valid Email";
+  //                       },
+  //                       controller: emailTextEditingController,
+  //                       style: simpleTextStyle,
+  //                       decoration: textFieldInputDecoration("Email")),
+  //
+  //                   //pass
+  //                   TextFormField(
+  //                       obscureText: true,
+  //                       validator: (val) {
+  //                         return val.length > 6 ? null : "Please provide a Password with 6+ characters";
+  //                       },
+  //                       controller: passWordTextEditingController,
+  //                       style: simpleTextStyle,
+  //                       decoration: textFieldInputDecoration("Password")),
+  //
+  //                   SizedBox(
+  //                     height: 8,
+  //                   ),
+  //
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+}

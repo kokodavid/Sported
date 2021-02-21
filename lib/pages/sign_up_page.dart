@@ -3,16 +3,16 @@ import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/screens/profile_screen.dart';
 import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/services/database.dart';
-import 'package:sported_app/widgets/widget.dart';
+import 'package:sported_app/widgets/form_input_decoration.dart';
 
-class Register extends StatefulWidget {
+class SignUp extends StatefulWidget {
   final Function toggle;
-  Register(this.toggle);
+  SignUp(this.toggle);
   @override
-  _RegisterState createState() => _RegisterState();
+  _SignUpState createState() => _SignUpState();
 }
 
-class _RegisterState extends State<Register> {
+class _SignUpState extends State<SignUp> {
   bool isLoading = false;
 
   AuthMethods authMethods = new AuthMethods();
@@ -45,7 +45,7 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: AppBar(),
       body: isLoading
           ? Container(
               child: Center(child: CircularProgressIndicator()),
@@ -68,25 +68,26 @@ class _RegisterState extends State<Register> {
                                   return val.isEmpty || val.length < 2 ? "Try another Username" : null;
                                 },
                                 controller: userNameTextEditingController,
-                                style: simpleTextStyle,
-                                decoration: textFieldInputDecoration("Full Names")),
+                                style: regularText,
+                                decoration: formInputDecoration(hintText: "Full Names")),
                             TextFormField(
-                                validator: (val) {
-                                  return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val)
-                                      ? null
-                                      : "Enter a valid Email";
-                                },
-                                controller: emailTextEditingController,
-                                style: simpleTextStyle,
-                                decoration: textFieldInputDecoration("Email")),
+                              validator: (val) {
+                                return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val)
+                                    ? null
+                                    : "Enter a valid Email";
+                              },
+                              controller: emailTextEditingController,
+                              style: regularText,
+                              decoration: formInputDecoration(hintText: "Email"),
+                            ),
                             TextFormField(
                                 obscureText: true,
                                 validator: (val) {
                                   return val.length > 6 ? null : "Please provide a Password with 6+ characters";
                                 },
                                 controller: passWordTextEditingController,
-                                style: simpleTextStyle,
-                                decoration: textFieldInputDecoration("Password")),
+                                style: regularText,
+                                decoration: formInputDecoration(hintText: "Password")),
                             TextFormField(
                                 obscureText: true,
                                 validator: (val) {
@@ -97,8 +98,8 @@ class _RegisterState extends State<Register> {
                                   }
                                 },
                                 controller: confirmPassWordTextEditingController,
-                                style: simpleTextStyle,
-                                decoration: textFieldInputDecoration("Confirm Password")),
+                                style: regularText,
+                                decoration: formInputDecoration(hintText: "Confirm Password")),
                           ],
                         ),
                       ),
@@ -111,7 +112,7 @@ class _RegisterState extends State<Register> {
                           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           child: Text(
                             "Forgot Password ?",
-                            style: simpleTextStyle,
+                            style: regularText,
                           ),
                         ),
                       ),
@@ -131,7 +132,7 @@ class _RegisterState extends State<Register> {
                               gradient: LinearGradient(colors: [const Color(0xff007EF4), const Color(0xff2A75BC)])),
                           child: Text(
                             "Sign Up",
-                            style: mediumTextStyle,
+                            style: regularText,
                           ),
                         ),
                       ),
@@ -146,7 +147,7 @@ class _RegisterState extends State<Register> {
                         children: [
                           Text(
                             "Already have an Account ?",
-                            style: mediumTextStyle,
+                            style: regularText,
                           ),
                           GestureDetector(
                             onTap: () {
