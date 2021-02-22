@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sported_app/screens/profile_screen.dart';
+import 'package:sported_app/screens/edit_profile_screen.dart';
 import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/services/database.dart';
-import 'package:sported_app/widgets/form_input_decoration.dart';
+import 'file:///D:/LEWY/Dev/Projects/ROUGH/Flutter/SportedApp/lib/helper/form_input_decoration.dart';
 
 class SignUpPage extends StatefulWidget {
   final Function toggle;
@@ -26,6 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController confirmPassWordTextEditingController = new TextEditingController();
 
+  //TODO: Implement email verification before pushing edit profile
   signMeUp() {
     if (formKey.currentState.validate()) {
       Map<String, String> userInfoMap = {"name": userNameTextEditingController.text, "email": emailTextEditingController.text};
@@ -34,12 +35,14 @@ class _SignUpPageState extends State<SignUpPage> {
         isLoading = true;
       });
 
-      authMethods.signUpWithEmailAndPassword(emailTextEditingController.text, passWordTextEditingController.text).then((val) {
-        print("$val");
+      authMethods.signUpWithEmailAndPassword(emailTextEditingController.text, passWordTextEditingController.text).then(
+        (val) {
+          print("$val");
 
-        databaseMethods.uploadUserInfo(userInfoMap);
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-      });
+          databaseMethods.uploadUserInfo(userInfoMap);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
+        },
+      );
     }
   }
 
@@ -104,7 +107,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 8.0.h),
+                            SizedBox(height: 10.0.h),
 
                             //full name field
                             TextFormField(
@@ -121,7 +124,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 return val.isEmpty || val.length < 2 ? "Try another Username" : null;
                               },
                             ),
-                            SizedBox(height: 16.0.h),
+                            SizedBox(height: 20.0.h),
 
                             //email title
                             Align(
@@ -134,7 +137,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 8.0.h),
+                            SizedBox(height: 10.0.h),
 
                             //email field
                             TextFormField(
@@ -153,7 +156,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     : "Enter a valid Email";
                               },
                             ),
-                            SizedBox(height: 16.0.h),
+                            SizedBox(height: 20.0.h),
 
                             //password title
                             Align(
@@ -166,7 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 8.0.h),
+                            SizedBox(height: 10.0.h),
 
                             //password field
                             TextFormField(
@@ -184,7 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               },
                               controller: passWordTextEditingController,
                             ),
-                            SizedBox(height: 16.0.h),
+                            SizedBox(height: 20.0.h),
 
                             //confirm password title
                             Align(
@@ -197,7 +200,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 8.0.h),
+                            SizedBox(height: 10.0.h),
 
                             //confirm password field
                             TextFormField(
@@ -219,7 +222,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 }
                               },
                             ),
-                            SizedBox(height: 16.0.h),
+                            SizedBox(height: 20.0.h),
                           ],
                         ),
                       ),
@@ -233,7 +236,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         minWidth: 1.sw,
                         height: 50.h,
                         onPressed: () {
-                          signMeUp();
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
+                          // signMeUp();
                         },
                         child: Text(
                           'Sign Up',

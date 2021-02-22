@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/locator.dart';
-import 'package:sported_app/screens/profile_screen.dart';
+import 'package:sported_app/screens/edit_profile_screen.dart';
 import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
-import 'package:sported_app/widgets/form_input_decoration.dart';
+
+import 'file:///D:/LEWY/Dev/Projects/ROUGH/Flutter/SportedApp/lib/helper/form_input_decoration.dart';
 
 class SignInPage extends StatefulWidget {
   final Function toggle;
@@ -27,7 +28,7 @@ class _SignInPageState extends State<SignInPage> {
             email: emailTextEditingController.text,
             password: passWordTextEditingController.text,
           );
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
     } catch (e) {
       print("Something went wrong!");
     }
@@ -101,7 +102,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
 
-                    SizedBox(height: 16.0.h),
+                    SizedBox(height: 10.0.h),
 
                     //email field
                     TextFormField(
@@ -121,7 +122,7 @@ class _SignInPageState extends State<SignInPage> {
                       },
                     ),
 
-                    SizedBox(height: 32.0.h),
+                    SizedBox(height: 20.0.h),
 
                     //password title
                     Align(
@@ -135,7 +136,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
 
-                    SizedBox(height: 16.0.h),
+                    SizedBox(height: 10.0.h),
 
                     //password field
                     TextFormField(
@@ -197,7 +198,7 @@ class _SignInPageState extends State<SignInPage> {
               //social sign in
               Text(
                 'Or Sign In using',
-                style: regularText,
+                style: regularStyle,
               ),
 
               SizedBox(height: 15.0.h),
@@ -225,7 +226,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                         SizedBox(width: 4.w),
-                        Text('Facebook', style: regularText),
+                        Text('Facebook', style: regularStyle),
                       ],
                     ),
                   ),
@@ -245,7 +246,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                         SizedBox(width: 4.w),
-                        Text('Google', style: regularText),
+                        Text('Google', style: regularStyle),
                       ],
                     ),
                   ),

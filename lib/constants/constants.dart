@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-TextStyle simpleTextStyle = TextStyle(color: Colors.white, fontSize: 16);
+TextStyle regularStyle = TextStyle(
+  color: Color(0xffBBBBBC),
+  fontSize: 15.sp,
+);
 
-TextStyle mediumTextStyle = TextStyle(color: Colors.white, fontSize: 17);
+TextStyle labelStyle = TextStyle(
+  fontSize: 14.sp,
+  color: Color(0xff707070),
+);
 
-TextStyle regularText = TextStyle(color: Color(0xffBBBBBC), fontSize: 15.sp);
+TextStyle hintStyle = TextStyle(
+  fontSize: 12.sp,
+  color: Color(0xff707070),
+);
