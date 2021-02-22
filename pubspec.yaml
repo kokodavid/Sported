@@ -42,6 +42,9 @@ dependencies:
   # ui
   font_awesome_flutter: ^8.11.0
   flutter_screenutil: ^4.0.3+2
+  material_design_icons_flutter: ^4.0.5855
+  keyboard_avoider: ^0.1.2
+
 
 dev_dependencies:
   flutter_test:
