@@ -20,6 +20,10 @@ class MyApp extends StatelessWidget {
       builder: () => MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          canvasColor: Color(0xff31323B),
+          accentColor: Color(0xff2F4826),
+          splashColor: Colors.transparent,
+          highlightColor: Color(0x1a2f4826),
           scaffoldBackgroundColor: Color(0xff18181A),
         ),
         home: Authenticate(),
