@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
+import 'package:sported_app/shared/pages_switcher.dart';
 
 class SaveProfileBtn extends StatelessWidget {
   @override
@@ -33,6 +36,14 @@ class SaveProfileBtn extends StatelessWidget {
               ),
               onPressed: () {
                 //TODO: Implement save profile
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider<NavBloc>(
+                      create: (context) => NavBloc()..add(LoadPageThree()),
+                      child: PagesSwitcher(),
+                    ),
+                  ),
+                );
               },
             ),
           ],

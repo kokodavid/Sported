@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/constants/constants.dart';
-
-import 'file:///D:/LEWY/Dev/Projects/ROUGH/Flutter/SportedApp/lib/helper/form_input_decoration.dart';
+import 'package:sported_app/shared/form_input_decoration.dart';
 
 class CoachingPrompt extends StatefulWidget {
   @override

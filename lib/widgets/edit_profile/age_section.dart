@@ -23,11 +23,11 @@ class AgeSection extends StatelessWidget {
           ),
 
           //age range dropdown
-          SizedBox(height: 10.0),
+          SizedBox(height: 10.0.h),
           Form(
             key: ageFormKey,
             child: Container(
-              width: 169.w,
+              width: 170.w,
               child: DropdownButtonFormField(
                 elevation: 0,
                 iconSize: 23.r,
@@ -118,6 +118,7 @@ class AgeSection extends StatelessWidget {
                 ),
                 icon: Icon(
                   MdiIcons.chevronDown,
+                  size: 24.r,
                   color: Color(0xffC5C6C7),
                 ),
                 decoration: InputDecoration(

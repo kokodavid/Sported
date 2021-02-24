@@ -4,7 +4,7 @@ import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/models/ourUser.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
-import '../../helper/form_input_decoration.dart';
+import '../../shared/form_input_decoration.dart';
 import '../../locator.dart';
 
 class EditProfileForms extends StatelessWidget {
