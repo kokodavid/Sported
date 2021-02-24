@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/screens/edit_profile_screen.dart';
 import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/services/database.dart';
-import 'file:///D:/LEWY/Dev/Projects/ROUGH/Flutter/SportedApp/lib/helper/form_input_decoration.dart';
+import 'package:sported_app/shared/form_input_decoration.dart';
 
 class SignUpPage extends StatefulWidget {
   final Function toggle;

@@ -5,9 +5,8 @@ import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/locator.dart';
 import 'package:sported_app/screens/edit_profile_screen.dart';
 import 'package:sported_app/services/auth.dart';
+import 'package:sported_app/shared/form_input_decoration.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
-
-import 'file:///D:/LEWY/Dev/Projects/ROUGH/Flutter/SportedApp/lib/helper/form_input_decoration.dart';
 
 class SignInPage extends StatefulWidget {
   final Function toggle;
