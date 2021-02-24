@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,7 +7,9 @@ import 'package:sported_app/locator.dart';
 import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/services/auth.dart';
+import 'package:sported_app/services/authentication_service.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
+import 'package:provider/provider.dart';
 
 
 class SignInPage extends StatefulWidget {
@@ -17,27 +20,21 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  bool _isSubmitting;
+  FirebaseAuth auth = FirebaseAuth.instance;
   final formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   AuthMethods authMethods = AuthMethods();
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController emailTextEditingController = new TextEditingController();
 
-  signMeIn() async {
-    try {
-      await locator.get<UserController>().signInWithEmailAndPassword(
-            email: emailTextEditingController.text,
-            password: passWordTextEditingController.text,
-          );
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
-    } catch (e) {
-      print("Something went wrong!");
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
         body: Padding(
           padding: EdgeInsets.only(top: 20.0.h, left: 20.0.w, right: 20.0.w, bottom: 20.0.h),
@@ -181,7 +178,7 @@ class _SignInPageState extends State<SignInPage> {
                 minWidth: 1.sw,
                 height: 50.h,
                 onPressed: () {
-                  signMeIn();
+                  login();
                 },
                 child: Text(
                   'Sign In',
@@ -201,7 +198,7 @@ class _SignInPageState extends State<SignInPage> {
                 style: regularStyle,
               ),
 
-              SizedBox(height: 17.0.h),
+              SizedBox(height: 15.0.h),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -233,7 +230,12 @@ class _SignInPageState extends State<SignInPage> {
 
                   //google
                   MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacement(context, MaterialPageRoute(
+                          builder: (context) => EditProfileScreen()
+                      ));
+
+                    },
                     padding: EdgeInsets.symmetric(horizontal: 8.r),
                     child: Row(
                       children: [
@@ -254,8 +256,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
 
               //sign up cta
-              SizedBox(height: 51.h),
-
+              SizedBox(height: 45.h),
               RichText(
                 text: TextSpan(
                   text: 'Don\'t have an account? ',
@@ -278,11 +279,83 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
 
-              SizedBox(height: 20.h),
+              SizedBox(height: 5.h),
             ],
           ),
         ),
       ),
     );
   }
+
+  _LoginUser() async {
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    final logMessage = await context
+        .read<AuthenticationService>()
+        .signIn(email: emailTextEditingController.text, password: passWordTextEditingController.text);
+
+
+    logMessage == "Logged In Successfully"
+        ? _showSuccessSnack(logMessage)
+        : _showErrorSnack(logMessage);
+
+    //print("I am logMessage $logMessage");
+
+    if (logMessage == "Logged In Successfully") {
+      Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) => EditProfileScreen()
+      ));
+
+      return;
+    } else {
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
+  }
+
+  login() async{
+    try {
+       await locator
+          .get<UserController>()
+          .signInWithEmailAndPassword(
+        email: emailTextEditingController.text,
+        password: passWordTextEditingController.text,
+      );
+       Navigator.pushReplacement(context, MaterialPageRoute(
+           builder: (context) => EditProfileScreen()
+       ));
+
+      } catch (e) {
+    }
+  }
+
+  _showSuccessSnack(String message) async {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        "$message",
+        style: TextStyle(color: Colors.green),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+    formKey.currentState.reset();
+  }
+
+  _showErrorSnack(String message) {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        "$message",
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+    setState(() {
+      _isSubmitting = false;
+    });
+  }
+
 }

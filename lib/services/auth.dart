@@ -10,7 +10,7 @@ class AuthMethods{
 
   Future<UserModel> getUser() async {
     var firebaseUser = await _auth.currentUser;
-    return UserModel(uid:firebaseUser.uid, displayName: firebaseUser.displayName);
+    return UserModel(uid:firebaseUser.uid);
   }
 
   UserModel _userFromFirebaseUser(User user){
@@ -21,7 +21,7 @@ class AuthMethods{
     var authResult = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     return UserModel(uid:authResult.user.uid,
-        displayName: authResult.user.displayName);
+        username: authResult.user.displayName);
   }
 
   Future signUpWithEmailAndPassword(String email, String password) async {

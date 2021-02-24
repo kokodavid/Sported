@@ -1,11 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:sported_app/helper/authenticate.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/services/auth.dart';
+import 'package:sported_app/services/authentication_service.dart';
 import 'package:sported_app/services/database.dart';
-
 
 class SignUpPage extends StatefulWidget {
   final Function toggle;
@@ -16,41 +18,25 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   bool isLoading = false;
+  bool _isSubmitting;
 
+  FirebaseAuth auth = FirebaseAuth.instance;
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
 
   final formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController userNameTextEditingController = new TextEditingController();
   TextEditingController emailTextEditingController = new TextEditingController();
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController confirmPassWordTextEditingController = new TextEditingController();
 
-  //TODO: Implement email verification before pushing edit profile
-  signMeUp() {
-    if (formKey.currentState.validate()) {
-      Map<String, String> userInfoMap = {"name": userNameTextEditingController.text, "email": emailTextEditingController.text};
-
-      setState(() {
-        isLoading = true;
-      });
-
-      authMethods.signUpWithEmailAndPassword(emailTextEditingController.text, passWordTextEditingController.text).then(
-        (val) {
-          print("$val");
-
-          databaseMethods.uploadUserInfo(userInfoMap);
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
-        },
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
         body: isLoading
             ? Container(
@@ -61,9 +47,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               )
             : SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
                 child: Padding(
-                  padding: EdgeInsets.only(top: 20.0.h, left: 20.0.w, right: 20.0.w, bottom: 20.0.h),
+                  padding:
+                      EdgeInsets.only(top: 20.0.h, left: 20.0.w, right: 20.0.w, bottom: 20.0.h),
                   child: Column(
                     children: [
                       //sign in
@@ -123,7 +109,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 prefixIcon: Icons.person_outlined,
                               ),
                               validator: (val) {
-                                return val.isEmpty || val.length < 2 ? "Try another Username" : null;
+                                return val.isEmpty || val.length < 2
+                                    ? "Try another Username"
+                                    : null;
                               },
                             ),
                             SizedBox(height: 20.0.h),
@@ -153,7 +141,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 prefixIcon: Icons.mail_outlined,
                               ),
                               validator: (val) {
-                                return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val)
+                                return RegExp(
+                                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                        .hasMatch(val)
                                     ? null
                                     : "Enter a valid Email";
                               },
@@ -185,7 +175,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 prefixIcon: Icons.lock_outlined,
                               ),
                               validator: (val) {
-                                return val.length > 6 ? null : "Please provide a Password with 6+ characters";
+                                return val.length > 6
+                                    ? null
+                                    : "Please provide a Password with 6+ characters";
                               },
                               controller: passWordTextEditingController,
                             ),
@@ -238,8 +230,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         minWidth: 1.sw,
                         height: 50.h,
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
-                          // signMeUp();
+                          signMeUp();
                         },
                         child: Text(
                           'Sign Up',
@@ -251,7 +242,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
 
-                      SizedBox(height: 46.h),
+                      SizedBox(height: 56.h),
 
                       //sign in cta
                       RichText(
@@ -263,7 +254,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           children: [
                             TextSpan(
-                              recognizer: TapGestureRecognizer()..onTap = () async => await widget.toggle(),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async => await widget.toggle(),
                               text: 'Sign In',
                               style: TextStyle(
                                 fontSize: 13.sp,
@@ -281,5 +273,67 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
       ),
     );
+  }
+
+  //TODO: Implement email verification before pushing edit profile
+  signMeUp() {
+    if (formKey.currentState.validate()) {
+      _registerUser();
+    }
+  }
+
+  void _registerUser() async {
+    setState(() {
+      _isSubmitting = true;
+    });
+    final logMessage = await context.read<AuthenticationService>().signUp(
+        email: emailTextEditingController.text, password: passWordTextEditingController.text);
+
+    logMessage == "Registered Successfully"
+        ? _showSuccessSnack(logMessage)
+        : _showErrorSnack(logMessage);
+
+    print("LogMessage:" + logMessage);
+
+    if (logMessage == "Registered Successfully") {
+      createUserInFirestore();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authenticate()));
+    } else {
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
+  }
+
+  //When User "Signed Up", success snack will display.
+  _showSuccessSnack(String message) {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        "$message",
+        style: TextStyle(color: Colors.green),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+    formKey.currentState.reset();
+  }
+
+  //When FirebaseAuth Catches error, error snack will display.
+  _showErrorSnack(String message) {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        "$message",
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+  }
+
+  createUserInFirestore() async {
+    context.read<AuthenticationService>().addUserToDB(
+        uid: auth.currentUser.uid,
+        username: userNameTextEditingController.text,
+        email: emailTextEditingController.text);
   }
 }

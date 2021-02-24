@@ -7,17 +7,33 @@ import 'package:sported_app/view_controller/user_controller.dart';
 import '../../../locator.dart';
 import '../../shared/form_input_decoration.dart';
 
-class EditProfileForms extends StatelessWidget {
+class EditProfileForms extends StatefulWidget {
+  @override
+  _EditProfileFormsState createState() => _EditProfileFormsState();
+}
+
+class _EditProfileFormsState extends State<EditProfileForms> {
+  UserModel _currentUser;
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
+
+  void getUser() async {
+    UserModel currentUser = await locator.get<UserController>().getUserFromDB();
+    _currentUser = currentUser;
+  }
+
   @override
   Widget build(BuildContext context) {
-    UserModel _currentUser = locator.get<UserController>().currentUser;
     final editProfileFormKey = GlobalKey<FormState>();
     TextEditingController fullNameTextEditingController = new TextEditingController();
     TextEditingController emailTextEditingController = new TextEditingController();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.0.w),
       child: Form(
-        onChanged: () {},
         key: editProfileFormKey,
         child: Column(
           children: [
@@ -36,10 +52,6 @@ class EditProfileForms extends StatelessWidget {
 
             //full name field
             TextFormField(
-              onChanged: (val) {
-                // print(val);
-                // print(fullNameTextEditingController.text);
-              },
               controller: fullNameTextEditingController,
               style: TextStyle(
                 fontSize: 15.sp,
@@ -48,7 +60,7 @@ class EditProfileForms extends StatelessWidget {
               decoration: formInputDecoration(
                 hintText: "",
                 isDense: true,
-                // labelText: _currentUser.email,
+                labelText: _currentUser.username,
                 prefixIcon: Icons.person_outlined,
               ),
               validator: (val) {
@@ -74,13 +86,17 @@ class EditProfileForms extends StatelessWidget {
               controller: emailTextEditingController,
               style: regularStyle,
               decoration: formInputDecoration(
-                // labelText: _currentUser.email,
+                labelText: _currentUser.email,
                 isDense: true,
                 hintText: "",
                 prefixIcon: Icons.mail_outlined,
               ),
               validator: (val) {
-                return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val) ? null : "Enter a valid Email";
+                return RegExp(
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                        .hasMatch(val)
+                    ? null
+                    : "Enter a valid Email";
               },
             ),
 

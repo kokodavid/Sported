@@ -120,7 +120,7 @@ class AgeSection extends StatelessWidget {
                 ),
                 icon: Icon(
                   MdiIcons.chevronDown,
-                  size: 24.r,
+                  size: 18.r,
                   color: Color(0xffC5C6C7),
                 ),
                 decoration: InputDecoration(
