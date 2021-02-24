@@ -21,6 +21,18 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           canvasColor: Color(0xff31323B),
+          appBarTheme: AppBarTheme(
+            color: Color(0xff18181A),
+            actionsIconTheme: IconThemeData(
+              color: Color(0xffBABABB),
+            ),
+            iconTheme: IconThemeData(
+              color: Color(0xffBABABB),
+            ),
+            elevation: 0.0,
+            brightness: Brightness.dark,
+            centerTitle: true,
+          ),
           accentColor: Color(0xff2F4826),
           splashColor: Colors.transparent,
           highlightColor: Color(0x1a2f4826),
