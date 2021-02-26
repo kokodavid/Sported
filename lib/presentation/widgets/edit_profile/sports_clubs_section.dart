@@ -6,6 +6,7 @@ import 'package:sported_app/constants/constants.dart';
 class SportsClubsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    String club1,club2,club3;
     final sportsClubKey = GlobalKey<FormState>();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -32,10 +33,7 @@ class SportsClubsSection extends StatelessWidget {
                   iconSize: 23.r,
                   isDense: true,
                   isExpanded: false,
-                  hint: Text(
-                    'Please select a sports club',
-                    style: labelStyle,
-                  ),
+                  hint: club1 == null ? Text('Please select a sports club',style: labelStyle):Text(club1),
                   icon: Icon(
                     MdiIcons.chevronDown,
                     color: Color(0xffC5C6C7),
@@ -44,53 +42,14 @@ class SportsClubsSection extends StatelessWidget {
                     fontSize: 15.sp,
                     color: Color(0xff8FD974),
                   ),
-                  items: [
-                    //TODO: Implement sports clubs selection
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
+                  items: ['NJSC', 'Karen tennis', 'Aga khan','Oshwal Centre','Jaffery Turf','Arena One','Gym Khana','Sikh Union','Parklands Sports club','Impala Club'].map(
+                        (val) {
+                      return DropdownMenuItem<String>(
+                        value: val,
+                        child: Text(val),
+                      );
+                    },
+                  ).toList(),
                   decoration: InputDecoration(
                     enabled: true,
                     fillColor: Color(0xff31323B),
@@ -104,21 +63,15 @@ class SportsClubsSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-                  onTap: () {},
-                  onChanged: (_) {},
+                  onChanged: (val) {},
                 ),
-                SizedBox(height: 10.h),
-
-                //club 2
+                SizedBox(height: 10),
                 DropdownButtonFormField(
                   elevation: 0,
                   iconSize: 23.r,
                   isDense: true,
                   isExpanded: false,
-                  hint: Text(
-                    'Please select a sports club',
-                    style: labelStyle,
-                  ),
+                  hint: club2 == null ? Text('Please select a sports club',style: labelStyle):Text(club1),
                   icon: Icon(
                     MdiIcons.chevronDown,
                     color: Color(0xffC5C6C7),
@@ -127,53 +80,14 @@ class SportsClubsSection extends StatelessWidget {
                     fontSize: 15.sp,
                     color: Color(0xff8FD974),
                   ),
-                  items: [
-                    //TODO: Implement sports clubs selection
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
+                  items: ['NJSC', 'Karen tennis', 'Aga khan','Oshwal Centre','Jaffery Turf','Arena One','Gym Khana','Sikh Union','Parklands Sports club','Impala Club'].map(
+                        (val) {
+                      return DropdownMenuItem<String>(
+                        value: val,
+                        child: Text(val),
+                      );
+                    },
+                  ).toList(),
                   decoration: InputDecoration(
                     enabled: true,
                     fillColor: Color(0xff31323B),
@@ -187,22 +101,15 @@ class SportsClubsSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-                  onTap: () {},
                   onChanged: (_) {},
                 ),
-
-                SizedBox(height: 10.h),
-
-                //club 3
+                SizedBox(height: 10),
                 DropdownButtonFormField(
                   elevation: 0,
                   iconSize: 23.r,
                   isDense: true,
                   isExpanded: false,
-                  hint: Text(
-                    'Please select a sports club',
-                    style: labelStyle,
-                  ),
+                  hint: club2 == null ? Text('Please select a sports club',style: labelStyle):Text(club1),
                   icon: Icon(
                     MdiIcons.chevronDown,
                     color: Color(0xffC5C6C7),
@@ -211,53 +118,14 @@ class SportsClubsSection extends StatelessWidget {
                     fontSize: 15.sp,
                     color: Color(0xff8FD974),
                   ),
-                  items: [
-                    //TODO: Implement sports clubs selection
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      child: SizedBox(
-                        width: 320.w,
-                        child: Text(
-                          "Nairobi Jeffery Sports Club",
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
+                  items: ['NJSC', 'Karen tennis', 'Aga khan','Oshwal Centre','Jaffery Turf','Arena One','Gym Khana','Sikh Union','Parklands Sports club','Impala Club'].map(
+                        (val) {
+                      return DropdownMenuItem<String>(
+                        value: val,
+                        child: Text(val),
+                      );
+                    },
+                  ).toList(),
                   decoration: InputDecoration(
                     enabled: true,
                     fillColor: Color(0xff31323B),
@@ -271,12 +139,9 @@ class SportsClubsSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-                  onTap: () {},
                   onChanged: (_) {},
                 ),
-
-                SizedBox(height: 20.h),
-
+                SizedBox(height: 20),
                 //divider
                 Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
 

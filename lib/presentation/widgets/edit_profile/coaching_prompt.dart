@@ -9,6 +9,9 @@ class CoachingPrompt extends StatefulWidget {
 }
 
 class _CoachingPromptState extends State<CoachingPrompt> {
+  bool _hasBeenPressedTrue = false;
+  bool _hasBeenPressedFalse = false;
+  TextEditingController pasteurl = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -43,10 +46,14 @@ class _CoachingPromptState extends State<CoachingPrompt> {
                     //yes
                     MaterialButton(
                       height: 30.h,
-                      color: Color(0xff8FD974),
+                      color: _hasBeenPressedTrue ? Color(0xff8FD974):Color(0xff31323B),
                       minWidth: 56.w,
                       padding: EdgeInsets.all(0),
-                      shape: StadiumBorder(),
+                      shape: StadiumBorder(
+                        side: BorderSide(
+                          color: Color(0xff3E3E3E),
+                        ),
+                      ),
                       elevation: 0.0,
                       hoverElevation: 0,
                       disabledElevation: 0,
@@ -55,20 +62,22 @@ class _CoachingPromptState extends State<CoachingPrompt> {
                       child: Text(
                         'Yes',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Color(0xff707070),
                           fontWeight: FontWeight.w400,
                           fontSize: 15.sp,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _hasBeenPressedTrue = !_hasBeenPressedTrue;
+                        });
+                        print("Yes");
+                      },
                     ),
-
                     SizedBox(width: 12.0.w),
-
-                    //no
                     MaterialButton(
                       height: 30.h,
-                      color: Color(0xff31323B),
+                      color: _hasBeenPressedFalse ? Color(0xff8FD974):Color(0xff31323B),
                       minWidth: 56.w,
                       shape: StadiumBorder(
                         side: BorderSide(
@@ -89,10 +98,16 @@ class _CoachingPromptState extends State<CoachingPrompt> {
                           fontSize: 15.sp,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _hasBeenPressedFalse = !_hasBeenPressedFalse;
+                        });
+                        print("Yes");
+                      },
                     ),
                   ],
                 ),
+
 
                 SizedBox(height: 10.0.h),
 
@@ -123,6 +138,7 @@ class _CoachingPromptState extends State<CoachingPrompt> {
                       color: Color(0xff707070),
                       fontSize: 15.sp,
                     ),
+                    controller: pasteurl,
                     decoration: formInputDecoration(
                       isDense: true,
                       hintText: 'Paste URL',

@@ -5,11 +5,10 @@ import 'package:sported_app/presentation/widgets/edit_profile/age_section.dart';
 import 'package:sported_app/presentation/widgets/edit_profile/avatar_section.dart';
 import 'package:sported_app/presentation/widgets/edit_profile/coaching_prompt.dart';
 import 'package:sported_app/presentation/widgets/edit_profile/edit_profile_forms.dart';
-import 'package:sported_app/presentation/widgets/edit_profile/gender_section.dart';
 import 'package:sported_app/presentation/widgets/edit_profile/save_profile_btn.dart';
 import 'package:sported_app/presentation/widgets/edit_profile/sports_clubs_section.dart';
-import 'package:sported_app/presentation/widgets/edit_profile/sports_played_section.dart';
 import 'package:sported_app/presentation/widgets/edit_profile/willingness_prompt.dart';
+import 'package:sported_app/widgets/edit_profile/gender_section.dart';
 
 class EditProfileScreen extends StatefulWidget {
   static String route = "profile-view";
@@ -22,6 +21,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final ScrollController _scrollController = ScrollController();
+
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -29,10 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           backgroundColor: Color(0xff18181A),
           elevation: 0.0,
           centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+          //TODO: Implement leading on condition
           title: Text(
             'Edit Profile',
             style: TextStyle(
@@ -62,35 +59,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     [
                       //avi section
                       AvatarSection(),
-
                       //forms
                       EditProfileForms(),
-
-                      //age & gender
+                      //age
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          //age
-                          AgeSection(),
-
-                          //gender
-                          GenderSection(),
+                          Expanded(child: AgeSection()),
+                          Expanded(child: GenderSection()),
                         ],
                       ),
-
                       //sports clubs
                       SportsClubsSection(),
-
-                      //select sports section
-                      SportsPlayedSection(),
-
                       //willingness
                       WillingnessPrompt(),
-
                       //coaching
                       CoachingPrompt(),
-
                       //save
                       SaveProfileBtn(),
                     ],

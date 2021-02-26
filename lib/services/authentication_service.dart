@@ -1,21 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sported_app/locator.dart';
+import 'package:sported_app/models/UserProfile.dart';
 import 'package:sported_app/models/ourUser.dart';
+import 'package:sported_app/services/auth.dart';
+import 'package:sported_app/services/storage_repo.dart';
 
 class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  AuthMethods _authRepo = locator.get<AuthMethods>();
   UserModel userModel = UserModel();
+  UserProfile userProfile = UserProfile();
+
+  UserModel _currentUser;
+
   final userRef = FirebaseFirestore.instance.collection("users");
+  final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
 
-  AuthenticationService();
 
-  Stream<User>get authStateChanges => _auth.authStateChanges();
+  Stream<User> get authStateChanges => _auth.authStateChanges();
+
 
   //1
   Future<dynamic> signIn({String email, String password}) async {
     try {
-      await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+      _currentUser = await _authRepo.signInWithEmailAndPassword(
+          email, password);
+
 
       return "Logged In Successfully";
     } on FirebaseAuthException catch (e) {
@@ -49,14 +60,13 @@ class AuthenticationService {
   }
 
   //3
-  Future<void> addUserToDB(
-      {String uid, String username, String email}) async {
+  Future<void> addUserToDB({String uid, String username, String email}) async {
     userModel = UserModel(
         uid: uid, username: username, email: email);
 
-  await userRef.doc(uid).set(userModel.toMap(userModel)).catchError((e){
-    print(e);
-  });
+    await userRef.doc(uid).set(userModel.toMap(userModel)).catchError((e) {
+      print(e);
+    });
   }
 
   //4
@@ -72,6 +82,22 @@ class AuthenticationService {
     await _auth.signOut();
   }
 
+  Future<UserProfile> uploadProfile(
+      {String uid, String fullName, String email, String age, String gender, String clubA, String clubB, String clubC, String pasteUrl, String buddy, String coach,}) async {
+    userProfile = UserProfile(fullName: fullName,
+        age: age,
+        gender: gender,
+        clubA: clubA,
+        clubB: clubB,
+        clubC: clubC,
+        pasteUrl: pasteUrl,
+        buddy: buddy,
+        coach: coach);
 
-
+    await userProfileRef.doc(uid)
+        .set(userProfile.toMap(userProfile))
+        .catchError((e) {
+      print(e);
+    });
+  }
 }

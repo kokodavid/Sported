@@ -3,13 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:sported_app/constants/constants.dart';
 
-class AgeSection extends StatelessWidget {
+class GenderSection extends StatelessWidget {
   String age;
   @override
   Widget build(BuildContext context) {
     final ageFormKey = GlobalKey<FormState>();
     return Padding(
-      padding: EdgeInsets.only(left: 20.w),
+      padding: EdgeInsets.symmetric(horizontal: 20.0.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -18,14 +18,13 @@ class AgeSection extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Age',
+              'Gender',
               style: regularStyle,
             ),
           ),
 
-          SizedBox(height: 10.0.h),
-
           //age range dropdown
+          SizedBox(height: 10.0.h),
           Form(
             key: ageFormKey,
             child: Container(
@@ -37,12 +36,11 @@ class AgeSection extends StatelessWidget {
 
                 },
                 isDense: true,
-                isExpanded: true,
                 style: TextStyle(
                   fontSize: 15.sp,
                   color: Color(0xff8FD974),
                 ),
-                items: ['10-15', '15-20', '20-25','25-30','30-40','above 40',].map(
+                items: ['Male', 'Female', 'Other'].map(
                       (val) {
                     return DropdownMenuItem<String>(
                       value: val,
@@ -50,7 +48,7 @@ class AgeSection extends StatelessWidget {
                     );
                   },
                 ).toList(),
-                hint: age == null ? Text('Age',style: TextStyle(
+                hint: age == null ? Text('Gender',style: TextStyle(
                   fontSize: 15.sp,
                   color: Color(0xff8FD974),
                 ),):Text(age),

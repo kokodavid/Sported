@@ -178,7 +178,7 @@ class _SignInPageState extends State<SignInPage> {
                 minWidth: 1.sw,
                 height: 50.h,
                 onPressed: () {
-                  login();
+                  _LoginUser();
                 },
                 child: Text(
                   'Sign In',
@@ -292,9 +292,9 @@ class _SignInPageState extends State<SignInPage> {
       _isSubmitting = true;
     });
 
-    final logMessage = await context
-        .read<AuthenticationService>()
-        .signIn(email: emailTextEditingController.text, password: passWordTextEditingController.text);
+    final logMessage = await locator
+        .get<UserController>()
+        .signInWithEmailAndPassword(email: emailTextEditingController.text, password: passWordTextEditingController.text);
 
 
     logMessage == "Logged In Successfully"

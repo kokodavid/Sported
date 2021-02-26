@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:sported_app/helper/authenticate.dart';
+import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/services/authentication_service.dart';
@@ -297,7 +297,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (logMessage == "Registered Successfully") {
       createUserInFirestore();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authenticate()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
     } else {
       setState(() {
         _isSubmitting = false;

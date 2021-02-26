@@ -2,7 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/constants/constants.dart';
 
-class WillingnessPrompt extends StatelessWidget {
+class WillingnessPrompt extends StatefulWidget {
+  @override
+  _WillingnessPromptState createState() => _WillingnessPromptState();
+}
+
+class _WillingnessPromptState extends State<WillingnessPrompt> {
+  bool _hasBeenPressedTrue = false;
+  bool _hasBeenPressedFalse = false;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,10 +55,14 @@ class WillingnessPrompt extends StatelessWidget {
                     //yes
                     MaterialButton(
                       height: 30.h,
-                      color: Color(0xff8FD974),
+                      color: _hasBeenPressedTrue ? Color(0xff8FD974):Color(0xff31323B),
                       minWidth: 56.w,
                       padding: EdgeInsets.all(0),
-                      shape: StadiumBorder(),
+                      shape: StadiumBorder(
+                        side: BorderSide(
+                          color: Color(0xff3E3E3E),
+                        ),
+                      ),
                       elevation: 0.0,
                       hoverElevation: 0,
                       disabledElevation: 0,
@@ -59,20 +71,22 @@ class WillingnessPrompt extends StatelessWidget {
                       child: Text(
                         'Yes',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Color(0xff707070),
                           fontWeight: FontWeight.w400,
                           fontSize: 15.sp,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                          setState(() {
+                            _hasBeenPressedTrue = !_hasBeenPressedTrue;
+                          });
+                          print("Yes");
+                      },
                     ),
-
                     SizedBox(width: 12.0.w),
-
-                    //no
                     MaterialButton(
                       height: 30.h,
-                      color: Color(0xff31323B),
+                      color: _hasBeenPressedFalse ? Color(0xff8FD974):Color(0xff31323B),
                       minWidth: 56.w,
                       shape: StadiumBorder(
                         side: BorderSide(
@@ -93,7 +107,12 @@ class WillingnessPrompt extends StatelessWidget {
                           fontSize: 15.sp,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _hasBeenPressedFalse = !_hasBeenPressedFalse;
+                        });
+                        print("Yes");
+                      },
                     ),
                   ],
                 ),
