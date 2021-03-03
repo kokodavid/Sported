@@ -4,8 +4,8 @@ import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/models/ourUser.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
+import '../../../locator.dart';
 import '../../shared/form_input_decoration.dart';
-import '../../locator.dart';
 
 class EditProfileForms extends StatelessWidget {
   @override
@@ -17,6 +17,7 @@ class EditProfileForms extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.0.w),
       child: Form(
+        onChanged: () {},
         key: editProfileFormKey,
         child: Column(
           children: [
@@ -35,6 +36,10 @@ class EditProfileForms extends StatelessWidget {
 
             //full name field
             TextFormField(
+              onChanged: (val) {
+                // print(val);
+                // print(fullNameTextEditingController.text);
+              },
               controller: fullNameTextEditingController,
               style: TextStyle(
                 fontSize: 15.sp,
@@ -43,7 +48,7 @@ class EditProfileForms extends StatelessWidget {
               decoration: formInputDecoration(
                 hintText: "",
                 isDense: true,
-                labelText: _currentUser.email,
+                // labelText: _currentUser.email,
                 prefixIcon: Icons.person_outlined,
               ),
               validator: (val) {
@@ -69,7 +74,7 @@ class EditProfileForms extends StatelessWidget {
               controller: emailTextEditingController,
               style: regularStyle,
               decoration: formInputDecoration(
-                labelText: _currentUser.email,
+                // labelText: _currentUser.email,
                 isDense: true,
                 hintText: "",
                 prefixIcon: Icons.mail_outlined,

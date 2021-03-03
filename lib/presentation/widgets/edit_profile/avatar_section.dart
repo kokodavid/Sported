@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sported_app/models/ourUser.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
-import '../../locator.dart';
+import '../../../locator.dart';
 import 'avatar.dart';
 
 class AvatarSection extends StatefulWidget {

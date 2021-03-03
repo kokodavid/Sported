@@ -3,12 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:sported_app/constants/constants.dart';
 
-class AgeSection extends StatelessWidget {
+class GenderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ageFormKey = GlobalKey<FormState>();
+    final genderFormKey = GlobalKey<FormState>();
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+      padding: EdgeInsets.only(right: 20.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -17,7 +17,7 @@ class AgeSection extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Age',
+              'Gender',
               style: regularStyle,
             ),
           ),
@@ -25,7 +25,7 @@ class AgeSection extends StatelessWidget {
           //age range dropdown
           SizedBox(height: 10.0.h),
           Form(
-            key: ageFormKey,
+            key: genderFormKey,
             child: Container(
               width: 170.w,
               child: DropdownButtonFormField(
@@ -33,17 +33,18 @@ class AgeSection extends StatelessWidget {
                 iconSize: 23.r,
                 onChanged: (_) {},
                 isDense: true,
+                isExpanded: true,
                 style: TextStyle(
                   fontSize: 15.sp,
                   color: Color(0xff8FD974),
                 ),
                 items: [
-                  //TODO: Implement age range selection
+                  //TODO: Implement gender selection
                   DropdownMenuItem(
                     child: SizedBox(
                       width: 122.w,
                       child: Text(
-                        "14-18",
+                        "Male",
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         softWrap: true,
@@ -55,20 +56,7 @@ class AgeSection extends StatelessWidget {
                     child: SizedBox(
                       width: 122.w,
                       child: Text(
-                        "18-25",
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-
-                  DropdownMenuItem(
-                    child: SizedBox(
-                      width: 122.w,
-                      child: Text(
-                        "25-30",
+                        "Female",
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         softWrap: true,
@@ -81,19 +69,7 @@ class AgeSection extends StatelessWidget {
                     child: SizedBox(
                       width: 122.w,
                       child: Text(
-                        "30-35",
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    child: SizedBox(
-                      width: 122.w,
-                      child: Text(
-                        "35-45",
+                        "Other",
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         softWrap: true,
@@ -107,7 +83,7 @@ class AgeSection extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      '25-30',
+                      'What\'s your Gender',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15.sp,
