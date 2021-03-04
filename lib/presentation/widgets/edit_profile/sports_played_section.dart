@@ -78,6 +78,7 @@ class _SportsPlayedSectionState extends State<SportsPlayedSection> {
                         if (!item.selected) {
                           showDialog(
                             context: context,
+                            barrierDismissible: false,
                             builder: (_) => SelectLevelDialog(),
                           );
                         }
@@ -134,6 +135,7 @@ class _SportsPlayedSectionState extends State<SportsPlayedSection> {
                         if (!item.selected) {
                           showDialog(
                             context: context,
+                            barrierDismissible: false,
                             builder: (_) => SelectLevelDialog(),
                           );
                         }
