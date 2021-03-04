@@ -83,7 +83,7 @@ class GenderSection extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      'What\'s your Gender',
+                      'Select your Gender',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15.sp,

@@ -399,6 +399,11 @@ class PaymentScreen extends StatelessWidget {
                     onPressed: () {
                       //TODO: Validate transaction code
                       //TODO: Add to bookings history
+
+                      FocusScopeNode currentFocus = FocusScope.of(context);
+                      if (!currentFocus.hasPrimaryFocus) {
+                        currentFocus.unfocus();
+                      }
                       showDialog(
                         context: context,
                         builder: (_) => SuccessfulBookDialog(),
