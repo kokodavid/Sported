@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sported_app/screens/edit_profile_screen.dart';
+import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
+import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/services/database.dart';
-import 'package:sported_app/shared/form_input_decoration.dart';
 
 class SignUpPage extends StatefulWidget {
   final Function toggle;
@@ -60,6 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               )
             : SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
                 child: Padding(
                   padding: EdgeInsets.only(top: 20.0.h, left: 20.0.w, right: 20.0.w, bottom: 20.0.h),
                   child: Column(
@@ -236,7 +237,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         minWidth: 1.sw,
                         height: 50.h,
                         onPressed: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
                           // signMeUp();
                         },
                         child: Text(
@@ -249,7 +250,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
 
-                      SizedBox(height: 56.h),
+                      SizedBox(height: 46.h),
 
                       //sign in cta
                       RichText(

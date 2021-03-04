@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/locator.dart';
-import 'package:sported_app/screens/edit_profile_screen.dart';
+import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
+import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/services/auth.dart';
-import 'package:sported_app/shared/form_input_decoration.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
 class SignInPage extends StatefulWidget {
@@ -200,7 +200,7 @@ class _SignInPageState extends State<SignInPage> {
                 style: regularStyle,
               ),
 
-              SizedBox(height: 15.0.h),
+              SizedBox(height: 17.0.h),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -253,7 +253,8 @@ class _SignInPageState extends State<SignInPage> {
               ),
 
               //sign up cta
-              SizedBox(height: 45.h),
+              SizedBox(height: 51.h),
+
               RichText(
                 text: TextSpan(
                   text: 'Don\'t have an account? ',
@@ -276,7 +277,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
 
-              SizedBox(height: 5.h),
+              SizedBox(height: 20.h),
             ],
           ),
         ),
