@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sported_app/pages/sign_in_page.dart';
-import 'package:sported_app/pages/sign_up_page.dart';
+import 'package:sported_app/presentation/pages/sign_in_page.dart';
+import 'package:sported_app/presentation/pages/sign_up_page.dart';
 
 class Authenticate extends StatefulWidget {
   @override

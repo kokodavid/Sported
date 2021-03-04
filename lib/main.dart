@@ -20,6 +20,11 @@ class MyApp extends StatelessWidget {
       builder: () => MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: ZoomPageTransitionsBuilder(),
+            },
+          ),
           canvasColor: Color(0xff31323B),
           appBarTheme: AppBarTheme(
             color: Color(0xff18181A),
