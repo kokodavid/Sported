@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' as LocationManager;
 
 class GMap extends StatefulWidget {
   @override
@@ -8,27 +11,44 @@ class GMap extends StatefulWidget {
 }
 
 class _GMapState extends State<GMap> {
-  LatLng _initialcameraposition = LatLng(1.2921, 36.8219);
-  GoogleMapController _controller;
-  Location _location = Location();
-  // Set<Marker> _markers = Set<Marker>();
-  // BitmapDescriptor sourceIcon;
-  // BitmapDescriptor destinationIcon;
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   setSourceAndDestinationIcons();
-  // }
-  //
-  // void setSourceAndDestinationIcons() async {
-  //   sourceIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'assets/driving_pin.png');
-  //   destinationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5), 'assets/destination_map_marker.png');
-  // }
+  //markers
+  BitmapDescriptor locationIcon;
+  Set<Marker> _locationMarkers = {};
+  Completer<GoogleMapController> _completer = Completer();
+  Set<Marker> markers;
+  void setCustomMapPin() async {
+    locationIcon = await BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(size: Size(24.h, 24.h)),
+      'assets/icons/location_icon.png',
+    );
+  }
 
-  void _onMapCreated(GoogleMapController _cntlr) {
-    _controller = _cntlr;
-    _cntlr.setMapStyle('''[
+  //curr location
+  Future<LatLng> getUserLocation() async {
+    LocationManager.LocationData currentLocation;
+    final location = LocationManager.Location();
+    try {
+      currentLocation = await location.getLocation();
+      final lat = currentLocation.latitude;
+      final lng = currentLocation.longitude;
+      final center = LatLng(lat, lng);
+      return center;
+    } on Exception {
+      currentLocation = null;
+      return null;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserLocation();
+    setCustomMapPin();
+  }
+
+  //on created
+  void _onMapCreated(GoogleMapController _controller) {
+    _controller.setMapStyle('''[
   {
     "elementType": "geometry",
     "stylers": [
@@ -214,12 +234,35 @@ class _GMapState extends State<GMap> {
     ]
   }
 ]''');
-
-    _location.onLocationChanged.listen(
-      (l) {
-        _controller.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(target: _initialcameraposition, zoom: 10),
+    _completer.complete(_controller);
+    setState(
+      () {
+        _locationMarkers.add(
+          Marker(
+            markerId: MarkerId('marker1'),
+            position: LatLng(0.0236, 37.9062),
+            icon: locationIcon,
+          ),
+        );
+        _locationMarkers.add(
+          Marker(
+            markerId: MarkerId('marker2'),
+            position: LatLng(1.2727, 36.8163),
+            icon: locationIcon,
+          ),
+        );
+        _locationMarkers.add(
+          Marker(
+            markerId: MarkerId('marker3'),
+            position: LatLng(1.2901, 36.8724),
+            icon: locationIcon,
+          ),
+        );
+        _locationMarkers.add(
+          Marker(
+            markerId: MarkerId('marker4'),
+            position: LatLng(-1.30032, 36.77894),
+            icon: locationIcon,
           ),
         );
       },
@@ -228,14 +271,18 @@ class _GMapState extends State<GMap> {
 
   @override
   Widget build(BuildContext context) {
+    CameraPosition initialLocation = CameraPosition(zoom: 5, target: LatLng(0.0236, 37.9062));
     return GoogleMap(
-      initialCameraPosition: CameraPosition(target: _initialcameraposition),
+      myLocationEnabled: true,
+      initialCameraPosition: initialLocation,
       mapType: MapType.normal,
       zoomGesturesEnabled: true,
       mapToolbarEnabled: false,
-      // markers: _markers,
-      // myLocationButtonEnabled: true,
-      // myLocationEnabled: true,
+      markers: _locationMarkers,
+      zoomControlsEnabled: false,
+      compassEnabled: false,
+      buildingsEnabled: true,
+      myLocationButtonEnabled: false,
       onMapCreated: _onMapCreated,
     );
   }

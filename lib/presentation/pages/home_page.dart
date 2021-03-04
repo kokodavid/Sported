@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sported_app/widgets/home/g_map.dart';
-import 'package:sported_app/widgets/home/home_carousel.dart';
-import 'package:sported_app/widgets/home/home_top_bar.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sported_app/presentation/shared/filter_chips/select_sport.dart';
+import 'package:sported_app/presentation/widgets/home/g_map.dart';
+import 'package:sported_app/presentation/widgets/home/home_carousel.dart';
+import 'package:sported_app/presentation/widgets/home/home_top_bar.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,17 +22,8 @@ class _HomePageState extends State<HomePage> {
         //search
         HomeTopBar(),
 
-        /*
         //select sport
-        // Positioned(
-        //   top: 20.h,
-        //   child: Container(
-        //     height: 40,
-        //     width: 40,
-        //     color: Colors.blue,
-        //   ),
-        // ),
-        */
+        Positioned(top: 48.0.h, right: 0.0, left: 0.0, child: SelectSport()),
 
         //carousel
         HomeCarousel(),

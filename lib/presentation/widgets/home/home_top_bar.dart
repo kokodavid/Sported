@@ -13,10 +13,25 @@ class HomeTopBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
+              constraints: BoxConstraints(
+                minWidth: 56.0.w,
+                minHeight: 56.0.w,
+                maxWidth: 56.0.w,
+                maxHeight: 56.0.w,
+              ),
               onPressed: () {},
-              icon: Icon(Icons.search, color: Color(0xffBABABB)),
+              icon: Icon(
+                Icons.search,
+                color: Color(0xffBABABB),
+              ),
             ),
             IconButton(
+              constraints: BoxConstraints(
+                minWidth: 56.0.w,
+                minHeight: 56.0.w,
+                maxWidth: 56.0.w,
+                maxHeight: 56.0.w,
+              ),
               onPressed: () {},
               icon: Icon(
                 MdiIcons.filterVariant,

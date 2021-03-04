@@ -14,6 +14,7 @@ class HomeCarousel extends StatelessWidget {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: [
+
             //venues
             Padding(
               padding: EdgeInsets.only(left: 12.w, right: 12.w),
