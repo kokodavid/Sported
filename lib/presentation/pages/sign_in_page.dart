@@ -1,16 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/locator.dart';
-import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/services/auth.dart';
-import 'package:sported_app/services/authentication_service.dart';
+import 'package:sported_app/shared/pages_switcher.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
-import 'package:provider/provider.dart';
 
+import 'home_page.dart';
 
 class SignInPage extends StatefulWidget {
   final Function toggle;
@@ -27,8 +28,6 @@ class _SignInPageState extends State<SignInPage> {
   AuthMethods authMethods = AuthMethods();
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController emailTextEditingController = new TextEditingController();
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +112,9 @@ class _SignInPageState extends State<SignInPage> {
                         prefixIcon: Icons.mail_outlined,
                       ),
                       validator: (val) {
-                        return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val)
+                        return RegExp(
+                                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                .hasMatch(val)
                             ? null
                             : "Enter a valid Email";
                       },
@@ -139,7 +140,9 @@ class _SignInPageState extends State<SignInPage> {
                     TextFormField(
                       obscureText: true,
                       validator: (val) {
-                        return val.length > 6 ? null : "Please provide a Password with 6+ characters";
+                        return val.length > 6
+                            ? null
+                            : "Please provide a Password with 6+ characters";
                       },
                       controller: passWordTextEditingController,
                       style: TextStyle(
@@ -231,10 +234,8 @@ class _SignInPageState extends State<SignInPage> {
                   //google
                   MaterialButton(
                     onPressed: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(
-                          builder: (context) => EditProfileScreen()
-                      ));
-
+                      Navigator.pushReplacement(
+                          context, MaterialPageRoute(builder: (context) => HomePage()));
                     },
                     padding: EdgeInsets.symmetric(horizontal: 8.r),
                     child: Row(
@@ -292,10 +293,8 @@ class _SignInPageState extends State<SignInPage> {
       _isSubmitting = true;
     });
 
-    final logMessage = await locator
-        .get<UserController>()
-        .signInWithEmailAndPassword(email: emailTextEditingController.text, password: passWordTextEditingController.text);
-
+    final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(
+        email: emailTextEditingController.text, password: passWordTextEditingController.text);
 
     logMessage == "Logged In Successfully"
         ? _showSuccessSnack(logMessage)
@@ -304,9 +303,14 @@ class _SignInPageState extends State<SignInPage> {
     //print("I am logMessage $logMessage");
 
     if (logMessage == "Logged In Successfully") {
-      Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) => EditProfileScreen()
-      ));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider<NavBloc>(
+            create: (context) => NavBloc()..add(LoadPageThree()),
+            child: PagesSwitcher(),
+          ),
+        ),
+      );
 
       return;
     } else {
@@ -316,21 +320,21 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  login() async{
-    try {
-       await locator
-          .get<UserController>()
-          .signInWithEmailAndPassword(
-        email: emailTextEditingController.text,
-        password: passWordTextEditingController.text,
-      );
-       Navigator.pushReplacement(context, MaterialPageRoute(
-           builder: (context) => EditProfileScreen()
-       ));
-
-      } catch (e) {
-    }
-  }
+  // login() async{
+  //   try {
+  //      await locator
+  //         .get<UserController>()
+  //         .signInWithEmailAndPassword(
+  //       email: emailTextEditingController.text,
+  //       password: passWordTextEditingController.text,
+  //     );
+  //      Navigator.pushReplacement(context, MaterialPageRoute(
+  //          builder: (context) => HomePage()
+  //      ));
+  //
+  //     } catch (e) {
+  //   }
+  // }
 
   _showSuccessSnack(String message) async {
     final snackbar = SnackBar(
@@ -357,5 +361,4 @@ class _SignInPageState extends State<SignInPage> {
       _isSubmitting = false;
     });
   }
-
 }

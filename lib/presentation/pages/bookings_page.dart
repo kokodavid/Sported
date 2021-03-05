@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/presentation/shared/filter_chips/select_sport.dart';
 import 'package:sported_app/presentation/widgets/bookings/bookings_grid.dart';
 
-class BookingsPage extends StatelessWidget {
+class BookingsHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(

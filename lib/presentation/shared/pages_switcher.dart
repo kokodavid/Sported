@@ -26,7 +26,7 @@ class PagesSwitcher extends StatelessWidget {
               body: state is LoadedPageOne
                   ? ProfilePage()
                   : state is LoadedPageTwo
-                      ? BookingsPage()
+                      ? BookingsHistoryPage()
                       : state is LoadedPageThree
                           ? HomePage()
                           : state is LoadedPageFour
