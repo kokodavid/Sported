@@ -6,6 +6,7 @@ import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/services/database.dart';
 
+
 class SignUpPage extends StatefulWidget {
   final Function toggle;
   SignUpPage({this.toggle});

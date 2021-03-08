@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+
 
 class DatabaseMethods{
-  getUserByUsername(String username) async {
+
+
+  getUserByUid(String username) async {
     return await FirebaseFirestore.instance.collection("users")
         .where("name", isEqualTo: username)
         .get();
@@ -11,10 +15,15 @@ class DatabaseMethods{
         .where("email", isEqualTo: userEmail)
         .get();
   }
+
+
   uploadUserInfo(userMap){
     FirebaseFirestore.instance.collection("users")
         .add(userMap).catchError((e){
       print(e.toString());
+
+
+
     });
   }
   
@@ -24,4 +33,11 @@ class DatabaseMethods{
           print(e.toString());
     });
   }
+
+  getProfileByUid(String uid) async {
+    return await FirebaseFirestore.instance.collection("UserProfiles")
+        .where("uid",isEqualTo: uid).get();
+  }
+
 }
+

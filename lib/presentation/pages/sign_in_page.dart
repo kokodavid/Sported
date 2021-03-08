@@ -8,6 +8,7 @@ import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
+
 class SignInPage extends StatefulWidget {
   final Function toggle;
   SignInPage({this.toggle});
