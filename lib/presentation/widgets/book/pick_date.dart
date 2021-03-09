@@ -10,33 +10,26 @@ class PickDate extends StatefulWidget {
 
 class _PickDateState extends State<PickDate> {
   String _selectedDate;
-  String _dateCount;
 
   @override
   void initState() {
     _selectedDate = '';
-    _dateCount = '';
     super.initState();
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(
       () {
-        if (args.value is PickerDateRange) {
-        } else if (args.value is DateTime) {
-          _selectedDate = args.value.toString();
-        } else if (args.value is List<DateTime>) {
-          _dateCount = args.value.length.toString();
-        }
-
+        _selectedDate = args.value.toString();
         print(_selectedDate);
-        print(_dateCount);
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    print('second data | $_selectedDate');
+
     return Padding(
       padding: EdgeInsets.only(left: 32.w, right: 32.w),
       child: SfDateRangePicker(
@@ -86,6 +79,11 @@ class _PickDateState extends State<PickDate> {
           viewHeaderStyle: DateRangePickerViewHeaderStyle(
             textStyle: regularStyle,
           ),
+          firstDayOfWeek: DateTime.monday,
+          weekendDays: [
+            DateTime.saturday,
+            DateTime.sunday,
+          ],
         ),
 
         //colors
@@ -96,7 +94,6 @@ class _PickDateState extends State<PickDate> {
         enablePastDates: false,
         toggleDaySelection: true,
         showNavigationArrow: true,
-
         selectionMode: DateRangePickerSelectionMode.single,
 
         //onTap

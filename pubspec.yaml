@@ -1,20 +1,7 @@
 name: sported_app
 description: A new Flutter application.
 
-# The following line prevents the package from being accidentally published to
-# pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.0.0+1
 
 environment:
@@ -23,10 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
 
   #to fix version solving
 # cupertino_icons: ^1.0.2
@@ -40,24 +23,26 @@ dependencies:
   # logic
   image_picker: ^0.6.7+22
   get_it: ^4.0.1
-  flutter_bloc:
-  bloc:
-  equatable:
-  location:
-  geolocator:
-
+  flutter_bloc: ^6.1.2
+  bloc: ^6.1.1
+  equatable: ^1.2.6
+  location: ^3.2.4
+  geolocator: ^6.2.1
+  intl:
 
   # ui
   font_awesome_flutter: ^8.11.0
-  chips_choice:
-  syncfusion_flutter_datepicker:
-  flutter_swiper:
+  shared_preferences: ^0.5.12+4
+  flutter_spinkit: ^5.0.0
   flutter_screenutil: ^4.0.3+2
   material_design_icons_flutter: ^4.0.5855
   keyboard_avoider: ^0.1.2
   google_maps_flutter: ^1.2.0
   convex_bottom_bar: ^2.7.1
-  shared_preferences: ^0.5.12+4
+  flutter_swiper: ^1.1.6
+  syncfusion_flutter_datepicker: ^18.4.44-beta
+  chips_choice: ^2.0.1
+  dio:
 
 
 

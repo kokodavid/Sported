@@ -8,7 +8,7 @@ class PickSlots extends StatefulWidget {
 }
 
 class _PickSlotsState extends State<PickSlots> {
-  int tag = 0;
+  int selectedSlot = 0;
   List<String> timeOptions = [
     '0600 hrs',
     '0700 hrs',
@@ -30,6 +30,7 @@ class _PickSlotsState extends State<PickSlots> {
 
   @override
   Widget build(BuildContext context) {
+    print('slot no: | $selectedSlot');
     return Container(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 32.w),
@@ -55,16 +56,16 @@ class _PickSlotsState extends State<PickSlots> {
             ChipsChoice<int>.single(
               wrapped: true,
               padding: EdgeInsets.all(0),
-              value: tag,
+              value: selectedSlot,
               spacing: 8.0.w,
               runSpacing: 10.h,
               onChanged: (val) {
-                return setState(() => tag = val);
+                return setState(() => selectedSlot = val);
               },
               choiceItems: C2Choice.listFrom<int, String>(
                 source: timeOptions,
-                value: (i, v) => i,
-                label: (i, v) => v,
+                value: (int, string) => int,
+                label: (int, string) => string,
               ),
               choiceBuilder: (item) {
                 return Column(
@@ -75,7 +76,8 @@ class _PickSlotsState extends State<PickSlots> {
                       duration: Duration(milliseconds: 150),
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
-                        border: Border.all(color: Color(0xff3E3E3E), style: BorderStyle.solid, width: 0.5.w),
+                        border: Border.all(
+                            color: Color(0xff3E3E3E), style: BorderStyle.solid, width: 0.5.w),
                         borderRadius: BorderRadius.circular(23.r),
                         color: item.selected ? Color(0xff8FD974) : Color(0xff07070A),
                       ),
