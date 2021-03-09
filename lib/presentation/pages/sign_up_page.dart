@@ -3,11 +3,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:sported_app/data/services/auth.dart';
+import 'package:sported_app/data/services/database.dart';
 import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
-import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/services/authentication_service.dart';
-import 'package:sported_app/services/database.dart';
 
 class SignUpPage extends StatefulWidget {
   final Function toggle;
@@ -315,6 +315,7 @@ class _SignUpPageState extends State<SignUpPage> {
         style: TextStyle(color: Colors.green),
       ),
     );
+    // ignore: deprecated_member_use
     _scaffoldKey.currentState.showSnackBar(snackbar);
     formKey.currentState.reset();
   }
@@ -328,6 +329,7 @@ class _SignUpPageState extends State<SignUpPage> {
         style: TextStyle(color: Colors.red),
       ),
     );
+    // ignore: deprecated_member_use
     _scaffoldKey.currentState.showSnackBar(snackbar);
   }
 

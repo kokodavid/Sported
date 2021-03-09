@@ -27,7 +27,7 @@ class _SportsPlayedSectionState extends State<SportsPlayedSection> {
   List<String> options2 = [
     'assets/icons/swimming_icon.png',
     'assets/icons/volleyball_icon.png',
-    'assets/icons/american_football.png',
+    'assets/icons/rugby_icon.png',
     'assets/icons/table_tennis_icon.png',
     'assets/icons/handball_icon.png',
   ];

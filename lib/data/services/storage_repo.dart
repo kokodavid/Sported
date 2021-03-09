@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:sported_app/models/ourUser.dart';
-import 'package:sported_app/services/auth.dart';
+import 'package:sported_app/data/models/ourUser.dart';
 
-import '../locator.dart';
+import '../../locator.dart';
+import 'auth.dart';
 
 class StorageRepo {
   firebase_storage.FirebaseStorage _storage = firebase_storage.FirebaseStorage.instanceFor(bucket: 'gs://sportedapp-6f6d2.appspot.com');

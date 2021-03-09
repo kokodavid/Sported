@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sported_app/constants/constants.dart';
-import 'package:sported_app/models/ourUser.dart';
-import 'package:sported_app/services/authentication_service.dart';
+import 'package:sported_app/data/models/ourUser.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
 import '../../../locator.dart';

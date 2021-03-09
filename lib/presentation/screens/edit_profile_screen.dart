@@ -5,7 +5,7 @@ import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
-import 'package:sported_app/models/ourUser.dart';
+import 'package:sported_app/data/models/ourUser.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/widgets/edit_profile/avatar_section.dart';
 import 'package:sported_app/shared/pages_switcher.dart';
@@ -53,7 +53,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ScrollController _scrollController = ScrollController();
     final editProfileFormKey = GlobalKey<FormState>();
     final ageFormKey = GlobalKey<FormState>();
     final genderFormKey = GlobalKey<FormState>();

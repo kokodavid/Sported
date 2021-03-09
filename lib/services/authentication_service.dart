@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sported_app/data/models/ourUser.dart';
+import 'package:sported_app/data/services/auth.dart';
 import 'package:sported_app/locator.dart';
 import 'package:sported_app/models/UserProfile.dart';
-import 'package:sported_app/models/ourUser.dart';
-import 'package:sported_app/services/auth.dart';
-import 'package:sported_app/services/storage_repo.dart';
 
 class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -17,16 +16,12 @@ class AuthenticationService {
   final userRef = FirebaseFirestore.instance.collection("users");
   final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
 
-
   Stream<User> get authStateChanges => _auth.authStateChanges();
-
 
   //1
   Future<dynamic> signIn({String email, String password}) async {
     try {
-      _currentUser = await _authRepo.signInWithEmailAndPassword(
-          email, password);
-
+      _currentUser = await _authRepo.signInWithEmailAndPassword(email, password);
 
       return "Logged In Successfully";
     } on FirebaseAuthException catch (e) {
@@ -43,8 +38,7 @@ class AuthenticationService {
   //2
   Future<String> signUp({String email, String password}) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+      await _auth.createUserWithEmailAndPassword(email: email, password: password);
       return "Registered Successfully";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -61,8 +55,7 @@ class AuthenticationService {
 
   //3
   Future<void> addUserToDB({String uid, String username, String email}) async {
-    userModel = UserModel(
-        uid: uid, username: username, email: email);
+    userModel = UserModel(uid: uid, username: username, email: email);
 
     await userRef.doc(uid).set(userModel.toMap(userModel)).catchError((e) {
       print(e);
@@ -82,9 +75,21 @@ class AuthenticationService {
     await _auth.signOut();
   }
 
-  Future<UserProfile> uploadProfile(
-      {String uid, String fullName, String email, String age, String gender, String clubA, String clubB, String clubC, String pasteUrl, String buddy, String coach,}) async {
-    userProfile = UserProfile(fullName: fullName,
+  Future<UserProfile> uploadProfile({
+    String uid,
+    String fullName,
+    String email,
+    String age,
+    String gender,
+    String clubA,
+    String clubB,
+    String clubC,
+    String pasteUrl,
+    String buddy,
+    String coach,
+  }) async {
+    userProfile = UserProfile(
+        fullName: fullName,
         age: age,
         gender: gender,
         clubA: clubA,
@@ -94,9 +99,7 @@ class AuthenticationService {
         buddy: buddy,
         coach: coach);
 
-    await userProfileRef.doc(uid)
-        .set(userProfile.toMap(userProfile))
-        .catchError((e) {
+    await userProfileRef.doc(uid).set(userProfile.toMap(userProfile)).catchError((e) {
       print(e);
     });
   }

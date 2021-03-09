@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sported_app/models/ourUser.dart';
+import 'package:sported_app/data/models/ourUser.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
 import '../../../locator.dart';

@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
+import 'package:sported_app/data/services/auth.dart';
 import 'package:sported_app/locator.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
-import 'package:sported_app/services/auth.dart';
 import 'package:sported_app/shared/pages_switcher.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
@@ -344,6 +344,7 @@ class _SignInPageState extends State<SignInPage> {
         style: TextStyle(color: Colors.green),
       ),
     );
+    // ignore: deprecated_member_use
     _scaffoldKey.currentState.showSnackBar(snackbar);
     formKey.currentState.reset();
   }
@@ -356,6 +357,7 @@ class _SignInPageState extends State<SignInPage> {
         style: TextStyle(color: Colors.red),
       ),
     );
+    // ignore: deprecated_member_use
     _scaffoldKey.currentState.showSnackBar(snackbar);
     setState(() {
       _isSubmitting = false;
