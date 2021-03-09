@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/screenutil_init.dart';
 import 'package:provider/provider.dart';
 import 'package:sported_app/business_logic/cubits/filter_chips_cubit/filter_chips_cubit.dart';
+import 'package:sported_app/data/repositories/booking_history_repository.dart';
 import 'package:sported_app/data/repositories/venue_data_provider.dart';
 import 'package:sported_app/data/repositories/venue_repository.dart';
 import 'package:sported_app/helper/authenticate.dart';
@@ -12,6 +13,8 @@ import 'package:sported_app/services/authentication_service.dart';
 import 'package:sported_app/simple_bloc_observer.dart';
 
 import 'business_logic/blocs/filter_bloc/filter_bloc.dart';
+import 'business_logic/cubits/booking_history_cubit/booking_history_cubit.dart';
+import 'data/repositories/booking_history_data_provider.dart';
 import 'data/repositories/venue_repository.dart';
 
 void main() async {
@@ -26,6 +29,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final VenueRepository venueRepository = VenueRepository(venueDataProvider: VenueDataProvider());
+    final BookingHistoryRepository bookingHistoryRepository =
+        BookingHistoryRepository(bookingHistoryDataProvider: BookingHistoryDataProvider());
     return MultiProvider(
       providers: [
         Provider<AuthenticationService>(
@@ -44,6 +49,10 @@ class MyApp extends StatelessWidget {
             BlocProvider<FilterChipsCubit>(
               create: (_) => FilterChipsCubit(),
             ),
+            BlocProvider<BookingHistoryCubit>(
+                create: (_) =>
+                    BookingHistoryCubit(bookingHistoryRepository: bookingHistoryRepository)
+                      ..loadBookingHistory()),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

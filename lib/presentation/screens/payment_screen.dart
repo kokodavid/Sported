@@ -1,12 +1,53 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:sported_app/data/models/venue/venue_model.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/widgets/payment/successfully_booked_dialog.dart';
 
-class PaymentScreen extends StatelessWidget {
+class PaymentScreen extends StatefulWidget {
+  final String selectedDate;
+  final SportsOffered sportBookingInfo;
+  final String selectedSlot;
+  final Venue venue;
+  PaymentScreen({
+    @required this.selectedDate,
+    @required this.selectedSlot,
+    @required this.venue,
+    @required this.sportBookingInfo,
+  });
+
+  @override
+  _PaymentScreenState createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends State<PaymentScreen> {
+  updateBookingHistory() {
+    final uid = FirebaseAuth.instance.currentUser.uid;
+    Map<String, dynamic> bookingHistory = {
+      "venueName": widget.venue.venueName,
+      "pricePaid": widget.sportBookingInfo.ratesPerHr.toString(),
+      "dateBooked": widget.selectedDate,
+      "slotBooked": widget.selectedSlot,
+      "sportName": widget.sportBookingInfo.sportName,
+      "uid": uid,
+    };
+
+    FirebaseFirestore.instance.collection('booking_history').add(bookingHistory);
+    FocusScopeNode currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+    showDialog(
+      context: context,
+      builder: (_) => SuccessfulBookDialog(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -397,17 +438,8 @@ class PaymentScreen extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      //TODO: Validate transaction code
-                      //TODO: Add to bookings history
-
-                      FocusScopeNode currentFocus = FocusScope.of(context);
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-                      showDialog(
-                        context: context,
-                        builder: (_) => SuccessfulBookDialog(),
-                      );
+                      //TODO:STKPush
+                      updateBookingHistory();
                     },
                   ),
 

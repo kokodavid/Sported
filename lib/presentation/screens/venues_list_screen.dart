@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
@@ -17,70 +17,70 @@ class VenuesListScreen extends StatefulWidget {
 }
 
 class _VenuesListScreenState extends State<VenuesListScreen> {
-  Map<String, dynamic> data = {
-    "venueName": "Impala Club",
-    "timeOpen": "0600",
-    "timeClosed": "2100",
-    "totalDaysOpen": 2,
-    "sportsOfferedList": ["Football", "Badminton", "Cricket", "Basketball", "Swimming"],
-    "sportsOffered": [
-      {
-        "sportName": "Football",
-        "ratesPerHr": 3800,
-        "slots": [
-          {"date": "", "time": "0900", "isBooked": false},
-          {"date": "", "time": "1000", "isBooked": false},
-          {"date": "", "time": "1100", "isBooked": false},
-          {"date": "", "time": "1200", "isBooked": false},
-        ]
-      },
-      {
-        "sportName": "Badminton",
-        "ratesPerHr": 1400,
-        "slots": [
-          {"date": "", "time": "0900", "isBooked": false},
-          {"date": "", "time": "1000", "isBooked": false},
-          {"date": "", "time": "1100", "isBooked": false},
-          {"date": "", "time": "1200", "isBooked": false},
-        ]
-      },
-      {
-        "sportName": "Cricket",
-        "ratesPerHr": 900,
-        "slots": [
-          {"date": "", "time": "0900", "isBooked": false},
-          {"date": "", "time": "1000", "isBooked": false},
-          {"date": "", "time": "1100", "isBooked": false},
-          {"date": "", "time": "1200", "isBooked": false},
-        ]
-      },
-      {
-        "sportName": "Basketball",
-        "ratesPerHr": 3400,
-        "slots": [
-          {"date": "", "time": "0900", "isBooked": false},
-          {"date": "", "time": "1000", "isBooked": false},
-          {"date": "", "time": "1100", "isBooked": false},
-          {"date": "", "time": "1200", "isBooked": false},
-        ]
-      },
-      {
-        "sportName": "Swimming",
-        "ratesPerHr": 2000,
-        "slots": [
-          {"date": "", "time": "0900", "isBooked": false},
-          {"date": "", "time": "1000", "isBooked": false},
-          {"date": "", "time": "1100", "isBooked": false},
-          {"date": "", "time": "1200", "isBooked": false},
-        ]
-      },
-    ]
-  };
-
-  addVenue() {
-    final ref = FirebaseFirestore.instance.collection('venues');
-    ref.add(data);
-  }
+  // Map<String, dynamic> data = {
+  //   "venueName": "Impala Club",
+  //   "timeOpen": "0600",
+  //   "timeClosed": "2100",
+  //   "totalDaysOpen": 2,
+  //   "sportsOfferedList": ["Football", "Badminton", "Cricket", "Basketball", "Swimming"],
+  //   "sportsOffered": [
+  //     {
+  //       "sportName": "Football",
+  //       "ratesPerHr": 3800,
+  //       "slots": [
+  //         {"date": "", "time": "0900", "isBooked": false},
+  //         {"date": "", "time": "1000", "isBooked": false},
+  //         {"date": "", "time": "1100", "isBooked": false},
+  //         {"date": "", "time": "1200", "isBooked": false},
+  //       ]
+  //     },
+  //     {
+  //       "sportName": "Badminton",
+  //       "ratesPerHr": 1400,
+  //       "slots": [
+  //         {"date": "", "time": "0900", "isBooked": false},
+  //         {"date": "", "time": "1000", "isBooked": false},
+  //         {"date": "", "time": "1100", "isBooked": false},
+  //         {"date": "", "time": "1200", "isBooked": false},
+  //       ]
+  //     },
+  //     {
+  //       "sportName": "Cricket",
+  //       "ratesPerHr": 900,
+  //       "slots": [
+  //         {"date": "", "time": "0900", "isBooked": false},
+  //         {"date": "", "time": "1000", "isBooked": false},
+  //         {"date": "", "time": "1100", "isBooked": false},
+  //         {"date": "", "time": "1200", "isBooked": false},
+  //       ]
+  //     },
+  //     {
+  //       "sportName": "Basketball",
+  //       "ratesPerHr": 3400,
+  //       "slots": [
+  //         {"date": "", "time": "0900", "isBooked": false},
+  //         {"date": "", "time": "1000", "isBooked": false},
+  //         {"date": "", "time": "1100", "isBooked": false},
+  //         {"date": "", "time": "1200", "isBooked": false},
+  //       ]
+  //     },
+  //     {
+  //       "sportName": "Swimming",
+  //       "ratesPerHr": 2000,
+  //       "slots": [
+  //         {"date": "", "time": "0900", "isBooked": false},
+  //         {"date": "", "time": "1000", "isBooked": false},
+  //         {"date": "", "time": "1100", "isBooked": false},
+  //         {"date": "", "time": "1200", "isBooked": false},
+  //       ]
+  //     },
+  //   ]
+  // };
+  //
+  // addVenue() {
+  //   final ref = FirebaseFirestore.instance.collection('venues');
+  //   ref.add(data);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +93,7 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              onPressed: addVenue,
+              onPressed: () {},
               icon: Icon(Icons.search),
             ),
             title: Text(
@@ -176,7 +176,15 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
                       return FilteredVenues(
                           filteredVenues: handballVenues, sportToBook: 'Handball');
                     }
-                    return Container();
+                    return Container(
+                      height: 200.h,
+                      child: Center(
+                        child: SpinKitRipple(
+                          color: Color(0xff9BEB81),
+                        ),
+                      ),
+                    );
+
                   },
                 ),
 
