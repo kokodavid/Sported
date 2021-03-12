@@ -1,19 +1,26 @@
 import 'package:chips_choice/chips_choice.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sported_app/constants/constants.dart';
+import 'package:sported_app/data/models/booking/booking_history_model.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
+import 'package:sported_app/data/repositories/booking_history_data_provider.dart';
 import 'package:sported_app/presentation/screens/payment_screen.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class BookScreen extends StatefulWidget {
   final sportBookingInfo;
+  final List<BookingHistory> entireBookingHistory;
   final Venue venue;
+  final BookingHistoryDataProvider bookingHistoryDataProvider;
   const BookScreen({
     Key key,
+    this.entireBookingHistory,
     @required this.venue,
     @required this.sportBookingInfo,
+    this.bookingHistoryDataProvider,
   }) : super(key: key);
   @override
   _BookScreenState createState() => _BookScreenState();
@@ -29,36 +36,27 @@ class _BookScreenState extends State<BookScreen> {
     super.initState();
   }
 
-  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    setState(
-      () {
-        selectedDate = args.value.toString();
-        print(selectedDate);
-      },
-    );
-  }
+  List<String> slots = [
+    '0600 hrs',
+    '0700 hrs',
+    '0800 hrs',
+    '0900 hrs',
+    '1000 hrs',
+    '1100 hrs',
+    '1200 hrs',
+    '1300 hrs',
+    '1400 hrs',
+    '1500 hrs',
+    '1600 hrs',
+    '1700 hrs',
+    '1800 hrs',
+    '1900 hrs',
+    '2000 hrs',
+    '2100 hrs',
+  ];
 
   @override
   Widget build(BuildContext context) {
-    List<String> slots = [
-      '${widget.sportBookingInfo.slots[0].time} hrs',
-      '${widget.sportBookingInfo.slots[1].time} hrs',
-      '0800 hrs',
-      '0900 hrs',
-      '1000 hrs',
-      '1100 hrs',
-      '1200 hrs',
-      '1300 hrs',
-      '1400 hrs',
-      '1500 hrs',
-      '1600 hrs',
-      '1700 hrs',
-      '1800 hrs',
-      '1900 hrs',
-      '2000 hrs',
-      '2100 hrs',
-    ];
-
     return SafeArea(
       child: NotificationListener<OverscrollIndicatorNotification>(
         // ignore: missing_return
@@ -162,7 +160,77 @@ class _BookScreenState extends State<BookScreen> {
                     selectionMode: DateRangePickerSelectionMode.single,
 
                     //onTap
-                    onSelectionChanged: _onSelectionChanged,
+
+                    onSelectionChanged: (DateRangePickerSelectionChangedArgs args) async {
+                      setState(() {
+                        selectedDate = args.value.toString();
+                        print(selectedDate);
+                      });
+
+                      //get entire booking history
+                      FirebaseFirestore firestore = FirebaseFirestore.instance;
+                      final entireBookingHistory = await firestore
+                          .collection('booking_history')
+                          .get()
+                          .then((value) =>
+                              value.docs.map((e) => BookingHistory.fromJson(e.data())).toList());
+
+                      //return list of all bookings of this venue, of this sport, at this selected date
+                      final List<BookingHistory> filteredBookingHistory = entireBookingHistory
+                          .where(
+                            (element) =>
+                                element.dateBooked == selectedDate &&
+                                element.sportName == widget.sportBookingInfo.sportName &&
+                                element.venueName == widget.venue.venueName,
+                          )
+                          .toList();
+
+                      filteredBookingHistory.forEach((element) {
+                        element.slotBooked == '0'
+                            ? setState(() {
+                                slots = [
+                                  '0700 hrs',
+                                  '0800 hrs',
+                                  '0900 hrs',
+                                  '1000 hrs',
+                                  '1100 hrs',
+                                  '1200 hrs',
+                                  '1300 hrs',
+                                  '1400 hrs',
+                                  '1500 hrs',
+                                  '1600 hrs',
+                                  '1700 hrs',
+                                  '1800 hrs',
+                                  '1900 hrs',
+                                  '2000 hrs',
+                                  '2100 hrs',
+                                ];
+                              })
+                            : element.slotBooked == '1'
+                                ? setState(() {
+                                    slots = [
+                                      '0600 hrs',
+                                      '0800 hrs',
+                                      '0900 hrs',
+                                      '1000 hrs',
+                                      '1100 hrs',
+                                      '1200 hrs',
+                                      '1300 hrs',
+                                      '1400 hrs',
+                                      '1500 hrs',
+                                      '1600 hrs',
+                                      '1700 hrs',
+                                      '1800 hrs',
+                                      '1900 hrs',
+                                      '2000 hrs',
+                                      '2100 hrs',
+                                    ];
+                                  })
+                                : Container();
+                      });
+
+                      print('slots | $slots');
+                    },
                   ),
                 ),
 
@@ -196,7 +264,7 @@ class _BookScreenState extends State<BookScreen> {
                           spacing: 8.0.w,
                           runSpacing: 10.h,
                           onChanged: (val) {
-                            return setState(() => selectedSlot = val);
+                            setState(() => selectedSlot = val);
                           },
                           choiceItems: C2Choice.listFrom<int, String>(
                             source: slots,
