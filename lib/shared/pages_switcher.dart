@@ -9,6 +9,7 @@ import 'package:sported_app/presentation/pages/buddies_page.dart';
 import 'package:sported_app/presentation/pages/events_page.dart';
 import 'package:sported_app/presentation/pages/home_page.dart';
 import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
+import 'package:sported_app/presentation/screens/venues_list_screen.dart';
 
 class PagesSwitcher extends StatelessWidget {
   @override
@@ -28,7 +29,7 @@ class PagesSwitcher extends StatelessWidget {
                             : state is LoadedPageFive
                                 ? BuddiesPage()
                                 : state is LoadedVenuesPage
-                                    ? VenuesScreen()
+                                    ? VenuesListScreen()
                                     : null,
             bottomNavigationBar: StyleProvider(
               style: Style(),
@@ -88,8 +89,6 @@ class PagesSwitcher extends StatelessWidget {
     );
   }
 }
-
-class VenuesScreen {}
 
 class Style extends StyleHook {
   @override
