@@ -207,7 +207,7 @@ class _BookScreenState extends State<BookScreen> {
                           .toList();
 
                       filteredBookingHistory.forEach((element) {
-                        element.slotBooked == '0'
+                        element.slotBooked == '0600 hrs'
                             ? setState(() {
                                 slots = [
                                   'Booked',
@@ -228,7 +228,7 @@ class _BookScreenState extends State<BookScreen> {
                                   '2100 hrs',
                                 ];
                               })
-                            : element.slotBooked == '1'
+                            : element.slotBooked == '0700 hrs'
                                 ? setState(() {
                                     slots = [
                                       '0600 hrs',
@@ -249,7 +249,7 @@ class _BookScreenState extends State<BookScreen> {
                                       '2100 hrs',
                                     ];
                                   })
-                                : element.slotBooked == '2'
+                                : element.slotBooked == '0800 hrs'
                                     ? setState(() {
                                         slots = [
                                           '0600 hrs',
@@ -270,7 +270,7 @@ class _BookScreenState extends State<BookScreen> {
                                           '2100 hrs',
                                         ];
                                       })
-                                    : element.slotBooked == '3'
+                                    : element.slotBooked == '0900 hrs'
                                         ? setState(() {
                                             slots = [
                                               '0600 hrs',
@@ -291,7 +291,7 @@ class _BookScreenState extends State<BookScreen> {
                                               '2100 hrs',
                                             ];
                                           })
-                                        : element.slotBooked == '4'
+                                        : element.slotBooked == '1000 hrs'
                                             ? setState(() {
                                                 slots = [
                                                   '0600 hrs',
@@ -312,7 +312,7 @@ class _BookScreenState extends State<BookScreen> {
                                                   '2100 hrs',
                                                 ];
                                               })
-                                            : element.slotBooked == '5'
+                                            : element.slotBooked == '1100 hrs'
                                                 ? setState(() {
                                                     slots = [
                                                       '0600 hrs',
@@ -333,7 +333,7 @@ class _BookScreenState extends State<BookScreen> {
                                                       '2100 hrs',
                                                     ];
                                                   })
-                                                : element.slotBooked == '6'
+                                                : element.slotBooked == '1200 hrs'
                                                     ? setState(() {
                                                         slots = [
                                                           '0600 hrs',
@@ -354,7 +354,7 @@ class _BookScreenState extends State<BookScreen> {
                                                           '2100 hrs',
                                                         ];
                                                       })
-                                                    : element.slotBooked == '7'
+                                                    : element.slotBooked == '1300 hrs'
                                                         ? setState(() {
                                                             slots = [
                                                               '0600 hrs',
@@ -375,7 +375,7 @@ class _BookScreenState extends State<BookScreen> {
                                                               '2100 hrs',
                                                             ];
                                                           })
-                                                        : element.slotBooked == '8'
+                                                        : element.slotBooked == '1400 hrs'
                                                             ? setState(() {
                                                                 slots = [
                                                                   '0600 hrs',
@@ -396,7 +396,7 @@ class _BookScreenState extends State<BookScreen> {
                                                                   '2100 hrs',
                                                                 ];
                                                               })
-                                                            : element.slotBooked == '9'
+                                                            : element.slotBooked == '1500 hrs'
                                                                 ? setState(() {
                                                                     slots = [
                                                                       '0600 hrs',
@@ -417,7 +417,7 @@ class _BookScreenState extends State<BookScreen> {
                                                                       '2100 hrs',
                                                                     ];
                                                                   })
-                                                                : element.slotBooked == '10'
+                                                                : element.slotBooked == '1600 hrs'
                                                                     ? setState(() {
                                                                         slots = [
                                                                           '0600 hrs',
@@ -438,7 +438,8 @@ class _BookScreenState extends State<BookScreen> {
                                                                           '2100 hrs',
                                                                         ];
                                                                       })
-                                                                    : element.slotBooked == '11'
+                                                                    : element.slotBooked ==
+                                                                            '1700 hrs'
                                                                         ? setState(() {
                                                                             slots = [
                                                                               '0600 hrs',
@@ -459,7 +460,8 @@ class _BookScreenState extends State<BookScreen> {
                                                                               '2100 hrs',
                                                                             ];
                                                                           })
-                                                                        : element.slotBooked == '12'
+                                                                        : element.slotBooked ==
+                                                                                '1800 hrs'
                                                                             ? setState(() {
                                                                                 slots = [
                                                                                   '0600 hrs',
@@ -481,7 +483,7 @@ class _BookScreenState extends State<BookScreen> {
                                                                                 ];
                                                                               })
                                                                             : element.slotBooked ==
-                                                                                    '13'
+                                                                                    '1900 hrs'
                                                                                 ? setState(() {
                                                                                     slots = [
                                                                                       '0600 hrs',
@@ -503,7 +505,7 @@ class _BookScreenState extends State<BookScreen> {
                                                                                     ];
                                                                                   })
                                                                                 : element.slotBooked ==
-                                                                                        '14'
+                                                                                        '2000 hrs'
                                                                                     ? setState(() {
                                                                                         slots = [
                                                                                           '0600 hrs',
@@ -525,7 +527,7 @@ class _BookScreenState extends State<BookScreen> {
                                                                                         ];
                                                                                       })
                                                                                     : element.slotBooked ==
-                                                                                            '15'
+                                                                                            '2100 hrs'
                                                                                         ? setState(
                                                                                             () {
                                                                                             slots =
