@@ -28,7 +28,10 @@ class BookScreen extends StatefulWidget {
 
 class _BookScreenState extends State<BookScreen> {
   String selectedDate;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   int selectedSlot = 0;
+  String convertedSlot;
 
   @override
   void initState() {
@@ -64,6 +67,7 @@ class _BookScreenState extends State<BookScreen> {
           overscroll.disallowGlow();
         },
         child: Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             backgroundColor: Color(0xff18181A),
             elevation: 0.0,
@@ -164,7 +168,24 @@ class _BookScreenState extends State<BookScreen> {
                     onSelectionChanged: (DateRangePickerSelectionChangedArgs args) async {
                       setState(() {
                         selectedDate = args.value.toString();
-                        print(selectedDate);
+                        slots = [
+                          '0600 hrs',
+                          '0700 hrs',
+                          '0800 hrs',
+                          '0900 hrs',
+                          '1000 hrs',
+                          '1100 hrs',
+                          '1200 hrs',
+                          '1300 hrs',
+                          '1400 hrs',
+                          '1500 hrs',
+                          '1600 hrs',
+                          '1700 hrs',
+                          '1800 hrs',
+                          '1900 hrs',
+                          '2000 hrs',
+                          '2100 hrs',
+                        ];
                       });
 
                       //get entire booking history
@@ -189,6 +210,7 @@ class _BookScreenState extends State<BookScreen> {
                         element.slotBooked == '0'
                             ? setState(() {
                                 slots = [
+                                  'Booked',
                                   '0700 hrs',
                                   '0800 hrs',
                                   '0900 hrs',
@@ -210,6 +232,7 @@ class _BookScreenState extends State<BookScreen> {
                                 ? setState(() {
                                     slots = [
                                       '0600 hrs',
+                                      'Booked',
                                       '0800 hrs',
                                       '0900 hrs',
                                       '1000 hrs',
@@ -226,7 +249,306 @@ class _BookScreenState extends State<BookScreen> {
                                       '2100 hrs',
                                     ];
                                   })
-                                : Container();
+                                : element.slotBooked == '2'
+                                    ? setState(() {
+                                        slots = [
+                                          '0600 hrs',
+                                          '0700 hrs',
+                                          'Booked',
+                                          '0900 hrs',
+                                          '1000 hrs',
+                                          '1100 hrs',
+                                          '1200 hrs',
+                                          '1300 hrs',
+                                          '1400 hrs',
+                                          '1500 hrs',
+                                          '1600 hrs',
+                                          '1700 hrs',
+                                          '1800 hrs',
+                                          '1900 hrs',
+                                          '2000 hrs',
+                                          '2100 hrs',
+                                        ];
+                                      })
+                                    : element.slotBooked == '3'
+                                        ? setState(() {
+                                            slots = [
+                                              '0600 hrs',
+                                              '0700 hrs',
+                                              '0800 hrs',
+                                              'Booked',
+                                              '1000 hrs',
+                                              '1100 hrs',
+                                              '1200 hrs',
+                                              '1300 hrs',
+                                              '1400 hrs',
+                                              '1500 hrs',
+                                              '1600 hrs',
+                                              '1700 hrs',
+                                              '1800 hrs',
+                                              '1900 hrs',
+                                              '2000 hrs',
+                                              '2100 hrs',
+                                            ];
+                                          })
+                                        : element.slotBooked == '4'
+                                            ? setState(() {
+                                                slots = [
+                                                  '0600 hrs',
+                                                  '0700 hrs',
+                                                  '0800 hrs',
+                                                  '0900 hrs',
+                                                  'Booked',
+                                                  '1100 hrs',
+                                                  '1200 hrs',
+                                                  '1300 hrs',
+                                                  '1400 hrs',
+                                                  '1500 hrs',
+                                                  '1600 hrs',
+                                                  '1700 hrs',
+                                                  '1800 hrs',
+                                                  '1900 hrs',
+                                                  '2000 hrs',
+                                                  '2100 hrs',
+                                                ];
+                                              })
+                                            : element.slotBooked == '5'
+                                                ? setState(() {
+                                                    slots = [
+                                                      '0600 hrs',
+                                                      '0700 hrs',
+                                                      '0800 hrs',
+                                                      '0900 hrs',
+                                                      '1000 hrs',
+                                                      'Booked',
+                                                      '1200 hrs',
+                                                      '1300 hrs',
+                                                      '1400 hrs',
+                                                      '1500 hrs',
+                                                      '1600 hrs',
+                                                      '1700 hrs',
+                                                      '1800 hrs',
+                                                      '1900 hrs',
+                                                      '2000 hrs',
+                                                      '2100 hrs',
+                                                    ];
+                                                  })
+                                                : element.slotBooked == '6'
+                                                    ? setState(() {
+                                                        slots = [
+                                                          '0600 hrs',
+                                                          '0700 hrs',
+                                                          '0800 hrs',
+                                                          '0900 hrs',
+                                                          '1000 hrs',
+                                                          '1100 hrs',
+                                                          'Booked',
+                                                          '1300 hrs',
+                                                          '1400 hrs',
+                                                          '1500 hrs',
+                                                          '1600 hrs',
+                                                          '1700 hrs',
+                                                          '1800 hrs',
+                                                          '1900 hrs',
+                                                          '2000 hrs',
+                                                          '2100 hrs',
+                                                        ];
+                                                      })
+                                                    : element.slotBooked == '7'
+                                                        ? setState(() {
+                                                            slots = [
+                                                              '0600 hrs',
+                                                              '0700 hrs',
+                                                              '0800 hrs',
+                                                              '0900 hrs',
+                                                              '1000 hrs',
+                                                              '1100 hrs',
+                                                              '1200 hrs',
+                                                              'Booked',
+                                                              '1400 hrs',
+                                                              '1500 hrs',
+                                                              '1600 hrs',
+                                                              '1700 hrs',
+                                                              '1800 hrs',
+                                                              '1900 hrs',
+                                                              '2000 hrs',
+                                                              '2100 hrs',
+                                                            ];
+                                                          })
+                                                        : element.slotBooked == '8'
+                                                            ? setState(() {
+                                                                slots = [
+                                                                  '0600 hrs',
+                                                                  '0700 hrs',
+                                                                  '0800 hrs',
+                                                                  '0900 hrs',
+                                                                  '1000 hrs',
+                                                                  '1100 hrs',
+                                                                  '1200 hrs',
+                                                                  '1300 hrs',
+                                                                  'Booked',
+                                                                  '1500 hrs',
+                                                                  '1600 hrs',
+                                                                  '1700 hrs',
+                                                                  '1800 hrs',
+                                                                  '1900 hrs',
+                                                                  '2000 hrs',
+                                                                  '2100 hrs',
+                                                                ];
+                                                              })
+                                                            : element.slotBooked == '9'
+                                                                ? setState(() {
+                                                                    slots = [
+                                                                      '0600 hrs',
+                                                                      '0700 hrs',
+                                                                      '0800 hrs',
+                                                                      '0900 hrs',
+                                                                      '1000 hrs',
+                                                                      '1100 hrs',
+                                                                      '1200 hrs',
+                                                                      'Booked',
+                                                                      '1400 hrs',
+                                                                      '1500 hrs',
+                                                                      '1600 hrs',
+                                                                      '1700 hrs',
+                                                                      '1800 hrs',
+                                                                      '1900 hrs',
+                                                                      '2000 hrs',
+                                                                      '2100 hrs',
+                                                                    ];
+                                                                  })
+                                                                : element.slotBooked == '10'
+                                                                    ? setState(() {
+                                                                        slots = [
+                                                                          '0600 hrs',
+                                                                          '0700 hrs',
+                                                                          '0800 hrs',
+                                                                          '0900 hrs',
+                                                                          '1000 hrs',
+                                                                          '1100 hrs',
+                                                                          '1200 hrs',
+                                                                          '1300 hrs',
+                                                                          '1400 hrs',
+                                                                          '1500 hrs',
+                                                                          'Booked',
+                                                                          '1700 hrs',
+                                                                          '1800 hrs',
+                                                                          '1900 hrs',
+                                                                          '2000 hrs',
+                                                                          '2100 hrs',
+                                                                        ];
+                                                                      })
+                                                                    : element.slotBooked == '11'
+                                                                        ? setState(() {
+                                                                            slots = [
+                                                                              '0600 hrs',
+                                                                              '0700 hrs',
+                                                                              '0800 hrs',
+                                                                              '0900 hrs',
+                                                                              '1000 hrs',
+                                                                              '1100 hrs',
+                                                                              '1200 hrs',
+                                                                              '1300 hrs',
+                                                                              '1400 hrs',
+                                                                              '1500 hrs',
+                                                                              '1600 hrs',
+                                                                              'Booked',
+                                                                              '1800 hrs',
+                                                                              '1900 hrs',
+                                                                              '2000 hrs',
+                                                                              '2100 hrs',
+                                                                            ];
+                                                                          })
+                                                                        : element.slotBooked == '12'
+                                                                            ? setState(() {
+                                                                                slots = [
+                                                                                  '0600 hrs',
+                                                                                  '0700 hrs',
+                                                                                  '0800 hrs',
+                                                                                  '0900 hrs',
+                                                                                  '1000 hrs',
+                                                                                  '1100 hrs',
+                                                                                  '1200 hrs',
+                                                                                  '1300 hrs',
+                                                                                  '1400 hrs',
+                                                                                  '1500 hrs',
+                                                                                  '1600 hrs',
+                                                                                  '1700 hrs',
+                                                                                  'Booked',
+                                                                                  '1900 hrs',
+                                                                                  '2000 hrs',
+                                                                                  '2100 hrs',
+                                                                                ];
+                                                                              })
+                                                                            : element.slotBooked ==
+                                                                                    '13'
+                                                                                ? setState(() {
+                                                                                    slots = [
+                                                                                      '0600 hrs',
+                                                                                      '0700 hrs',
+                                                                                      '0800 hrs',
+                                                                                      '0900 hrs',
+                                                                                      '1000 hrs',
+                                                                                      '1100 hrs',
+                                                                                      '1200 hrs',
+                                                                                      '1300 hrs',
+                                                                                      '1400 hrs',
+                                                                                      '1500 hrs',
+                                                                                      '1600 hrs',
+                                                                                      '1700 hrs',
+                                                                                      '1800 hrs',
+                                                                                      'Booked',
+                                                                                      '2000 hrs',
+                                                                                      '2100 hrs',
+                                                                                    ];
+                                                                                  })
+                                                                                : element.slotBooked ==
+                                                                                        '14'
+                                                                                    ? setState(() {
+                                                                                        slots = [
+                                                                                          '0600 hrs',
+                                                                                          '0700 hrs',
+                                                                                          '0800 hrs',
+                                                                                          '0900 hrs',
+                                                                                          '1000 hrs',
+                                                                                          '1100 hrs',
+                                                                                          '1200 hrs',
+                                                                                          '1300 hrs',
+                                                                                          '1400 hrs',
+                                                                                          '1500 hrs',
+                                                                                          '1600 hrs',
+                                                                                          '1700 hrs',
+                                                                                          '1800 hrs',
+                                                                                          '1900 hrs',
+                                                                                          'Booked',
+                                                                                          '2100 hrs',
+                                                                                        ];
+                                                                                      })
+                                                                                    : element.slotBooked ==
+                                                                                            '15'
+                                                                                        ? setState(
+                                                                                            () {
+                                                                                            slots =
+                                                                                                [
+                                                                                              '0600 hrs',
+                                                                                              '0700 hrs',
+                                                                                              '0800 hrs',
+                                                                                              '0900 hrs',
+                                                                                              '1000 hrs',
+                                                                                              '1100 hrs',
+                                                                                              '1200 hrs',
+                                                                                              '1300 hrs',
+                                                                                              '1400 hrs',
+                                                                                              '1500 hrs',
+                                                                                              '1600 hrs',
+                                                                                              '1700 hrs',
+                                                                                              '1800 hrs',
+                                                                                              '1900 hrs',
+                                                                                              '2000 hrs',
+                                                                                              'Booked',
+                                                                                            ];
+                                                                                          })
+                                                                                        : Container();
                       });
 
                       print('slots | $slots');
@@ -369,16 +691,20 @@ class _BookScreenState extends State<BookScreen> {
 
                     //update firestore with selected slot
 
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) {
-                        return PaymentScreen(
-                          selectedDate: selectedDate,
-                          venue: widget.venue,
-                          selectedSlot: selectedSlot.toString(),
-                          sportBookingInfo: widget.sportBookingInfo,
-                        );
-                      }),
-                    );
+                    selectedDate.isEmpty
+                        ? _showErrorSnackbar('Please select a date to book')
+                        : slots[selectedSlot] == 'Booked'
+                            ? _showErrorSnackbar('This slot is already booked, as indicated')
+                            : Navigator.of(context).push(
+                                MaterialPageRoute(builder: (BuildContext context) {
+                                  return PaymentScreen(
+                                    selectedDate: selectedDate,
+                                    venue: widget.venue,
+                                    selectedSlot: selectedSlot,
+                                    sportBookingInfo: widget.sportBookingInfo,
+                                  );
+                                }),
+                              );
                   },
                 ),
 
@@ -389,5 +715,17 @@ class _BookScreenState extends State<BookScreen> {
         ),
       ),
     );
+  }
+
+  _showErrorSnackbar(String message) {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        "$message",
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState.showSnackBar(snackbar);
   }
 }
