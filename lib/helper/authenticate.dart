@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sported_app/screens/login.dart';
-import 'package:sported_app/screens/register.dart';
+import 'package:sported_app/presentation/pages/sign_in_page.dart';
+import 'package:sported_app/presentation/pages/sign_up_page.dart';
 
 class Authenticate extends StatefulWidget {
   @override
@@ -8,7 +8,6 @@ class Authenticate extends StatefulWidget {
 }
 
 class _AuthenticateState extends State<Authenticate> {
-
   bool showSignInScreen = true;
 
   void toggleView() {
@@ -17,13 +16,12 @@ class _AuthenticateState extends State<Authenticate> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     if (showSignInScreen) {
-      return Login(toggleView);
+      return SignInPage(toggle: toggleView);
     } else {
-      return Register(toggleView);
+      return SignUpPage(toggle: toggleView);
     }
   }
 }
