@@ -76,7 +76,42 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
     showDialog(
       context: context,
-      builder: (_) => SuccessfulBookDialog(),
+      builder: (_) => SuccessfulBookDialog(
+        selectedDate: widget.selectedDate,
+        selectedSlot: widget.selectedSlot == 0
+            ? '0600 hrs'
+            : widget.selectedSlot == 1
+                ? '0700 hrs'
+                : widget.selectedSlot == 2
+                    ? '0800 hrs'
+                    : widget.selectedSlot == 3
+                        ? '0900 hrs'
+                        : widget.selectedSlot == 4
+                            ? '1000 hrs'
+                            : widget.selectedSlot == 5
+                                ? '1100 hrs'
+                                : widget.selectedSlot == 6
+                                    ? '1200 hrs'
+                                    : widget.selectedSlot == 7
+                                        ? '1300 hrs'
+                                        : widget.selectedSlot == 8
+                                            ? '1400 hrs'
+                                            : widget.selectedSlot == 9
+                                                ? '1500 hrs'
+                                                : widget.selectedSlot == 10
+                                                    ? '1600 hrs'
+                                                    : widget.selectedSlot == 11
+                                                        ? '1700 hrs'
+                                                        : widget.selectedSlot == 12
+                                                            ? '1800 hrs'
+                                                            : widget.selectedSlot == 13
+                                                                ? '1900 hrs'
+                                                                : widget.selectedSlot == 14
+                                                                    ? '2000 hrs'
+                                                                    : widget.selectedSlot == 15
+                                                                        ? '2100 hrs'
+                                                                        : null,
+      ),
     );
   }
 

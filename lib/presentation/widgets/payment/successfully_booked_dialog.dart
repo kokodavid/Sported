@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class SuccessfulBookDialog extends StatelessWidget {
+  final String selectedDate;
+  final String selectedSlot;
+  const SuccessfulBookDialog({
+    Key key,
+    this.selectedDate,
+    this.selectedSlot,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final formattedDate = DateFormat.MMMMEEEEd().format(DateTime.parse(selectedDate));
     return Dialog(
       backgroundColor: Color(0xff18181A),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
@@ -52,11 +62,36 @@ class SuccessfulBookDialog extends StatelessWidget {
             ),
             SizedBox(height: 8.h),
 
-            Text(
-              'See you on {\$bookedTime}',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14.sp,
+            RichText(
+              text: TextSpan(
+                text: 'See you on ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.sp,
+                ),
+                children: [
+                  TextSpan(
+                    text: formattedDate,
+                    style: TextStyle(
+                      color: Color(0xff8FD974),
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                  TextSpan(
+                    text: " at ",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                  TextSpan(
+                    text: selectedSlot,
+                    style: TextStyle(
+                      color: Color(0xff8FD974),
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                ],
               ),
             ),
 
