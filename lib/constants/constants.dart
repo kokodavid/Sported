@@ -15,3 +15,6 @@ TextStyle hintStyle = TextStyle(
   fontSize: 12.sp,
   color: Color(0xff707070),
 );
+
+String kConsumerKey = "ygmt4jBmWDba1neZU11lfvzpXiKk1uyN";
+String kConsumerSecret = "iY5FXEbsLaVjLatM";

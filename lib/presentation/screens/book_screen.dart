@@ -2,7 +2,6 @@ import 'package:chips_choice/chips_choice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/booking/booking_history_model.dart';
@@ -290,10 +289,10 @@ class _BookScreenState extends State<BookScreen> {
                           ),
                         )
                       : Container(
-                          width: 25.w,
-                          child: SpinKitRipple(
-                            color: Colors.black,
-                          ),
+                          // width: 25.w,
+                          // child: SpinKitRipple(
+                          //   color: Colors.black,
+                          // ),
                         ),
                   onPressed: () async {
                     setState(() {

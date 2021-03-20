@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
@@ -179,9 +178,9 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
                     return Container(
                       height: 200.h,
                       child: Center(
-                        child: SpinKitRipple(
-                          color: Color(0xff9BEB81),
-                        ),
+                        // child: SpinKitRipple(
+                        //   color: Color(0xff9BEB81),
+                        // ),
                       ),
                     );
 
