@@ -6,8 +6,12 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:sported_app/constants/constants.dart';
+import 'package:sported_app/data/models/venue/venue_model.dart';
 
 class VenueDetailsScreen extends StatelessWidget {
+  final Venue venue;
+
+  const VenueDetailsScreen({Key key, @required this.venue}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -34,7 +38,7 @@ class VenueDetailsScreen extends StatelessWidget {
                 flexibleSpace: Swiper(
                   loop: true,
                   outer: false,
-                  itemCount: 4,
+                  itemCount: venue.images.length,
                   indicatorLayout: PageIndicatorLayout.COLOR,
                   pagination: SwiperPagination(
                     alignment: Alignment.bottomCenter,
@@ -46,24 +50,28 @@ class VenueDetailsScreen extends StatelessWidget {
                       activeColor: Colors.white,
                     ),
                   ),
-                  itemBuilder: (context, int) => Container(
-                    height: 240.h,
-                    width: 1.sw,
-                    foregroundDecoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Color(0xff18181A),
-                        ],
+                  itemBuilder: (context, index) {
+                    final image = venue.images[index];
+                    return Container(
+                      height: 240.h,
+                      width: 1.sw,
+                      foregroundDecoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Color(0xff18181A),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Image.asset(
-                      'assets/images/stadium.png',
-                      fit: BoxFit.fitHeight,
-                    ),
-                  ),
+                      child: Image.network(
+                        image,
+                        fit: BoxFit.fitWidth,
+                        filterQuality: FilterQuality.medium,
+                      ),
+                    );
+                  },
                 ),
                 leading: IconButton(
                   onPressed: () {
@@ -89,7 +97,7 @@ class VenueDetailsScreen extends StatelessWidget {
                         children: [
                           //venue name
                           Text(
-                            'Nairobi Jaffery Sports Club',
+                            venue.venueName,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -99,7 +107,7 @@ class VenueDetailsScreen extends StatelessWidget {
 
                           //venue desc
                           Text(
-                            'Yes, there is zion, it converts with vision.Yes, there is zion, it disappears with art.Going to the mind doesn’t capture milk anymore than discovering creates boundless politics.When one absorbs light and zen, one is able to study milk.Totality believes when you gain with fear.',
+                            venue.description,
                             style: TextStyle(
                               fontSize: 15.sp,
                               color: Color(0xBF707070),
@@ -128,141 +136,213 @@ class VenueDetailsScreen extends StatelessWidget {
 
                           SizedBox(height: 20.h),
 
-                          //facilities & price
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              //football
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ImageIcon(
-                                    AssetImage('assets/icons/football_icon.png'),
-                                    color: Color(0xff838384),
-                                    size: 25.r,
-                                  ),
-                                  SizedBox(height: 2.0.h),
-                                  Text(
-                                    'Football',
-                                    style: labelStyle.copyWith(fontSize: 9.sp),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    '4000 KES/hr',
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      color: Color(0xff9BEB81),
-                                      fontWeight: FontWeight.bold,
+                          // facilities & price
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     //football
+                          //     Column(
+                          //       mainAxisAlignment: MainAxisAlignment.start,
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       children: [
+                          //         ImageIcon(
+                          //           AssetImage('assets/icons/football_icon.png'),
+                          //           color: Color(0xff838384),
+                          //           size: 25.r,
+                          //         ),
+                          //         SizedBox(height: 2.0.h),
+                          //         Text(
+                          //           'Football',
+                          //           style: labelStyle.copyWith(fontSize: 9.sp),
+                          //         ),
+                          //         SizedBox(height: 10.h),
+                          //         Text(
+                          //           '4000 KES/hr',
+                          //           style: TextStyle(
+                          //             fontSize: 10.sp,
+                          //             color: Color(0xff9BEB81),
+                          //             fontWeight: FontWeight.bold,
+                          //           ),
+                          //         )
+                          //       ],
+                          //     ),
+                          //     //cricket
+                          //     Column(
+                          //       mainAxisAlignment: MainAxisAlignment.start,
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       children: [
+                          //         ImageIcon(
+                          //           AssetImage('assets/icons/cricket_icon.png'),
+                          //           color: Color(0xff838384),
+                          //           size: 25.r,
+                          //         ),
+                          //         SizedBox(height: 2.0.h),
+                          //         Text(
+                          //           'Cricket',
+                          //           style: labelStyle.copyWith(fontSize: 9.sp),
+                          //         ),
+                          //         SizedBox(height: 10.h),
+                          //         Text(
+                          //           '1000 KES/hr',
+                          //           style: TextStyle(
+                          //             fontSize: 10.sp,
+                          //             color: Color(0xff9BEB81),
+                          //             fontWeight: FontWeight.bold,
+                          //           ),
+                          //         )
+                          //       ],
+                          //     ),
+                          //     //badminton
+                          //     Column(
+                          //       mainAxisAlignment: MainAxisAlignment.start,
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       children: [
+                          //         ImageIcon(
+                          //           AssetImage('assets/icons/badminton_icon.png'),
+                          //           color: Color(0xff838384),
+                          //           size: 25.r,
+                          //         ),
+                          //         SizedBox(height: 2.0.h),
+                          //         Text(
+                          //           'Badminton',
+                          //           style: labelStyle.copyWith(fontSize: 9.sp),
+                          //         ),
+                          //         SizedBox(height: 10.h),
+                          //         Text(
+                          //           '1000 KES/hr',
+                          //           style: TextStyle(
+                          //             fontSize: 10.sp,
+                          //             color: Color(0xff9BEB81),
+                          //             fontWeight: FontWeight.bold,
+                          //           ),
+                          //         )
+                          //       ],
+                          //     ),
+                          //     //volleyball
+                          //     Column(
+                          //       mainAxisAlignment: MainAxisAlignment.start,
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       children: [
+                          //         ImageIcon(
+                          //           AssetImage('assets/icons/volleyball_icon.png'),
+                          //           color: Color(0xff838384),
+                          //           size: 25.r,
+                          //         ),
+                          //         SizedBox(height: 2.0.h),
+                          //         Text(
+                          //           'Volleyball',
+                          //           style: labelStyle.copyWith(fontSize: 9.sp),
+                          //         ),
+                          //         SizedBox(height: 10.h),
+                          //         Text(
+                          //           '1000 KES/hr',
+                          //           style: TextStyle(
+                          //             fontSize: 10.sp,
+                          //             color: Color(0xff9BEB81),
+                          //             fontWeight: FontWeight.bold,
+                          //           ),
+                          //         )
+                          //       ],
+                          //     ),
+                          //     //tt
+                          //     Column(
+                          //       mainAxisAlignment: MainAxisAlignment.start,
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       children: [
+                          //         ImageIcon(
+                          //           AssetImage('assets/icons/table_tennis_icon.png'),
+                          //           color: Color(0xff838384),
+                          //           size: 25.r,
+                          //         ),
+                          //         SizedBox(height: 2.0.h),
+                          //         Text(
+                          //           'Table Tennis',
+                          //           style: labelStyle.copyWith(fontSize: 9.sp),
+                          //         ),
+                          //         SizedBox(height: 10.h),
+                          //         Text(
+                          //           '4000 KES/hr',
+                          //           style: TextStyle(
+                          //             fontSize: 10.sp,
+                          //             color: Color(0xff9BEB81),
+                          //             fontWeight: FontWeight.bold,
+                          //           ),
+                          //         )
+                          //       ],
+                          //     ),
+                          //   ],
+                          // ),
+
+                          Container(
+                            height: 80.h,
+                            width: 1.sw,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: venue.sportsOffered.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final sportName = venue.sportsOffered[index].sportName;
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    //sport
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            ImageIcon(
+                                              AssetImage(
+                                                sportName == "Football"
+                                                    ? 'assets/icons/football_icon.png'
+                                                    : sportName == 'Table Tennis'
+                                                        ? 'assets/icons/table_tennis_icon.png'
+                                                        : sportName == "Badminton"
+                                                            ? 'assets/icons/badminton_icon.png'
+                                                            : sportName == 'Volleyball'
+                                                                ? 'assets/icons/volleyball_icon.png'
+                                                                : sportName == "Handball"
+                                                                    ? 'assets/icons/handball_icon.png'
+                                                                    : sportName == 'Swimming'
+                                                                        ? 'assets/icons/swimming_icon.png'
+                                                                        : sportName == 'Tennis'
+                                                                            ? 'assets/icons/tennis_icon.png'
+                                                                            : sportName == 'Rugby'
+                                                                                ? 'assets/icons/rugby_icon.png'
+                                                                                : sportName == 'Cricket'
+                                                                                    ? 'assets/icons/cricket_icon.png'
+                                                                                    : sportName == "Basketball"
+                                                                                        ? 'assets/icons/basketball_icon.png'
+                                                                                        : '',
+                                              ),
+                                              color: Color(0xff838384),
+                                              size: 25.r,
+                                            ),
+                                            SizedBox(height: 2.0.h),
+                                            Text(
+                                              venue.sportsOffered[index].sportName,
+                                              style: labelStyle.copyWith(fontSize: 9.sp),
+                                            ),
+                                            SizedBox(height: 10.h),
+                                            Text(
+                                              venue.sportsOffered[index].ratesPerHr.toString() + " KES/hr",
+                                              style: TextStyle(
+                                                fontSize: 10.sp,
+                                                color: Color(0xff9BEB81),
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                  )
-                                ],
-                              ),
-                              //cricket
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ImageIcon(
-                                    AssetImage('assets/icons/cricket_icon.png'),
-                                    color: Color(0xff838384),
-                                    size: 25.r,
-                                  ),
-                                  SizedBox(height: 2.0.h),
-                                  Text(
-                                    'Cricket',
-                                    style: labelStyle.copyWith(fontSize: 9.sp),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    '1000 KES/hr',
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      color: Color(0xff9BEB81),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              //badminton
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ImageIcon(
-                                    AssetImage('assets/icons/badminton_icon.png'),
-                                    color: Color(0xff838384),
-                                    size: 25.r,
-                                  ),
-                                  SizedBox(height: 2.0.h),
-                                  Text(
-                                    'Badminton',
-                                    style: labelStyle.copyWith(fontSize: 9.sp),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    '1000 KES/hr',
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      color: Color(0xff9BEB81),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              //volleyball
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ImageIcon(
-                                    AssetImage('assets/icons/volleyball_icon.png'),
-                                    color: Color(0xff838384),
-                                    size: 25.r,
-                                  ),
-                                  SizedBox(height: 2.0.h),
-                                  Text(
-                                    'Volleyball',
-                                    style: labelStyle.copyWith(fontSize: 9.sp),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    '1000 KES/hr',
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      color: Color(0xff9BEB81),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              //tt
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ImageIcon(
-                                    AssetImage('assets/icons/table_tennis_icon.png'),
-                                    color: Color(0xff838384),
-                                    size: 25.r,
-                                  ),
-                                  SizedBox(height: 2.0.h),
-                                  Text(
-                                    'Table Tennis',
-                                    style: labelStyle.copyWith(fontSize: 9.sp),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    '4000 KES/hr',
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      color: Color(0xff9BEB81),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
+                                    SizedBox(width: 20.w),
+                                  ],
+                                );
+                              },
+                            ),
                           ),
 
                           SizedBox(height: 20.h),
@@ -297,30 +377,18 @@ class VenueDetailsScreen extends StatelessWidget {
                             width: 0.5.sw,
                             padding: EdgeInsets.only(left: 4.w),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 ImageIcon(
                                   AssetImage('assets/icons/shower_icon.png'),
                                   color: Color(0xffA5A5A8),
                                   size: 15.r,
                                 ),
+
+                                SizedBox(width:10.w),
+                                
                                 ImageIcon(
                                   AssetImage('assets/icons/wifi_icon.png'),
-                                  color: Color(0xffA5A5A8),
-                                  size: 15.r,
-                                ),
-                                ImageIcon(
-                                  AssetImage('assets/icons/wifi_icon.png'),
-                                  color: Color(0xffA5A5A8),
-                                  size: 15.r,
-                                ),
-                                ImageIcon(
-                                  AssetImage('assets/icons/shower_icon.png'),
-                                  color: Color(0xffA5A5A8),
-                                  size: 15.r,
-                                ),
-                                ImageIcon(
-                                  AssetImage('assets/icons/shower_icon.png'),
                                   color: Color(0xffA5A5A8),
                                   size: 15.r,
                                 ),
@@ -358,121 +426,46 @@ class VenueDetailsScreen extends StatelessWidget {
                           SizedBox(height: 20.h),
 
                           //rules
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  //indicator
-                                  Icon(
-                                    MdiIcons.circleOutline,
-                                    size: 10.r,
-                                    color: Color(0xff9BEB81),
-                                  ),
+                          Container(
+                            height: 300.h,
+                            child: ListView.builder(
+                              itemCount: venue.rules.length,
+                              itemBuilder: (context, index) {
+                                final rule = venue.rules[index];
+                                return Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        //indicator
+                                        Icon(
+                                          MdiIcons.circleOutline,
+                                          size: 10.r,
+                                          color: Color(0xff9BEB81),
+                                        ),
 
-                                  SizedBox(width: 10.w),
+                                        SizedBox(width: 10.w),
 
-                                  //rule
-                                  SizedBox(
-                                    width: 362.w,
-                                    child: Text(
-                                      'Booda-hood is not enlightened in heavens, the state of courage, or space, but everywhere.',
-                                      softWrap: true,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xBF707070),
-                                      ),
+                                        //rule
+                                        SizedBox(
+                                          width: 362.w,
+                                          child: Text(
+                                            rule,
+                                            softWrap: true,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 15.sp,
+                                              color: Color(0xBF707070),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10.0.h),
-                              Row(
-                                children: [
-                                  //indicator
-                                  Icon(
-                                    MdiIcons.circleOutline,
-                                    size: 10.r,
-                                    color: Color(0xff9BEB81),
-                                  ),
-
-                                  SizedBox(width: 10.w),
-
-                                  //rule
-                                  SizedBox(
-                                    width: 362.w,
-                                    child: Text(
-                                      'Booda-hood is not enlightened in heavens, the state of courage, or space, but everywhere.',
-                                      softWrap: true,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xBF707070),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10.0.h),
-                              Row(
-                                children: [
-                                  //indicator
-                                  Icon(
-                                    MdiIcons.circleOutline,
-                                    size: 10.r,
-                                    color: Color(0xff9BEB81),
-                                  ),
-
-                                  SizedBox(width: 10.w),
-
-                                  //rule
-                                  SizedBox(
-                                    width: 362.w,
-                                    child: Text(
-                                      'Booda-hood is not enlightened in heavens, the state of courage, or space, but everywhere.',
-                                      softWrap: true,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xBF707070),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10.0.h),
-                              Row(
-                                children: [
-                                  //indicator
-                                  Icon(
-                                    MdiIcons.circleOutline,
-                                    size: 10.r,
-                                    color: Color(0xff9BEB81),
-                                  ),
-
-                                  SizedBox(width: 10.w),
-
-                                  //rule
-                                  SizedBox(
-                                    width: 362.w,
-                                    child: Text(
-                                      'Booda-hood is not enlightened in heavens, the state of courage, or space, but everywhere.',
-                                      softWrap: true,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xBF707070),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10.0.h),
-                            ],
+                                    SizedBox(height: 10.0.h),
+                                  ],
+                                );
+                              },
+                            ),
                           ),
 
                           SizedBox(height: 16.0.h),

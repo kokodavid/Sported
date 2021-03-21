@@ -240,29 +240,17 @@ class _GMapState extends State<GMap> {
         _locationMarkers.add(
           Marker(
             markerId: MarkerId('marker1'),
-            position: LatLng(0.0236, 37.9062),
+            position: LatLng(-1.2754225352272903, 36.76830631083326),
             icon: locationIcon,
+            infoWindow: InfoWindow(title: 'Nairobi Jeffary Sports Club'),
           ),
         );
         _locationMarkers.add(
           Marker(
             markerId: MarkerId('marker2'),
-            position: LatLng(1.2727, 36.8163),
+            position: LatLng(-1.2593830167467919, 36.82361004197738),
             icon: locationIcon,
-          ),
-        );
-        _locationMarkers.add(
-          Marker(
-            markerId: MarkerId('marker3'),
-            position: LatLng(1.2901, 36.8724),
-            icon: locationIcon,
-          ),
-        );
-        _locationMarkers.add(
-          Marker(
-            markerId: MarkerId('marker4'),
-            position: LatLng(-1.30032, 36.77894),
-            icon: locationIcon,
+            infoWindow: InfoWindow(title: 'Aga Khan Sports Club'),
           ),
         );
       },
@@ -271,7 +259,7 @@ class _GMapState extends State<GMap> {
 
   @override
   Widget build(BuildContext context) {
-    CameraPosition initialLocation = CameraPosition(zoom: 5, target: LatLng(0.0236, 37.9062));
+    CameraPosition initialLocation = CameraPosition(zoom: 12, target: LatLng(-1.2593830167467919, 36.82361004197738));
     return GoogleMap(
       myLocationEnabled: true,
       initialCameraPosition: initialLocation,

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,70 +18,33 @@ class VenuesListScreen extends StatefulWidget {
 }
 
 class _VenuesListScreenState extends State<VenuesListScreen> {
-  // Map<String, dynamic> data = {
-  //   "venueName": "Impala Club",
-  //   "timeOpen": "0600",
-  //   "timeClosed": "2100",
-  //   "totalDaysOpen": 2,
-  //   "sportsOfferedList": ["Football", "Badminton", "Cricket", "Basketball", "Swimming"],
-  //   "sportsOffered": [
-  //     {
-  //       "sportName": "Football",
-  //       "ratesPerHr": 3800,
-  //       "slots": [
-  //         {"date": "", "time": "0900", "isBooked": false},
-  //         {"date": "", "time": "1000", "isBooked": false},
-  //         {"date": "", "time": "1100", "isBooked": false},
-  //         {"date": "", "time": "1200", "isBooked": false},
-  //       ]
-  //     },
-  //     {
-  //       "sportName": "Badminton",
-  //       "ratesPerHr": 1400,
-  //       "slots": [
-  //         {"date": "", "time": "0900", "isBooked": false},
-  //         {"date": "", "time": "1000", "isBooked": false},
-  //         {"date": "", "time": "1100", "isBooked": false},
-  //         {"date": "", "time": "1200", "isBooked": false},
-  //       ]
-  //     },
-  //     {
-  //       "sportName": "Cricket",
-  //       "ratesPerHr": 900,
-  //       "slots": [
-  //         {"date": "", "time": "0900", "isBooked": false},
-  //         {"date": "", "time": "1000", "isBooked": false},
-  //         {"date": "", "time": "1100", "isBooked": false},
-  //         {"date": "", "time": "1200", "isBooked": false},
-  //       ]
-  //     },
-  //     {
-  //       "sportName": "Basketball",
-  //       "ratesPerHr": 3400,
-  //       "slots": [
-  //         {"date": "", "time": "0900", "isBooked": false},
-  //         {"date": "", "time": "1000", "isBooked": false},
-  //         {"date": "", "time": "1100", "isBooked": false},
-  //         {"date": "", "time": "1200", "isBooked": false},
-  //       ]
-  //     },
-  //     {
-  //       "sportName": "Swimming",
-  //       "ratesPerHr": 2000,
-  //       "slots": [
-  //         {"date": "", "time": "0900", "isBooked": false},
-  //         {"date": "", "time": "1000", "isBooked": false},
-  //         {"date": "", "time": "1100", "isBooked": false},
-  //         {"date": "", "time": "1200", "isBooked": false},
-  //       ]
-  //     },
-  //   ]
-  // };
-  //
-  // addVenue() {
-  //   final ref = FirebaseFirestore.instance.collection('venues');
-  //   ref.add(data);
-  // }
+  Map<String, dynamic> data = {
+    "venueName": "Nais Club",
+    "timeOpen": "0600",
+    "timeClosed": "2100",
+    "totalDaysOpen": 7,
+    "description":
+        "The Jaffery Sports Club Ground is a cricket ground situated in Nairobi, Kenya. It hosted its first ODI international during the 2007 World Cricket League in Kenya. The Ground is owned by a sect of the Muslim community in Nairobi. Hence most of the players in the Club team are Islamic.",
+    "rules": ["Rules will be updated"],
+    "sportsOfferedList": ["Football", "Badminton", "Cricket", "Table Tennis", "Volleyball"],
+    "images": [
+      "https://fastly.4sqi.net/img/general/600x600/407721430_DGyytCXxHEvZ8ECmP_-tfAeZakOPEHb4q7pZB9imNdk.jpg",
+      "https://lh3.googleusercontent.com/p/AF1QipPkGabgYnFBS7eaDZSh_dXh0xZ1NphZBIXL-VjF=s1600-w400",
+      "https://fastly.4sqi.net/img/general/600x600/10778693_gxKhtXi4NS0I54e2xJUMVQSlOqoUoB1kh8E8WQh1M30.jpg"
+    ],
+    "sportsOffered": [
+      {"sportName": "Football", "ratesPerHr": 4000},
+      {"sportName": "Badminton", "ratesPerHr": 300},
+      {"sportName": "Cricket", "ratesPerHr": 10000},
+      {"sportName": "Volleyball", "ratesPerHr": 2000},
+      {"sportName": "Table Tennis", "ratesPerHr": 1000}
+    ]
+  };
+
+  addVenue() {
+    final ref = FirebaseFirestore.instance.collection('venues');
+    ref.add(data);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +57,7 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              onPressed: () {},
+              onPressed: addVenue,
               icon: Icon(Icons.search),
             ),
             title: Text(
@@ -122,14 +86,12 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
                     ),
                   ),
                 ),
-                //
                 // // list of venues
                 BlocBuilder<FilterBloc, FilterState>(
                   builder: (context, state) {
                     if (state is FootballLoaded) {
                       final footballVenues = state.footballVenues;
-                      return FilteredVenues(
-                          filteredVenues: footballVenues, sportToBook: 'Football');
+                      return FilteredVenues(filteredVenues: footballVenues, sportToBook: 'Football');
                     }
                     if (state is CricketLoaded) {
                       final cricketVenues = state.cricketVenues;
@@ -138,14 +100,12 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
                     }
                     if (state is BadmintonLoaded) {
                       final badmintonVenues = state.badmintonVenues;
-                      return FilteredVenues(
-                          filteredVenues: badmintonVenues, sportToBook: 'Badminton');
+                      return FilteredVenues(filteredVenues: badmintonVenues, sportToBook: 'Badminton');
                     }
                     if (state is BasketballLoaded) {
                       final basketballVenues = state.basketballVenues;
 
-                      return FilteredVenues(
-                          filteredVenues: basketballVenues, sportToBook: 'Basketball');
+                      return FilteredVenues(filteredVenues: basketballVenues, sportToBook: 'Basketball');
                     }
                     if (state is TennisLoaded) {
                       final tennisVenues = state.tennisVenues;
@@ -154,13 +114,11 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
 
                     if (state is SwimmingLoaded) {
                       final swimmingVenues = state.swimmingVenues;
-                      return FilteredVenues(
-                          filteredVenues: swimmingVenues, sportToBook: 'Swimming');
+                      return FilteredVenues(filteredVenues: swimmingVenues, sportToBook: 'Swimming');
                     }
                     if (state is VolleyballLoaded) {
                       final volleyballVenues = state.volleyballVenues;
-                      return FilteredVenues(
-                          filteredVenues: volleyballVenues, sportToBook: 'Volleyball');
+                      return FilteredVenues(filteredVenues: volleyballVenues, sportToBook: 'Volleyball');
                     }
                     if (state is RugbyLoaded) {
                       final rugbyVenues = state.rugbyVenues;
@@ -168,13 +126,11 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
                     }
                     if (state is TableTennisLoaded) {
                       final tableTennisVenues = state.tableTennisVenues;
-                      return FilteredVenues(
-                          filteredVenues: tableTennisVenues, sportToBook: 'Table Tennis');
+                      return FilteredVenues(filteredVenues: tableTennisVenues, sportToBook: 'Table Tennis');
                     }
                     if (state is HandballLoaded) {
                       final handballVenues = state.handballVenues;
-                      return FilteredVenues(
-                          filteredVenues: handballVenues, sportToBook: 'Handball');
+                      return FilteredVenues(filteredVenues: handballVenues, sportToBook: 'Handball');
                     }
                     return Container(
                       height: 200.h,
@@ -184,7 +140,6 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
                         ),
                       ),
                     );
-
                   },
                 ),
 

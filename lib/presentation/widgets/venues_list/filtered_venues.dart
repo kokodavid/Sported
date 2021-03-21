@@ -8,8 +8,11 @@ import 'package:sported_app/presentation/screens/venue_details_screen.dart';
 class FilteredVenues extends StatelessWidget {
   final List<Venue> filteredVenues;
   final String sportToBook;
-  const FilteredVenues({Key key, @required this.filteredVenues, @required this.sportToBook})
-      : super(key: key);
+  const FilteredVenues({
+    Key key,
+    @required this.filteredVenues,
+    @required this.sportToBook,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -29,7 +32,7 @@ class FilteredVenues extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => VenueDetailsScreen(),
+                      builder: (_) => VenueDetailsScreen(venue: venue),
                     ),
                   );
                 },
@@ -59,8 +62,8 @@ class FilteredVenues extends StatelessWidget {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
-                              child: Image.asset(
-                                'assets/images/stadium.png',
+                              child: Image.network(
+                                venue.images[0],
                                 fit: BoxFit.fitHeight,
                               ),
                             ),
@@ -118,11 +121,9 @@ class FilteredVenues extends StatelessWidget {
                                                                               ? 'assets/icons/tennis_icon.png'
                                                                               : sportName == 'Rugby'
                                                                                   ? 'assets/icons/rugby_icon.png'
-                                                                                  : sportName ==
-                                                                                          'Cricket'
+                                                                                  : sportName == 'Cricket'
                                                                                       ? 'assets/icons/cricket_icon.png'
-                                                                                      : sportName ==
-                                                                                              "Basketball"
+                                                                                      : sportName == "Basketball"
                                                                                           ? 'assets/icons/basketball_icon.png'
                                                                                           : '',
                                                 ),
@@ -214,12 +215,10 @@ class FilteredVenues extends StatelessWidget {
                                   padding: EdgeInsets.all(0),
                                   elevation: 0.0,
                                   onPressed: () {
-                                    final sportBookingInfo = venue.sportsOffered
-                                        .singleWhere((element) => element.sportName == sportToBook);
+                                    final sportBookingInfo = venue.sportsOffered.singleWhere((element) => element.sportName == sportToBook);
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (_) => BookScreen(
-                                            sportBookingInfo: sportBookingInfo, venue: venue),
+                                        builder: (_) => BookScreen(sportBookingInfo: sportBookingInfo, venue: venue),
                                       ),
                                     );
                                   },

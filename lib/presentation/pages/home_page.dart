@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sported_app/presentation/shared/filter_chips/select_sport.dart';
 import 'package:sported_app/presentation/widgets/home/g_map.dart';
 import 'package:sported_app/presentation/widgets/home/home_carousel.dart';
+import 'package:sported_app/presentation/widgets/home/home_page_sports_filter.dart';
 import 'package:sported_app/presentation/widgets/home/home_top_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
         HomeTopBar(),
 
         //select sport
-        Positioned(top: 48.0.h, right: 0.0, left: 0.0, child: SelectSport()),
+        Positioned(top: 48.0.h, right: 0.0, left: 0.0, child: HomePageSportsFilter()),
 
         //carousel
         HomeCarousel(),
