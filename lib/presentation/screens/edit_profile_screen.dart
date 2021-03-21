@@ -40,7 +40,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   UserModel _currentUser;
   String _username;
   String _email;
-  String empty = "loading....";
+  String empty = "Cannot be Edited.";
   String age, gender, club1, club2, club3, buddy, coach, urlPaste;
   bool buddyYes = false;
   bool buddyNo = false;
@@ -118,7 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               hintText: _username ?? empty,
                               isDense: true,
                               // labelText: _username,
-                              prefixIcon: Icons.person_outlined,
+                              prefixIcon: Icons.person_outline,
                             ),
                             validator: (val) {
                               return val.isEmpty || val.length < 2 ? "Try another Username" : null;
@@ -143,7 +143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               // labelText: _email,
                               isDense: true,
                               hintText: _email ?? empty,
-                              prefixIcon: Icons.mail_outlined,
+                              prefixIcon: Icons.email_outlined ,
                             ),
                             validator: (val) {
                               return RegExp(
@@ -379,16 +379,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                                 items: [
                                   'No',
-                                  'NJSC',
-                                  'Karen tennis',
                                   'Aga khan',
-                                  'Oshwal Centre',
                                   'Jaffery Turf',
                                   'Arena One',
-                                  'Gym Khana',
-                                  'Sikh Union',
-                                  'Parklands Sports club',
-                                  'Impala Club'
                                 ].map(
                                   (val) {
                                     return DropdownMenuItem<String>(
@@ -441,16 +434,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                                 items: [
                                   'No',
-                                  'NJSC',
-                                  'Karen tennis',
                                   'Aga khan',
-                                  'Oshwal Centre',
                                   'Jaffery Turf',
                                   'Arena One',
-                                  'Gym Khana',
-                                  'Sikh Union',
-                                  'Parklands Sports club',
-                                  'Impala Club'
                                 ].map(
                                   (val) {
                                     return DropdownMenuItem<String>(
@@ -503,16 +489,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                                 items: [
                                   'No',
-                                  'NJSC',
-                                  'Karen tennis',
                                   'Aga khan',
-                                  'Oshwal Centre',
                                   'Jaffery Turf',
                                   'Arena One',
-                                  'Gym Khana',
-                                  'Sikh Union',
-                                  'Parklands Sports club',
-                                  'Impala Club'
                                 ].map(
                                   (val) {
                                     return DropdownMenuItem<String>(

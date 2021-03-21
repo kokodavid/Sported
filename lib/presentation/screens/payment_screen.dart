@@ -18,42 +18,24 @@ class PaymentScreen extends StatefulWidget {
   final SportsOffered sportBookingInfo;
   final int selectedSlot;
   final Venue venue;
+  final String checkoutId;
   PaymentScreen({
     @required this.selectedDate,
     @required this.selectedSlot,
     @required this.venue,
     @required this.sportBookingInfo,
+    @required this.checkoutId
   });
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
-
+class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserver {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   DocumentReference paymentsRef;
   String mUserMail = "kokodavid78@gmail.com";
-  bool _initialized = false;
-  bool _error = false;
-
-  void initializeFlutterFire() async {
-    try {
-      // Wait for Firebase to initialize and set `_initialized` state to true
-      await Firebase.initializeApp();
-      setState(() {
-        _initialized = true;
-      });
-
-      paymentsRef =
-          FirebaseFirestore.instance.collection('payments').doc(mUserMail);
-    } catch (e) {
-      print(e.toString());
-      // Set `_error` state to true if Firebase initialization fails
-      setState(() {
-        _error = true;
-      });
-    }
-  }
+  QuerySnapshot payment;
 
 
   updateBookingHistory() {
@@ -145,66 +127,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  paymentConfirm()async{
+    if(await FirebaseFirestore.instance.collection("lost_found_receipts").doc("deposit_info").collection("all").doc(widget.checkoutId).get().then(
+            (value) => value.exists == true)){
+      _showErrorSnackbar("Money");
+      updateBookingHistory();
+    }else{
+      _showErrorSnackbar("Error No Money");
 
-  Future<void> updateAccount(String mCheckoutRequestID) {
-    Map<String, String> initData = {
-      'CheckoutRequestID': mCheckoutRequestID,
-    };
-
-    paymentsRef.set({"info": "$mUserMail receipts data goes here."});
-
-    return paymentsRef
-        .collection("deposit")
-        .doc(mCheckoutRequestID)
-        .set(initData)
-        .then((value) => print("Transaction Initialized."))
-        .catchError((error) => print("Failed to init transaction: $error"));
-  }
-
-  Future<dynamic> startTransaction({double amount, String phone})async{
-    dynamic transactionInitialisation;
-    //Wrap it with a try-catch
-    try {
-      //Run it
-      transactionInitialisation =
-      await MpesaFlutterPlugin.initializeMpesaSTKPush(
-          businessShortCode: "174379",
-          transactionType: TransactionType.CustomerPayBillOnline,
-          amount: amount,
-          partyA: phone,
-          partyB: "174379",
-          callBackURL: Uri(
-              scheme: "https",
-              host : "us-central1-sportedapp-6f6d2.cloudfunctions.net",
-              path: "paymentCallback"
-          ),
-          accountReference: "payment",
-          phoneNumber: phone,
-          baseUri: Uri(scheme: "https", host: "sandbox.safaricom.co.ke"),
-          transactionDesc: "Demo",
-          passKey: "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919");
-
-      var result = transactionInitialisation as Map<String, dynamic>;
-
-      if (result.keys.contains("ResponseCode")) {
-        String mResponseCode = result["ResponseCode"];
-        print("Resulting Code: " + mResponseCode);
-        if (mResponseCode == '0') {
-          updateAccount(result["CheckoutRequestID"]);
-        }
-      }
-      print("RESULT: " + transactionInitialisation.toString());
-
-    } catch (e) {
-      //you can implement your exception handling here.
-      //Network unreachability is a sure exception.
-      print("Exception Caught: " + e.toString());
     }
+
+
+    // print(await FirebaseFirestore.instance.collection("lost_found_receipts").doc("deposit_info").collection("all").doc(widget.checkoutId).get());
+
+
+
   }
+
 
   @override
   void initState() {
-    initializeFlutterFire();
     super.initState();
   }
 
@@ -212,6 +154,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: Color(0xff18181A),
           elevation: 0.0,
@@ -266,77 +209,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
 
                   SizedBox(height: 80.h),
-
                   //invoice number
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Invoice Number #2342343',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20.h),
-
                   // title
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'LIPA NA MPESA',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff707070),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-
-                  //guides
-
-                  SizedBox(height: 40.h),
-
-                  //title
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      width: 374.w,
-                      child: Text(
-                        'Enter the transaction code you received from M-PESA',
-                        softWrap: true,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20.h),
-
-                  //txt box
-                  Padding(
-                    padding: MediaQuery.of(context).viewInsets,
-
-                    //TODO: Validate transaction code
-                    child: TextFormField(
-                      maxLines: 1,
-                      style: TextStyle(
-                        color: Color(0xff707070),
-                        fontSize: 15.sp,
-                      ),
-                      decoration: formInputDecoration(
-                        isDense: true,
-                        hintText: 'Enter transaction code',
-                        prefixIcon: MdiIcons.numeric,
-                      ),
-                    ),
-                  ),
 
                   SizedBox(height: 35.h),
 
@@ -355,7 +229,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     highlightElevation: 0,
                     focusElevation: 0,
                     child: Text(
-                      'Proceed',
+                      'Pay',
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
@@ -364,8 +238,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                     onPressed: () async{
                       //TODO:STKPush
-                      await startTransaction(amount: 1,phone: "254708207512");
-                      // updateBookingHistory();
+                      await paymentConfirm();
                     },
                   ),
 
@@ -378,4 +251,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
     );
   }
+  _showErrorSnackbar(String message) {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        "$message",
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+  }
+
 }
+
+

@@ -1,13 +1,18 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mpesa_flutter_plugin/initializer.dart';
+import 'package:mpesa_flutter_plugin/payment_enums.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/booking/booking_history_model.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
 import 'package:sported_app/data/repositories/booking_history_data_provider.dart';
 import 'package:sported_app/presentation/screens/payment_screen.dart';
+import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class BookScreen extends StatefulWidget {
@@ -27,16 +32,101 @@ class BookScreen extends StatefulWidget {
 }
 
 class _BookScreenState extends State<BookScreen> {
+  TextEditingController phoneNumber = TextEditingController();
   String selectedDate;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   int selectedSlot = 0;
   bool isCheckingAvailability = false;
   String convertedSlot;
+  DocumentReference paymentsRef;
+  String mUserMail = "kokodavid78@gmail.com";
+  String checkoutId;
+  bool _initialized = false;
+  bool _error = false;
+
+  void initializeFlutterFire() async {
+    try {
+      // Wait for Firebase to initialize and set `_initialized` state to true
+      await Firebase.initializeApp();
+      setState(() {
+        _initialized = true;
+      });
+
+      paymentsRef =
+          FirebaseFirestore.instance.collection('payments').doc(mUserMail);
+    } catch (e) {
+      print(e.toString());
+      // Set `_error` state to true if Firebase initialization fails
+      setState(() {
+        _error = true;
+      });
+    }
+  }
+
+  Future<void> updateAccount(String mCheckoutRequestID) {
+    Map<String, String> initData = {
+      'CheckoutRequestID': mCheckoutRequestID,
+    };
+
+    paymentsRef.set({"info": "$mUserMail receipts data goes here."});
+
+    return paymentsRef
+        .collection("deposit")
+        .doc(mCheckoutRequestID)
+        .set(initData)
+        .then((value) => print("Transaction Initialized."))
+        .catchError((error) => print("Failed to init transaction: $error"));
+  }
+
+  Future<dynamic> startTransaction({double amount, String phone})async{
+    dynamic transactionInitialisation;
+    //Wrap it with a try-catch
+    try {
+      //Run it
+      transactionInitialisation =
+      await MpesaFlutterPlugin.initializeMpesaSTKPush(
+          businessShortCode: "174379",
+          transactionType: TransactionType.CustomerPayBillOnline,
+          amount: amount,
+          partyA: phone,
+          partyB: "174379",
+          callBackURL: Uri(
+              scheme: "https",
+              host : "us-central1-sportedapp-6f6d2.cloudfunctions.net",
+              path: "paymentCallback"
+          ),
+          accountReference: "payment",
+          phoneNumber: phone,
+          baseUri: Uri(scheme: "https", host: "sandbox.safaricom.co.ke"),
+          transactionDesc: "Demo",
+          passKey: "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919");
+
+      var result = transactionInitialisation as Map<String, dynamic>;
+
+      if (result.keys.contains("ResponseCode")) {
+        String mResponseCode = result["ResponseCode"];
+        print("Resulting Code: " + mResponseCode);
+        if (mResponseCode == '0') {
+          updateAccount(result["CheckoutRequestID"]);
+          setState(() {
+            checkoutId = result["CheckoutRequestID"];
+          });
+        }
+      }
+      print("RESULT: " + transactionInitialisation.toString());
+
+    } catch (e) {
+      //you can implement your exception handling here.
+      //Network unreachability is a sure exception.
+      print("Exception Caught: " + e.toString());
+    }
+  }
 
   @override
   void initState() {
     selectedDate = '';
+    initializeFlutterFire();
     super.initState();
   }
 
@@ -197,7 +287,6 @@ class _BookScreenState extends State<BookScreen> {
                         ),
 
                         SizedBox(height: 20.h),
-
                         //slots
                         ChipsChoice<int>.single(
                           wrapped: true,
@@ -207,6 +296,19 @@ class _BookScreenState extends State<BookScreen> {
                           runSpacing: 10.h,
                           onChanged: (val) {
                             setState(() => selectedSlot = val);
+                            setState(() {
+                              isCheckingAvailability = true;
+                            });
+
+                            //ensure a date is selected
+                            if (selectedDate == "null" || selectedDate == '') {
+                              _showErrorSnackbar('Please select a date to book');
+                              setState(() {
+                                isCheckingAvailability = false;
+                              });
+                            } else {
+                              bookingValidation();
+                            }
                           },
                           choiceItems: C2Choice.listFrom<int, String>(
                             source: slots,
@@ -262,6 +364,57 @@ class _BookScreenState extends State<BookScreen> {
                     ),
                   ),
                 ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'LIPA NA MPESA',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff707070),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20.h),
+                //guides
+                //title
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: SizedBox(
+                    width: 374.w,
+                    child: Text(
+                      'Enter  M-PESA Number',
+                      softWrap: true,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20.h),
+                //txt box
+                Padding(
+                  padding: MediaQuery.of(context).viewInsets,
+
+                  //TODO: Validate transaction code
+                  child: TextFormField(
+                    controller: phoneNumber,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: Color(0xff707070),
+                      fontSize: 15.sp,
+                    ),
+                    decoration: formInputDecoration(
+                      isDense: true,
+                      hintText: 'Enter Phone Number',
+                      prefixIcon: MdiIcons.numeric,
+                    ),
+                  ),
+                ),
+
 
                 SizedBox(height: 64.h),
 
@@ -295,19 +448,19 @@ class _BookScreenState extends State<BookScreen> {
                           // ),
                         ),
                   onPressed: () async {
-                    setState(() {
-                      isCheckingAvailability = true;
-                    });
+                    await startTransaction(amount:1,phone: "254"+phoneNumber.text);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (BuildContext context) {
+                        return PaymentScreen(
+                          selectedDate: selectedDate,
+                          venue: widget.venue,
+                          selectedSlot: selectedSlot,
+                          sportBookingInfo: widget.sportBookingInfo,
+                          checkoutId: checkoutId,
+                        );
+                      }),
+                    );
 
-                    //ensure a date is selected
-                    if (selectedDate == "null" || selectedDate == '') {
-                      _showErrorSnackbar('Please select a date to book');
-                      setState(() {
-                        isCheckingAvailability = false;
-                      });
-                    } else {
-                      bookingValidation();
-                    }
                   },
                 ),
 
@@ -375,16 +528,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotOneBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -396,16 +540,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotTwoBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -417,16 +552,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotThreeBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -438,16 +564,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotFourBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -459,16 +576,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotFiveBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -480,16 +588,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotSixBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -501,16 +600,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotSevenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -522,16 +612,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotEightBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -543,16 +624,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotNineBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -564,16 +636,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotTenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -585,16 +648,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotElevenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -606,16 +660,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotTwelveBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -627,16 +672,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotThirteenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -648,16 +684,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotFourteenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -669,16 +696,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotFifteenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
@@ -690,16 +708,7 @@ class _BookScreenState extends State<BookScreen> {
       if (slotSixteenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return PaymentScreen(
-              selectedDate: selectedDate,
-              venue: widget.venue,
-              selectedSlot: selectedSlot,
-              sportBookingInfo: widget.sportBookingInfo,
-            );
-          }),
-        );
+        
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar

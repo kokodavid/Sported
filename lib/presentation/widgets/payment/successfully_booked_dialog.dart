@@ -18,7 +18,7 @@ class SuccessfulBookDialog extends StatelessWidget {
       backgroundColor: Color(0xff18181A),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
       child: Container(
-        height: 288.h,
+        height: 298.h,
         width: 360.w,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

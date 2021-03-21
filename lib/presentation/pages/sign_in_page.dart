@@ -28,9 +28,17 @@ class _SignInPageState extends State<SignInPage> {
   AuthMethods authMethods = AuthMethods();
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController emailTextEditingController = new TextEditingController();
+  bool _isLoading = false;
+
 
   @override
   Widget build(BuildContext context) {
+    Widget loadingIndicator =_isLoading? new Container(
+      color: Color(0xff18181A),
+      width: 70.0,
+      height: 70.0,
+      child: new Padding(padding: const EdgeInsets.all(5.0),child: new Center(child: new LinearProgressIndicator(backgroundColor: Color(0xff8FD974),))),
+    ):new Container();
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -161,18 +169,19 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(height: 16.h),
 
               //reset password
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  "Reset Password",
-                  style: TextStyle(
-                    fontSize: 15.0.sp,
-                    color: Color(0xff8FD974),
-                  ),
-                ),
-              ),
+              // Align(
+              //   alignment: Alignment.centerRight,
+              //   child: Text(
+              //     "Reset Password",
+              //     style: TextStyle(
+              //       fontSize: 15.0.sp,
+              //       color: Color(0xff8FD974),
+              //     ),
+              //   ),
+              // ),
 
               SizedBox(height: 24.h),
+              new Align(child: loadingIndicator,alignment: FractionalOffset.topCenter,),
 
               //sign in btn
               MaterialButton(
@@ -181,7 +190,7 @@ class _SignInPageState extends State<SignInPage> {
                 minWidth: 1.sw,
                 height: 50.h,
                 onPressed: () {
-                  _LoginUser();
+                  login();
                 },
                 child: Text(
                   'Sign In',
@@ -193,69 +202,68 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
 
-              SizedBox(height: 55.0.h),
+              SizedBox(height: 20.0.h),
 
               //social sign in
-              Text(
-                'Or Sign In using',
-                style: regularStyle,
-              ),
-
-              SizedBox(height: 15.0.h),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  //facebook
-                  MaterialButton(
-                    onPressed: () {},
-                    padding: EdgeInsets.symmetric(horizontal: 8.r),
-                    splashColor: Colors.transparent,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 19.r,
-                          backgroundColor: Colors.transparent,
-                          child: Image.asset(
-                            'assets/icons/facebook_icon.png',
-                            height: 19.r,
-                            width: 19.r,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text('Facebook', style: regularStyle),
-                      ],
-                    ),
-                  ),
-
-                  //google
-                  MaterialButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                          context, MaterialPageRoute(builder: (context) => HomePage()));
-                    },
-                    padding: EdgeInsets.symmetric(horizontal: 8.r),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          child: Image.asset(
-                            'assets/icons/google_icon.png',
-                            height: 19.r,
-                            width: 19.r,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text('Google', style: regularStyle),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
+              // Text(
+              //   'Or Sign In using',
+              //   style: regularStyle,
+              // ),
+              //
+              // SizedBox(height: 15.0.h),
+              //
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   crossAxisAlignment: CrossAxisAlignment.center,
+              //   children: [
+              //     //facebook
+              //     MaterialButton(
+              //       onPressed: () {},
+              //       padding: EdgeInsets.symmetric(horizontal: 8.r),
+              //       splashColor: Colors.transparent,
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.start,
+              //         crossAxisAlignment: CrossAxisAlignment.center,
+              //         children: [
+              //           CircleAvatar(
+              //             radius: 19.r,
+              //             backgroundColor: Colors.transparent,
+              //             child: Image.asset(
+              //               'assets/icons/facebook_icon.png',
+              //               height: 19.r,
+              //               width: 19.r,
+              //             ),
+              //           ),
+              //           SizedBox(width: 4.w),
+              //           Text('Facebook', style: regularStyle),
+              //         ],
+              //       ),
+              //     ),
+              //
+              //     //google
+              //     MaterialButton(
+              //       onPressed: () {
+              //         Navigator.pushReplacement(
+              //             context, MaterialPageRoute(builder: (context) => HomePage()));
+              //       },
+              //       padding: EdgeInsets.symmetric(horizontal: 8.r),
+              //       child: Row(
+              //         children: [
+              //           CircleAvatar(
+              //             backgroundColor: Colors.transparent,
+              //             child: Image.asset(
+              //               'assets/icons/google_icon.png',
+              //               height: 19.r,
+              //               width: 19.r,
+              //             ),
+              //           ),
+              //           SizedBox(width: 4.w),
+              //           Text('Google', style: regularStyle),
+              //         ],
+              //       ),
+              //     ),
+              //   ],
+              // ),
               //sign up cta
               SizedBox(height: 45.h),
               RichText(
@@ -288,9 +296,16 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  login() {
+    if (formKey.currentState.validate()) {
+      _LoginUser();
+    }
+  }
+
   _LoginUser() async {
     setState(() {
       _isSubmitting = true;
+      _isLoading = true;
     });
 
     final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(
@@ -316,6 +331,7 @@ class _SignInPageState extends State<SignInPage> {
     } else {
       setState(() {
         _isSubmitting = false;
+        _isLoading = false;
       });
     }
   }

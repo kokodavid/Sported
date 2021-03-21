@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
               highlightColor: Color(0x1a2f4826),
               scaffoldBackgroundColor: Color(0xff18181A),
             ),
-            home: PaymentScreen(),
+            home: Authenticate(),
           ),
         ),
       ),
