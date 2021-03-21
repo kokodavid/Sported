@@ -1,31 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mpesa_flutter_plugin/initializer.dart';
+import 'package:mpesa_flutter_plugin/payment_enums.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/widgets/payment/successfully_booked_dialog.dart';
 
 class PaymentScreen extends StatefulWidget {
+
   final String selectedDate;
   final SportsOffered sportBookingInfo;
   final int selectedSlot;
   final Venue venue;
+  final String checkoutId;
   PaymentScreen({
     @required this.selectedDate,
     @required this.selectedSlot,
     @required this.venue,
     @required this.sportBookingInfo,
+    @required this.checkoutId
   });
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
+class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserver {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  DocumentReference paymentsRef;
+  String mUserMail = "kokodavid78@gmail.com";
+  QuerySnapshot payment;
+
+
   updateBookingHistory() {
     final uid = FirebaseAuth.instance.currentUser.uid;
     Map<String, dynamic> bookingHistory = {
@@ -115,10 +127,34 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  paymentConfirm()async{
+    if(await FirebaseFirestore.instance.collection("lost_found_receipts").doc("deposit_info").collection("all").doc(widget.checkoutId).get().then(
+            (value) => value.exists == true)){
+      _showErrorSnackbar("Money");
+      updateBookingHistory();
+    }else{
+      _showErrorSnackbar("Error No Money");
+
+    }
+
+
+    // print(await FirebaseFirestore.instance.collection("lost_found_receipts").doc("deposit_info").collection("all").doc(widget.checkoutId).get());
+
+
+
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: Color(0xff18181A),
           elevation: 0.0,
@@ -173,312 +209,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
 
                   SizedBox(height: 80.h),
-
                   //invoice number
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Invoice Number #2342343',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20.h),
-
                   // title
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'LIPA NA MPESA',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff707070),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-
-                  //guides
-                  Padding(
-                    padding: EdgeInsets.only(left: 12.w, right: 12.w),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            //indicator
-                            Icon(
-                              MdiIcons.circleOutline,
-                              size: 10.r,
-                              color: Color(0xff9BEB81),
-                            ),
-
-                            SizedBox(width: 10.w),
-
-                            //guide
-                            SizedBox(
-                              width: 330.w,
-                              child: Text(
-                                'Go to Safaricom Menu',
-                                softWrap: true,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  color: Color(0xBF707070),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10.0.h),
-                        Row(
-                          children: [
-                            //indicator
-                            Icon(
-                              MdiIcons.circleOutline,
-                              size: 10.r,
-                              color: Color(0xff9BEB81),
-                            ),
-
-                            SizedBox(width: 10.w),
-
-                            //guide
-                            SizedBox(
-                              width: 330.w,
-                              child: Text(
-                                'Select M-PESA',
-                                softWrap: true,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  color: Color(0xBF707070),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10.0.h),
-                        Row(
-                          children: [
-                            //indicator
-                            Icon(
-                              MdiIcons.circleOutline,
-                              size: 10.r,
-                              color: Color(0xff9BEB81),
-                            ),
-
-                            SizedBox(width: 10.w),
-
-                            //guide
-                            SizedBox(
-                              width: 330.w,
-                              child: Text(
-                                'Select LIPA NA M-PESA',
-                                softWrap: true,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  color: Color(0xBF707070),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10.0.h),
-                        Row(
-                          children: [
-                            //indicator
-                            Icon(
-                              MdiIcons.circleOutline,
-                              size: 10.r,
-                              color: Color(0xff9BEB81),
-                            ),
-
-                            SizedBox(width: 10.w),
-
-                            //guide
-                            SizedBox(
-                              width: 330.w,
-                              child: Text(
-                                'Select Buy Goods and Services',
-                                softWrap: true,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  color: Color(0xBF707070),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10.0.h),
-                        Row(
-                          children: [
-                            //indicator
-                            Icon(
-                              MdiIcons.circleOutline,
-                              size: 10.r,
-                              color: Color(0xff9BEB81),
-                            ),
-
-                            SizedBox(width: 10.w),
-
-                            //guide
-                            SizedBox(
-                              width: 330.w,
-                              child: SizedBox(
-                                width: 330.w,
-                                //TODO: Confirm Till Number
-                                child: RichText(
-                                  softWrap: true,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  text: TextSpan(
-                                    text: 'Enter the TILL N0: ',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: Color(0xBF707070),
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: "972946",
-                                        style: TextStyle(
-                                          fontSize: 15.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xBF707070),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10.0.h),
-                        Row(
-                          children: [
-                            //indicator
-                            Icon(
-                              MdiIcons.circleOutline,
-                              size: 10.r,
-                              color: Color(0xff9BEB81),
-                            ),
-
-                            SizedBox(width: 10.w),
-
-                            //guide
-                            SizedBox(
-                              width: 330.w,
-                              child: SizedBox(
-                                width: 330.w,
-                                //TODO: Confirm Till Number
-                                child: RichText(
-                                  softWrap: true,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  text: TextSpan(
-                                    text: 'Enter the AMOUNT: ',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: Color(0xBF707070),
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: "2600",
-                                        style: TextStyle(
-                                          fontSize: 15.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xBF707070),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10.0.h),
-                        Row(
-                          children: [
-                            //indicator
-                            Icon(
-                              MdiIcons.circleOutline,
-                              size: 10.r,
-                              color: Color(0xff9BEB81),
-                            ),
-
-                            SizedBox(width: 10.w),
-
-                            //guide
-                            SizedBox(
-                              width: 330.w,
-                              child: Text(
-                                'CONFIRM',
-                                softWrap: true,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xBF707070),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 40.h),
-
-                  //title
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      width: 374.w,
-                      child: Text(
-                        'Enter the transaction code you received from M-PESA',
-                        softWrap: true,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20.h),
-
-                  //txt box
-                  Padding(
-                    padding: MediaQuery.of(context).viewInsets,
-
-                    //TODO: Validate transaction code
-                    child: TextFormField(
-                      maxLines: 1,
-                      style: TextStyle(
-                        color: Color(0xff707070),
-                        fontSize: 15.sp,
-                      ),
-                      decoration: formInputDecoration(
-                        isDense: true,
-                        hintText: 'Enter transaction code',
-                        prefixIcon: MdiIcons.numeric,
-                      ),
-                    ),
-                  ),
 
                   SizedBox(height: 35.h),
 
@@ -497,16 +229,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     highlightElevation: 0,
                     focusElevation: 0,
                     child: Text(
-                      'Proceed',
+                      'Pay',
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                         fontSize: 15.sp,
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async{
                       //TODO:STKPush
-                      updateBookingHistory();
+                      await paymentConfirm();
                     },
                   ),
 
@@ -519,4 +251,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
     );
   }
+  _showErrorSnackbar(String message) {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        "$message",
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+  }
+
 }
+
+

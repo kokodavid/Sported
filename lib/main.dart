@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/screenutil_init.dart';
+import 'package:mpesa_flutter_plugin/initializer.dart';
 import 'package:provider/provider.dart';
 import 'package:sported_app/business_logic/cubits/filter_chips_cubit/filter_chips_cubit.dart';
 import 'package:sported_app/data/repositories/booking_history_repository.dart';
@@ -9,11 +10,13 @@ import 'package:sported_app/data/repositories/venue_data_provider.dart';
 import 'package:sported_app/data/repositories/venue_repository.dart';
 import 'package:sported_app/helper/authenticate.dart';
 import 'package:sported_app/locator.dart';
+import 'package:sported_app/presentation/screens/payment_screen.dart';
 import 'package:sported_app/services/authentication_service.dart';
 import 'package:sported_app/simple_bloc_observer.dart';
 
 import 'business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'business_logic/cubits/booking_history_cubit/booking_history_cubit.dart';
+import 'constants/constants.dart';
 import 'data/repositories/booking_history_data_provider.dart';
 import 'data/repositories/venue_repository.dart';
 
@@ -21,6 +24,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Bloc.observer = SimpleBlocObserver();
+  MpesaFlutterPlugin.setConsumerKey(kConsumerKey);
+  MpesaFlutterPlugin.setConsumerSecret(kConsumerSecret);
   setupServices();
   runApp(MyApp());
 }

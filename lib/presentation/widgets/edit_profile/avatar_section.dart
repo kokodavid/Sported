@@ -16,6 +16,7 @@ class AvatarSection extends StatefulWidget {
 
 class _AvatarSectionState extends State<AvatarSection> {
   UserModel _currentUser = locator.get<UserController>().currentUser;
+  File _image;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -30,9 +31,10 @@ class _AvatarSectionState extends State<AvatarSection> {
             height: 117.h,
             width: 155.w,
             color: Colors.transparent,
-            child: Avatar(
-              avatarUrl: _currentUser?.avatarUrl,
-            ),
+            child: _image == null
+            ? Image.network(_currentUser?.avatarUrl) : Image.file(_image)
+
+
           ),
         ),
 
@@ -57,7 +59,15 @@ class _AvatarSectionState extends State<AvatarSection> {
             onPressed: () async {
               // ignore: deprecated_member_use
               File image = await ImagePicker.pickImage(source: ImageSource.gallery);
-              await locator.get<UserController>().uploadProfilePicture(image);
+              setState(() {
+                if (image != null) {
+                  _image = File(image.path);
+                } else {
+                  print('No image selected.');
+                }
+              });
+              await locator.get<UserController>().uploadProfilePicture(_image);
+
               print(image.path.toString());
             },
           ),
