@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
@@ -17,33 +17,33 @@ class VenuesListScreen extends StatefulWidget {
 }
 
 class _VenuesListScreenState extends State<VenuesListScreen> {
-  Map<String, dynamic> data = {
-    "venueName": "Nais Club",
-    "timeOpen": "0600",
-    "timeClosed": "2100",
-    "totalDaysOpen": 7,
-    "description":
-        "The Jaffery Sports Club Ground is a cricket ground situated in Nairobi, Kenya. It hosted its first ODI international during the 2007 World Cricket League in Kenya. The Ground is owned by a sect of the Muslim community in Nairobi. Hence most of the players in the Club team are Islamic.",
-    "rules": ["Rules will be updated"],
-    "sportsOfferedList": ["Football", "Badminton", "Cricket", "Table Tennis", "Volleyball"],
-    "images": [
-      "https://fastly.4sqi.net/img/general/600x600/407721430_DGyytCXxHEvZ8ECmP_-tfAeZakOPEHb4q7pZB9imNdk.jpg",
-      "https://lh3.googleusercontent.com/p/AF1QipPkGabgYnFBS7eaDZSh_dXh0xZ1NphZBIXL-VjF=s1600-w400",
-      "https://fastly.4sqi.net/img/general/600x600/10778693_gxKhtXi4NS0I54e2xJUMVQSlOqoUoB1kh8E8WQh1M30.jpg"
-    ],
-    "sportsOffered": [
-      {"sportName": "Football", "ratesPerHr": 4000},
-      {"sportName": "Badminton", "ratesPerHr": 300},
-      {"sportName": "Cricket", "ratesPerHr": 10000},
-      {"sportName": "Volleyball", "ratesPerHr": 2000},
-      {"sportName": "Table Tennis", "ratesPerHr": 1000}
-    ]
-  };
-
-  addVenue() {
-    final ref = FirebaseFirestore.instance.collection('venues');
-    ref.add(data);
-  }
+  // Map<String, dynamic> data = {
+  //   "venueName": "Nais Club",
+  //   "timeOpen": "0600",
+  //   "timeClosed": "2100",
+  //   "totalDaysOpen": 7,
+  //   "description":
+  //       "The Jaffery Sports Club Ground is a cricket ground situated in Nairobi, Kenya. It hosted its first ODI international during the 2007 World Cricket League in Kenya. The Ground is owned by a sect of the Muslim community in Nairobi. Hence most of the players in the Club team are Islamic.",
+  //   "rules": ["Rules will be updated"],
+  //   "sportsOfferedList": ["Football", "Badminton", "Cricket", "Table Tennis", "Volleyball"],
+  //   "images": [
+  //     "https://fastly.4sqi.net/img/general/600x600/407721430_DGyytCXxHEvZ8ECmP_-tfAeZakOPEHb4q7pZB9imNdk.jpg",
+  //     "https://lh3.googleusercontent.com/p/AF1QipPkGabgYnFBS7eaDZSh_dXh0xZ1NphZBIXL-VjF=s1600-w400",
+  //     "https://fastly.4sqi.net/img/general/600x600/10778693_gxKhtXi4NS0I54e2xJUMVQSlOqoUoB1kh8E8WQh1M30.jpg"
+  //   ],
+  //   "sportsOffered": [
+  //     {"sportName": "Football", "ratesPerHr": 4000},
+  //     {"sportName": "Badminton", "ratesPerHr": 300},
+  //     {"sportName": "Cricket", "ratesPerHr": 10000},
+  //     {"sportName": "Volleyball", "ratesPerHr": 2000},
+  //     {"sportName": "Table Tennis", "ratesPerHr": 1000}
+  //   ]
+  // };
+  //
+  // addVenue() {
+  //   final ref = FirebaseFirestore.instance.collection('venues');
+  //   ref.add(data);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              onPressed: addVenue,
+              onPressed: () {},
               icon: Icon(Icons.search),
             ),
             title: Text(
@@ -134,14 +134,13 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
                     return Container(
                       height: 200.h,
                       child: Center(
-                        // child: SpinKitRipple(
-                        //   color: Color(0xff9BEB81),
-                        // ),
+                        child: SpinKitRipple(
+                          color: Color(0xff9BEB81),
+                        ),
                       ),
                     );
                   },
                 ),
-
                 // FilteredVenues(),
               ],
             ),

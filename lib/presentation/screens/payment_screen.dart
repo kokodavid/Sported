@@ -1,31 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:mpesa_flutter_plugin/initializer.dart';
-import 'package:mpesa_flutter_plugin/payment_enums.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
-import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/widgets/payment/successfully_booked_dialog.dart';
 
 class PaymentScreen extends StatefulWidget {
-
   final String selectedDate;
   final SportsOffered sportBookingInfo;
   final int selectedSlot;
   final Venue venue;
   final String checkoutId;
-  PaymentScreen({
-    @required this.selectedDate,
-    @required this.selectedSlot,
-    @required this.venue,
-    @required this.sportBookingInfo,
-    @required this.checkoutId
-  });
+  PaymentScreen({@required this.selectedDate, @required this.selectedSlot, @required this.venue, @required this.sportBookingInfo, @required this.checkoutId});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -36,7 +25,6 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
   DocumentReference paymentsRef;
   String mUserMail = "kokodavid78@gmail.com";
   QuerySnapshot payment;
-
 
   updateBookingHistory() {
     final uid = FirebaseAuth.instance.currentUser.uid;
@@ -88,7 +76,9 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
     }
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (_) => SuccessfulBookDialog(
+        // dialogContext:context,
         selectedDate: widget.selectedDate,
         selectedSlot: widget.selectedSlot == 0
             ? '0600 hrs'
@@ -125,25 +115,26 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
                                                                         : null,
       ),
     );
+
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (context) => PagesSwitcher(),
+    //   ),
+    // );
+
+    print({"date | ${widget.selectedDate}"});
   }
 
-  paymentConfirm()async{
-    if(await FirebaseFirestore.instance.collection("lost_found_receipts").doc("deposit_info").collection("all").doc(widget.checkoutId).get().then(
-            (value) => value.exists == true)){
-      _showErrorSnackbar("Money");
-      updateBookingHistory();
-    }else{
-      _showErrorSnackbar("Error No Money");
-
+  paymentConfirm() async {
+    if (await FirebaseFirestore.instance.collection("lost_found_receipts").doc("deposit_info").collection("all").doc(widget.checkoutId).get().then((value) => value.exists == true)) {
+      // _showErrorSnackbar("Money");
+      return updateBookingHistory();
+    } else {
+      _showErrorSnackbar("Payment not successful");
     }
 
-
     // print(await FirebaseFirestore.instance.collection("lost_found_receipts").doc("deposit_info").collection("all").doc(widget.checkoutId).get());
-
-
-
   }
-
 
   @override
   void initState() {
@@ -209,15 +200,285 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
                   ),
 
                   SizedBox(height: 80.h),
-                  //invoice number
-                  // title
+                  // guides
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'CONFIRM YOUR BOOKING',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff707070),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 20.h),
+
+                  //guides
+
+                  Padding(
+                    padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            //indicator
+                            Icon(
+                              MdiIcons.circleOutline,
+                              size: 10.r,
+                              color: Color(0xff9BEB81),
+                            ),
+
+                            SizedBox(width: 10.w),
+
+                            //guide
+                            SizedBox(
+                              width: 330.w,
+                              child: Text(
+                                'Wait for MPESA prompt to enter your PIN',
+                                softWrap: true,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  color: Color(0xBF707070),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0.h),
+                        Row(
+                          children: [
+                            //indicator
+                            Icon(
+                              MdiIcons.circleOutline,
+                              size: 10.r,
+                              color: Color(0xff9BEB81),
+                            ),
+
+                            SizedBox(width: 10.w),
+
+                            //guide
+                            SizedBox(
+                              width: 330.w,
+                              child: Text(
+                                'Enter your PIN to pay for the slot',
+                                softWrap: true,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  color: Color(0xBF707070),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0.h),
+                        Row(
+                          children: [
+                            //indicator
+                            Icon(
+                              MdiIcons.circleOutline,
+                              size: 10.r,
+                              color: Color(0xff9BEB81),
+                            ),
+
+                            SizedBox(width: 10.w),
+
+                            //guide
+                            SizedBox(
+                              width: 330.w,
+                              child: Text(
+                                'Wait for M-PESA Confirmation Message',
+                                softWrap: true,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  color: Color(0xBF707070),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0.h),
+                        Row(
+                          children: [
+                            //indicator
+                            Icon(
+                              MdiIcons.circleOutline,
+                              size: 10.r,
+                              color: Color(0xff9BEB81),
+                            ),
+
+                            SizedBox(width: 10.w),
+
+                            //guide
+                            SizedBox(
+                              width: 330.w,
+                              child: SizedBox(
+                                width: 330.w,
+                                child: RichText(
+                                  softWrap: true,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  text: TextSpan(
+                                    text: 'Press ',
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: Color(0xBF707070),
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: "CONFIRM BOOKING ",
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xBF707070),
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: 'to book your slot.',
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: Color(0xBF707070),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0.h),
+                        Row(
+                          children: [
+                            //indicator
+                            Icon(
+                              MdiIcons.circleOutline,
+                              size: 10.r,
+                              color: Color(0xff9BEB81),
+                            ),
+
+                            SizedBox(width: 10.w),
+
+                            //guide
+                            SizedBox(
+                              width: 330.w,
+                              child: SizedBox(
+                                width: 330.w,
+                                child: RichText(
+                                  softWrap: false,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  text: TextSpan(
+                                    text: 'NOTE:',
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: Color(0xBF707070),
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: " Failure to press Confirm Booking will NOT book you a spot",
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xBF707070),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0.h),
+                        Row(
+                          children: [
+                            //indicator
+                            Icon(
+                              MdiIcons.circleOutline,
+                              size: 10.r,
+                              color: Color(0xff9BEB81),
+                            ),
+
+                            SizedBox(width: 10.w),
+
+                            //guide
+                            SizedBox(
+                              width: 330.w,
+                              child: Text(
+                                'View your booking details & history',
+                                softWrap: true,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  color: Color(0xBF707070),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0.h),
+                        Row(
+                          children: [
+                            //indicator
+                            Icon(
+                              MdiIcons.circleOutline,
+                              size: 10.r,
+                              color: Color(0xff9BEB81),
+                            ),
+
+                            SizedBox(width: 10.w),
+
+                            //guide
+                            SizedBox(
+                              width: 330.w,
+                              child: SizedBox(
+                                width: 330.w,
+                                child: RichText(
+                                  softWrap: false,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  text: TextSpan(
+                                    text: 'BEWARE:',
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: Color(0xBF707070),
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: " MPESA delays; B",
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xBF707070),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
 
                   SizedBox(height: 35.h),
 
                   //proceed btn
                   MaterialButton(
                     height: 40.h,
-                    minWidth: 88.w,
+                    minWidth: 140.w,
                     color: Color(0xff8FD974),
                     padding: EdgeInsets.all(0),
                     shape: RoundedRectangleBorder(
@@ -229,14 +490,14 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
                     highlightElevation: 0,
                     focusElevation: 0,
                     child: Text(
-                      'Pay',
+                      'Confirm Booking',
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                         fontSize: 15.sp,
                       ),
                     ),
-                    onPressed: () async{
+                    onPressed: () async {
                       //TODO:STKPush
                       await paymentConfirm();
                     },
@@ -251,6 +512,7 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
       ),
     );
   }
+
   _showErrorSnackbar(String message) {
     final snackbar = SnackBar(
       backgroundColor: Colors.black,
@@ -264,7 +526,4 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
     // ignore: deprecated_member_use
     _scaffoldKey.currentState.showSnackBar(snackbar);
   }
-
 }
-
-

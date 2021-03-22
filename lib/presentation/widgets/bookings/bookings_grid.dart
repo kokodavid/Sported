@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:sported_app/data/models/booking/booking_history_model.dart';
 
@@ -23,6 +24,9 @@ class BookingsGrid extends StatelessWidget {
         physics: BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           final sportName = userBookingHistory[index].sportName;
+          final dateBooked = userBookingHistory[index].dateBooked;
+          final formattedDate = DateFormat.MEd().format(DateTime.parse(dateBooked));
+
           return Container(
             width: 176.w,
             height: 216.h,
@@ -100,7 +104,7 @@ class BookingsGrid extends StatelessWidget {
                     Container(
                       width: 120.w,
                       child: Text(
-                        userBookingHistory[index].dateBooked,
+                        formattedDate,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Color(0xff707070),

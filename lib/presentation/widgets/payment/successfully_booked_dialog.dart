@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
+import 'package:sported_app/presentation/shared/pages_switcher.dart';
 
 class SuccessfulBookDialog extends StatelessWidget {
   final String selectedDate;
@@ -14,6 +17,7 @@ class SuccessfulBookDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formattedDate = DateFormat.MMMMEEEEd().format(DateTime.parse(selectedDate));
+    print(formattedDate);
     return Dialog(
       backgroundColor: Color(0xff18181A),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
@@ -118,8 +122,14 @@ class SuccessfulBookDialog extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                //TODO: Pop with data
-                Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider<NavBloc>(
+                      create: (context) => NavBloc()..add(LoadPageTwo()),
+                      child: PagesSwitcher(),
+                    ),
+                  ),
+                );
               },
             ),
 

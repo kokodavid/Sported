@@ -7,8 +7,8 @@ import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/ourUser.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
+import 'package:sported_app/presentation/shared/pages_switcher.dart';
 import 'package:sported_app/presentation/widgets/edit_profile/avatar_section.dart';
-import 'package:sported_app/shared/pages_switcher.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
 import '../../locator.dart';
@@ -143,14 +143,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               // labelText: _email,
                               isDense: true,
                               hintText: _email ?? empty,
-                              prefixIcon: Icons.email_outlined ,
+                              prefixIcon: Icons.email_outlined,
                             ),
                             validator: (val) {
-                              return RegExp(
-                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(val)
-                                  ? null
-                                  : "Enter a valid Email";
+                              return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val) ? null : "Enter a valid Email";
                             },
                           ),
                           SizedBox(height: 20.0.h),
@@ -741,8 +737,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               //etc
                               RichText(
                                 text: TextSpan(
-                                  text:
-                                      'Do you hold any certifications or credentials to be able to coach?',
+                                  text: 'Do you hold any certifications or credentials to be able to coach?',
                                   style: TextStyle(
                                     fontSize: 11.sp,
                                     color: Color(0xff8FD974),
@@ -1001,15 +996,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   createUserProfile() async {
     try {
-      await locator.get<UserController>().uploadProfile(
-          age: age,
-          clubC: club3,
-          clubB: club2,
-          clubA: club1,
-          coach: coach,
-          buddy: buddy,
-          gender: gender,
-          pasteUrl: pasteUrl.text);
+      await locator.get<UserController>().uploadProfile(age: age, clubC: club3, clubB: club2, clubA: club1, coach: coach, buddy: buddy, gender: gender, pasteUrl: pasteUrl.text);
       print("Age:" + age);
       print("Url:" + pasteUrl.text);
     } catch (e) {

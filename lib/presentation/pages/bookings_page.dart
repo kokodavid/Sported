@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'package:sported_app/business_logic/cubits/booking_history_cubit/booking_history_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
@@ -81,8 +82,7 @@ class BookingsHistoryPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Color(0xff8FD974),
                               ),
-                              child: ImageIcon(AssetImage('assets/icons/football_icon.png'),
-                                  size: 24.r, color: Color(0xff28282B)),
+                              child: ImageIcon(AssetImage('assets/icons/football_icon.png'), size: 24.r, color: Color(0xff28282B)),
                             ),
                           ),
                         ),
@@ -123,8 +123,7 @@ class BookingsHistoryPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Color(0xff8FD974),
                               ),
-                              child: ImageIcon(AssetImage('assets/icons/cricket_icon.png'),
-                                  size: 24.r, color: Color(0xff28282B)),
+                              child: ImageIcon(AssetImage('assets/icons/cricket_icon.png'), size: 24.r, color: Color(0xff28282B)),
                             ),
                           ),
                         ),
@@ -165,8 +164,7 @@ class BookingsHistoryPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Color(0xff8FD974),
                               ),
-                              child: ImageIcon(AssetImage('assets/icons/badminton_icon.png'),
-                                  size: 24.r, color: Color(0xff28282B)),
+                              child: ImageIcon(AssetImage('assets/icons/badminton_icon.png'), size: 24.r, color: Color(0xff28282B)),
                             ),
                           ),
                         ),
@@ -207,8 +205,7 @@ class BookingsHistoryPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Color(0xff8FD974),
                               ),
-                              child: ImageIcon(AssetImage('assets/icons/basketball_icon.png'),
-                                  size: 24.r, color: Color(0xff28282B)),
+                              child: ImageIcon(AssetImage('assets/icons/basketball_icon.png'), size: 24.r, color: Color(0xff28282B)),
                             ),
                           ),
                         ),
@@ -294,8 +291,7 @@ class BookingsHistoryPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Color(0xff8FD974),
                               ),
-                              child: ImageIcon(AssetImage('assets/icons/swimming_icon.png'),
-                                  size: 24.r, color: Color(0xff28282B)),
+                              child: ImageIcon(AssetImage('assets/icons/swimming_icon.png'), size: 24.r, color: Color(0xff28282B)),
                             ),
                           ),
                         ),
@@ -336,8 +332,7 @@ class BookingsHistoryPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Color(0xff8FD974),
                               ),
-                              child: ImageIcon(AssetImage('assets/icons/volleyball_icon.png'),
-                                  size: 24.r, color: Color(0xff28282B)),
+                              child: ImageIcon(AssetImage('assets/icons/volleyball_icon.png'), size: 24.r, color: Color(0xff28282B)),
                             ),
                           ),
                         ),
@@ -378,8 +373,7 @@ class BookingsHistoryPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Color(0xff8FD974),
                               ),
-                              child: ImageIcon(AssetImage('assets/icons/rugby_icon.png'),
-                                  size: 24.r, color: Color(0xff28282B)),
+                              child: ImageIcon(AssetImage('assets/icons/rugby_icon.png'), size: 24.r, color: Color(0xff28282B)),
                             ),
                           ),
                         ),
@@ -420,8 +414,7 @@ class BookingsHistoryPage extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: Color(0xff8FD974),
                               ),
-                              child: ImageIcon(AssetImage('assets/icons/table_tennis_icon.png'),
-                                  size: 24.r, color: Color(0xff28282B)),
+                              child: ImageIcon(AssetImage('assets/icons/table_tennis_icon.png'), size: 24.r, color: Color(0xff28282B)),
                             ),
                           ),
                         ),
@@ -483,63 +476,43 @@ class BookingsHistoryPage extends StatelessWidget {
                     return BlocBuilder<FilterBloc, FilterState>(
                       builder: (context, sportState) {
                         if (sportState is FootballLoaded) {
-                          final footballHistory = state.userBookingHistory
-                              .where((element) => element.sportName == 'Football')
-                              .toList();
+                          final footballHistory = state.userBookingHistory.where((element) => element.sportName == 'Football').toList();
                           return BookingsGrid(userBookingHistory: footballHistory);
                         }
                         if (sportState is CricketLoaded) {
-                          final cricketHistory = state.userBookingHistory
-                              .where((element) => element.sportName == 'Cricket')
-                              .toList();
+                          final cricketHistory = state.userBookingHistory.where((element) => element.sportName == 'Cricket').toList();
                           return BookingsGrid(userBookingHistory: cricketHistory);
                         }
                         if (sportState is BadmintonLoaded) {
-                          final badmintonHistory = state.userBookingHistory
-                              .where((element) => element.sportName == 'Badminton')
-                              .toList();
+                          final badmintonHistory = state.userBookingHistory.where((element) => element.sportName == 'Badminton').toList();
                           return BookingsGrid(userBookingHistory: badmintonHistory);
                         }
                         if (sportState is BasketballLoaded) {
-                          final basketballHistory = state.userBookingHistory
-                              .where((element) => element.sportName == 'Basketball')
-                              .toList();
+                          final basketballHistory = state.userBookingHistory.where((element) => element.sportName == 'Basketball').toList();
                           return BookingsGrid(userBookingHistory: basketballHistory);
                         }
                         if (sportState is TennisLoaded) {
-                          final tennisLoaded = state.userBookingHistory
-                              .where((element) => element.sportName == 'Tennis')
-                              .toList();
+                          final tennisLoaded = state.userBookingHistory.where((element) => element.sportName == 'Tennis').toList();
                           return BookingsGrid(userBookingHistory: tennisLoaded);
                         }
                         if (sportState is SwimmingLoaded) {
-                          final swimmingHistory = state.userBookingHistory
-                              .where((element) => element.sportName == 'Swimming')
-                              .toList();
+                          final swimmingHistory = state.userBookingHistory.where((element) => element.sportName == 'Swimming').toList();
                           return BookingsGrid(userBookingHistory: swimmingHistory);
                         }
                         if (sportState is VolleyballLoaded) {
-                          final volleyballLoaded = state.userBookingHistory
-                              .where((element) => element.sportName == 'Volleyball')
-                              .toList();
+                          final volleyballLoaded = state.userBookingHistory.where((element) => element.sportName == 'Volleyball').toList();
                           return BookingsGrid(userBookingHistory: volleyballLoaded);
                         }
                         if (sportState is RugbyLoaded) {
-                          final rugbyHistory = state.userBookingHistory
-                              .where((element) => element.sportName == 'Rugby')
-                              .toList();
+                          final rugbyHistory = state.userBookingHistory.where((element) => element.sportName == 'Rugby').toList();
                           return BookingsGrid(userBookingHistory: rugbyHistory);
                         }
                         if (sportState is TableTennisLoaded) {
-                          final tableTennisHistory = state.userBookingHistory
-                              .where((element) => element.sportName == 'Table Tennis')
-                              .toList();
+                          final tableTennisHistory = state.userBookingHistory.where((element) => element.sportName == 'Table Tennis').toList();
                           return BookingsGrid(userBookingHistory: tableTennisHistory);
                         }
                         if (sportState is HandballLoaded) {
-                          final handballHistory = state.userBookingHistory
-                              .where((element) => element.sportName == 'Handball')
-                              .toList();
+                          final handballHistory = state.userBookingHistory.where((element) => element.sportName == 'Handball').toList();
                           return BookingsGrid(userBookingHistory: handballHistory);
                         } else
                           return Container();
@@ -549,9 +522,9 @@ class BookingsHistoryPage extends StatelessWidget {
                     return Container(
                       height: 200.h,
                       child: Center(
-                        // child: SpinKitRipple(
-                        //   color: Color(0xff9BEB81),
-                        // ),
+                        child: SpinKitRipple(
+                          color: Color(0xff9BEB81),
+                        ),
                       ),
                     );
                   } else if (state is BookingHistoryLoadFailure) {

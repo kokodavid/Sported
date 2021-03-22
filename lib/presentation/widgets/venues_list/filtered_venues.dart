@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
 import 'package:sported_app/presentation/screens/book_screen.dart';
@@ -64,6 +65,13 @@ class FilteredVenues extends StatelessWidget {
                               ),
                               child: Image.network(
                                 venue.images[0],
+                                loadingBuilder: (_, __, ___) {
+                                  if (___ == null) return __;
+                                  return SpinKitRipple(
+                                    color: Color(0xff8FD974),
+                                    size: 20.r,
+                                  );
+                                },
                                 fit: BoxFit.fitHeight,
                               ),
                             ),

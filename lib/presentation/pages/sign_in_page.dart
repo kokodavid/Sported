@@ -4,14 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
-import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/services/auth.dart';
 import 'package:sported_app/locator.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
-import 'package:sported_app/shared/pages_switcher.dart';
+import 'package:sported_app/presentation/shared/pages_switcher.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
-
-import 'home_page.dart';
 
 class SignInPage extends StatefulWidget {
   final Function toggle;
@@ -30,15 +27,21 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController emailTextEditingController = new TextEditingController();
   bool _isLoading = false;
 
-
   @override
   Widget build(BuildContext context) {
-    Widget loadingIndicator =_isLoading? new Container(
-      color: Color(0xff18181A),
-      width: 70.0,
-      height: 70.0,
-      child: new Padding(padding: const EdgeInsets.all(5.0),child: new Center(child: new LinearProgressIndicator(backgroundColor: Color(0xff8FD974),))),
-    ):new Container();
+    Widget loadingIndicator = _isLoading
+        ? new Container(
+            color: Color(0xff18181A),
+            width: 70.0,
+            height: 70.0,
+            child: new Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: new Center(
+                    child: new LinearProgressIndicator(
+                  backgroundColor: Color(0xff8FD974),
+                ))),
+          )
+        : new Container();
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -120,11 +123,7 @@ class _SignInPageState extends State<SignInPage> {
                         prefixIcon: Icons.mail_outlined,
                       ),
                       validator: (val) {
-                        return RegExp(
-                                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                .hasMatch(val)
-                            ? null
-                            : "Enter a valid Email";
+                        return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val) ? null : "Enter a valid Email";
                       },
                     ),
 
@@ -148,9 +147,7 @@ class _SignInPageState extends State<SignInPage> {
                     TextFormField(
                       obscureText: true,
                       validator: (val) {
-                        return val.length > 6
-                            ? null
-                            : "Please provide a Password with 6+ characters";
+                        return val.length > 6 ? null : "Please provide a Password with 6+ characters";
                       },
                       controller: passWordTextEditingController,
                       style: TextStyle(
@@ -181,7 +178,10 @@ class _SignInPageState extends State<SignInPage> {
               // ),
 
               SizedBox(height: 24.h),
-              new Align(child: loadingIndicator,alignment: FractionalOffset.topCenter,),
+              new Align(
+                child: loadingIndicator,
+                alignment: FractionalOffset.topCenter,
+              ),
 
               //sign in btn
               MaterialButton(
@@ -308,12 +308,9 @@ class _SignInPageState extends State<SignInPage> {
       _isLoading = true;
     });
 
-    final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(
-        email: emailTextEditingController.text, password: passWordTextEditingController.text);
+    final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(email: emailTextEditingController.text, password: passWordTextEditingController.text);
 
-    logMessage == "Logged In Successfully"
-        ? _showSuccessSnack(logMessage)
-        : _showErrorSnack(logMessage);
+    logMessage == "Logged In Successfully" ? _showSuccessSnack(logMessage) : _showErrorSnack(logMessage);
 
     //print("I am logMessage $logMessage");
 

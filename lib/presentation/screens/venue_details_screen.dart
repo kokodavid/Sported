@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_page_indicator/flutter_page_indicator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -69,6 +70,13 @@ class VenueDetailsScreen extends StatelessWidget {
                         image,
                         fit: BoxFit.fitWidth,
                         filterQuality: FilterQuality.medium,
+                        loadingBuilder: (_, __, ___) {
+                          if (___ == null) return __;
+                          return SpinKitRipple(
+                            color: Color(0xff8FD974),
+                            size: 48.r,
+                          );
+                        },
                       ),
                     );
                   },
@@ -135,143 +143,6 @@ class VenueDetailsScreen extends StatelessWidget {
                           ),
 
                           SizedBox(height: 20.h),
-
-                          // facilities & price
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-                          //     //football
-                          //     Column(
-                          //       mainAxisAlignment: MainAxisAlignment.start,
-                          //       crossAxisAlignment: CrossAxisAlignment.center,
-                          //       children: [
-                          //         ImageIcon(
-                          //           AssetImage('assets/icons/football_icon.png'),
-                          //           color: Color(0xff838384),
-                          //           size: 25.r,
-                          //         ),
-                          //         SizedBox(height: 2.0.h),
-                          //         Text(
-                          //           'Football',
-                          //           style: labelStyle.copyWith(fontSize: 9.sp),
-                          //         ),
-                          //         SizedBox(height: 10.h),
-                          //         Text(
-                          //           '4000 KES/hr',
-                          //           style: TextStyle(
-                          //             fontSize: 10.sp,
-                          //             color: Color(0xff9BEB81),
-                          //             fontWeight: FontWeight.bold,
-                          //           ),
-                          //         )
-                          //       ],
-                          //     ),
-                          //     //cricket
-                          //     Column(
-                          //       mainAxisAlignment: MainAxisAlignment.start,
-                          //       crossAxisAlignment: CrossAxisAlignment.center,
-                          //       children: [
-                          //         ImageIcon(
-                          //           AssetImage('assets/icons/cricket_icon.png'),
-                          //           color: Color(0xff838384),
-                          //           size: 25.r,
-                          //         ),
-                          //         SizedBox(height: 2.0.h),
-                          //         Text(
-                          //           'Cricket',
-                          //           style: labelStyle.copyWith(fontSize: 9.sp),
-                          //         ),
-                          //         SizedBox(height: 10.h),
-                          //         Text(
-                          //           '1000 KES/hr',
-                          //           style: TextStyle(
-                          //             fontSize: 10.sp,
-                          //             color: Color(0xff9BEB81),
-                          //             fontWeight: FontWeight.bold,
-                          //           ),
-                          //         )
-                          //       ],
-                          //     ),
-                          //     //badminton
-                          //     Column(
-                          //       mainAxisAlignment: MainAxisAlignment.start,
-                          //       crossAxisAlignment: CrossAxisAlignment.center,
-                          //       children: [
-                          //         ImageIcon(
-                          //           AssetImage('assets/icons/badminton_icon.png'),
-                          //           color: Color(0xff838384),
-                          //           size: 25.r,
-                          //         ),
-                          //         SizedBox(height: 2.0.h),
-                          //         Text(
-                          //           'Badminton',
-                          //           style: labelStyle.copyWith(fontSize: 9.sp),
-                          //         ),
-                          //         SizedBox(height: 10.h),
-                          //         Text(
-                          //           '1000 KES/hr',
-                          //           style: TextStyle(
-                          //             fontSize: 10.sp,
-                          //             color: Color(0xff9BEB81),
-                          //             fontWeight: FontWeight.bold,
-                          //           ),
-                          //         )
-                          //       ],
-                          //     ),
-                          //     //volleyball
-                          //     Column(
-                          //       mainAxisAlignment: MainAxisAlignment.start,
-                          //       crossAxisAlignment: CrossAxisAlignment.center,
-                          //       children: [
-                          //         ImageIcon(
-                          //           AssetImage('assets/icons/volleyball_icon.png'),
-                          //           color: Color(0xff838384),
-                          //           size: 25.r,
-                          //         ),
-                          //         SizedBox(height: 2.0.h),
-                          //         Text(
-                          //           'Volleyball',
-                          //           style: labelStyle.copyWith(fontSize: 9.sp),
-                          //         ),
-                          //         SizedBox(height: 10.h),
-                          //         Text(
-                          //           '1000 KES/hr',
-                          //           style: TextStyle(
-                          //             fontSize: 10.sp,
-                          //             color: Color(0xff9BEB81),
-                          //             fontWeight: FontWeight.bold,
-                          //           ),
-                          //         )
-                          //       ],
-                          //     ),
-                          //     //tt
-                          //     Column(
-                          //       mainAxisAlignment: MainAxisAlignment.start,
-                          //       crossAxisAlignment: CrossAxisAlignment.center,
-                          //       children: [
-                          //         ImageIcon(
-                          //           AssetImage('assets/icons/table_tennis_icon.png'),
-                          //           color: Color(0xff838384),
-                          //           size: 25.r,
-                          //         ),
-                          //         SizedBox(height: 2.0.h),
-                          //         Text(
-                          //           'Table Tennis',
-                          //           style: labelStyle.copyWith(fontSize: 9.sp),
-                          //         ),
-                          //         SizedBox(height: 10.h),
-                          //         Text(
-                          //           '4000 KES/hr',
-                          //           style: TextStyle(
-                          //             fontSize: 10.sp,
-                          //             color: Color(0xff9BEB81),
-                          //             fontWeight: FontWeight.bold,
-                          //           ),
-                          //         )
-                          //       ],
-                          //     ),
-                          //   ],
-                          // ),
 
                           Container(
                             height: 80.h,
@@ -384,9 +255,7 @@ class VenueDetailsScreen extends StatelessWidget {
                                   color: Color(0xffA5A5A8),
                                   size: 15.r,
                                 ),
-
-                                SizedBox(width:10.w),
-                                
+                                SizedBox(width: 10.w),
                                 ImageIcon(
                                   AssetImage('assets/icons/wifi_icon.png'),
                                   color: Color(0xffA5A5A8),
@@ -427,7 +296,7 @@ class VenueDetailsScreen extends StatelessWidget {
 
                           //rules
                           Container(
-                            height: 300.h,
+                            height: 100.h,
                             child: ListView.builder(
                               itemCount: venue.rules.length,
                               itemBuilder: (context, index) {

@@ -8,7 +8,7 @@ import 'package:sported_app/presentation/pages/bookings_page.dart';
 import 'package:sported_app/presentation/pages/buddies_page.dart';
 import 'package:sported_app/presentation/pages/events_page.dart';
 import 'package:sported_app/presentation/pages/home_page.dart';
-import 'package:sported_app/presentation/pages/profile_page.dart';
+import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/screens/venues_list_screen.dart';
 
 class PagesSwitcher extends StatelessWidget {
@@ -24,7 +24,7 @@ class PagesSwitcher extends StatelessWidget {
             },
             child: Scaffold(
               body: state is LoadedPageOne
-                  ? ProfilePage()
+                  ? EditProfileScreen()
                   : state is LoadedPageTwo
                       ? BookingsHistoryPage()
                       : state is LoadedPageThree

@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mpesa_flutter_plugin/initializer.dart';
 import 'package:mpesa_flutter_plugin/payment_enums.dart';
 import 'package:sported_app/constants/constants.dart';
@@ -12,7 +11,6 @@ import 'package:sported_app/data/models/booking/booking_history_model.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
 import 'package:sported_app/data/repositories/booking_history_data_provider.dart';
 import 'package:sported_app/presentation/screens/payment_screen.dart';
-import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class BookScreen extends StatefulWidget {
@@ -36,7 +34,8 @@ class _BookScreenState extends State<BookScreen> {
   String selectedDate;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  int selectedSlot = 0;
+  int selectedSlot = null;
+  bool isBooked = false;
   bool isCheckingAvailability = false;
   String convertedSlot;
   DocumentReference paymentsRef;
@@ -53,8 +52,7 @@ class _BookScreenState extends State<BookScreen> {
         _initialized = true;
       });
 
-      paymentsRef =
-          FirebaseFirestore.instance.collection('payments').doc(mUserMail);
+      paymentsRef = FirebaseFirestore.instance.collection('payments').doc(mUserMail);
     } catch (e) {
       print(e.toString());
       // Set `_error` state to true if Firebase initialization fails
@@ -71,31 +69,21 @@ class _BookScreenState extends State<BookScreen> {
 
     paymentsRef.set({"info": "$mUserMail receipts data goes here."});
 
-    return paymentsRef
-        .collection("deposit")
-        .doc(mCheckoutRequestID)
-        .set(initData)
-        .then((value) => print("Transaction Initialized."))
-        .catchError((error) => print("Failed to init transaction: $error"));
+    return paymentsRef.collection("deposit").doc(mCheckoutRequestID).set(initData).then((value) => print("Transaction Initialized.")).catchError((error) => print("Failed to init transaction: $error"));
   }
 
-  Future<dynamic> startTransaction({double amount, String phone})async{
+  Future<dynamic> startTransaction({double amount, String phone}) async {
     dynamic transactionInitialisation;
     //Wrap it with a try-catch
     try {
       //Run it
-      transactionInitialisation =
-      await MpesaFlutterPlugin.initializeMpesaSTKPush(
+      transactionInitialisation = await MpesaFlutterPlugin.initializeMpesaSTKPush(
           businessShortCode: "174379",
           transactionType: TransactionType.CustomerPayBillOnline,
           amount: amount,
           partyA: phone,
           partyB: "174379",
-          callBackURL: Uri(
-              scheme: "https",
-              host : "us-central1-sportedapp-6f6d2.cloudfunctions.net",
-              path: "paymentCallback"
-          ),
+          callBackURL: Uri(scheme: "https", host: "us-central1-sportedapp-6f6d2.cloudfunctions.net", path: "paymentCallback"),
           accountReference: "payment",
           phoneNumber: phone,
           baseUri: Uri(scheme: "https", host: "sandbox.safaricom.co.ke"),
@@ -115,7 +103,6 @@ class _BookScreenState extends State<BookScreen> {
         }
       }
       print("RESULT: " + transactionInitialisation.toString());
-
     } catch (e) {
       //you can implement your exception handling here.
       //Network unreachability is a sure exception.
@@ -364,32 +351,25 @@ class _BookScreenState extends State<BookScreen> {
                     ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'LIPA NA MPESA',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff707070),
-                    ),
-                  ),
-                ),
+
+                //lipa na mpesa
                 SizedBox(height: 20.h),
-                //guides
-                //title
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    width: 374.w,
-                    child: Text(
-                      'Enter  M-PESA Number',
-                      softWrap: true,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        color: Colors.white,
+
+                Padding(
+                  padding: EdgeInsets.only(left: 32.w, right: 32.w),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      width: 374.w,
+                      child: Text(
+                        'Enter  M-PESA Number',
+                        softWrap: true,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -397,24 +377,77 @@ class _BookScreenState extends State<BookScreen> {
                 SizedBox(height: 20.h),
                 //txt box
                 Padding(
-                  padding: MediaQuery.of(context).viewInsets,
-
-                  //TODO: Validate transaction code
-                  child: TextFormField(
-                    controller: phoneNumber,
-                    maxLines: 1,
-                    style: TextStyle(
-                      color: Color(0xff707070),
-                      fontSize: 15.sp,
-                    ),
-                    decoration: formInputDecoration(
-                      isDense: true,
-                      hintText: 'Enter Phone Number',
-                      prefixIcon: MdiIcons.numeric,
+                  padding: EdgeInsets.only(left: 32.w, right: 32.w),
+                  child: Container(
+                    child: Padding(
+                      padding: MediaQuery.of(context).viewInsets,
+                      //TODO: Validate transaction code
+                      child: TextFormField(
+                        maxLines: 1,
+                        keyboardType: TextInputType.number,
+                        enabled: isBooked ? false : true,
+                        controller: phoneNumber,
+                        style: TextStyle(
+                          color: Color(0xff707070),
+                          fontSize: 15.sp,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: '7XXXXXXXX',
+                          alignLabelWithHint: true,
+                          isDense: true,
+                          enabled: true,
+                          fillColor: Color(0xff31323B),
+                          filled: true,
+                          hintStyle: labelStyle,
+                          labelStyle: labelStyle,
+                          prefixIcon: Container(
+                            width: 24.w,
+                            decoration: BoxDecoration(
+                              color: Color(0xff31323B),
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(8.r),
+                                topLeft: Radius.circular(8.r),
+                              ),
+                            ),
+                            margin: EdgeInsets.only(bottom: 2.h),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '+254',
+                              style: labelStyle.copyWith(
+                                color: Color(0xff9BEB81),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              style: BorderStyle.none,
+                            ),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              style: BorderStyle.none,
+                            ),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              style: BorderStyle.none,
+                            ),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              style: BorderStyle.none,
+                            ),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-
 
                 SizedBox(height: 64.h),
 
@@ -442,25 +475,37 @@ class _BookScreenState extends State<BookScreen> {
                           ),
                         )
                       : Container(
-                          // width: 25.w,
-                          // child: SpinKitRipple(
-                          //   color: Colors.black,
-                          // ),
+                          width: 24.h,
+                          height: 24.h,
+                          child: CircularProgressIndicator(
+                            backgroundColor: Colors.black,
+                          ),
                         ),
                   onPressed: () async {
-                    await startTransaction(amount:1,phone: "254"+phoneNumber.text);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) {
-                        return PaymentScreen(
-                          selectedDate: selectedDate,
-                          venue: widget.venue,
-                          selectedSlot: selectedSlot,
-                          sportBookingInfo: widget.sportBookingInfo,
-                          checkoutId: checkoutId,
-                        );
-                      }),
-                    );
+                    setState(() {
+                      isCheckingAvailability = true;
+                    });
+                    await startTransaction(amount: 1, phone: "254" + phoneNumber.text);
 
+                    if (selectedDate.isNotEmpty && selectedSlot != null && phoneNumber.text.length == 9 && phoneNumber.text.startsWith('7')) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (BuildContext context) {
+                          return PaymentScreen(
+                            selectedDate: selectedDate,
+                            venue: widget.venue,
+                            selectedSlot: selectedSlot,
+                            sportBookingInfo: widget.sportBookingInfo,
+                            checkoutId: checkoutId,
+                          );
+                        }),
+                      );
+
+                      setState(() {
+                        isCheckingAvailability = false;
+                      });
+                    } else {
+                      _showErrorSnackbar('Error booking slot. Please input all the fields correctly');
+                    }
                   },
                 ),
 
@@ -528,9 +573,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotOneBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
+        setState(() {
+          isBooked = true;
+        });
         //show snackbar
         _showErrorSnackbar('Slot is booked');
       }
@@ -540,9 +591,14 @@ class _BookScreenState extends State<BookScreen> {
       if (slotTwoBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
+        setState(() {
+          isBooked = true;
+        });
         //show snackbar
         _showErrorSnackbar('Slot is booked');
       }
@@ -552,10 +608,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotThreeBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -564,10 +625,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotFourBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -576,10 +642,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotFiveBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -588,10 +659,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotSixBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -600,10 +676,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotSevenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -612,10 +693,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotEightBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -624,10 +710,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotNineBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -636,10 +727,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotTenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -648,10 +744,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotElevenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -660,10 +761,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotTwelveBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -672,10 +778,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotThirteenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -684,10 +795,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotFourteenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -696,10 +812,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotFifteenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
@@ -708,10 +829,15 @@ class _BookScreenState extends State<BookScreen> {
       if (slotSixteenBooked.isEmpty) {
         print("isEmpty | bookable");
         //navigate
-        
+        setState(() {
+          isBooked = false;
+        });
       } else {
         print("isNotEmpty | not bookable");
         //show snackbar
+        setState(() {
+          isBooked = true;
+        });
         _showErrorSnackbar('Slot is booked');
       }
     }
