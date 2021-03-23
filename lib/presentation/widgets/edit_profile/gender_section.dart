@@ -4,11 +4,12 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:sported_app/constants/constants.dart';
 
 class GenderSection extends StatelessWidget {
+  String age;
   @override
   Widget build(BuildContext context) {
-    final genderFormKey = GlobalKey<FormState>();
+    final ageFormKey = GlobalKey<FormState>();
     return Padding(
-      padding: EdgeInsets.only(right: 20.w),
+      padding: EdgeInsets.symmetric(horizontal: 20.0.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,76 +26,50 @@ class GenderSection extends StatelessWidget {
           //age range dropdown
           SizedBox(height: 10.0.h),
           Form(
-            key: genderFormKey,
+            key: ageFormKey,
             child: Container(
               width: 170.w,
               child: DropdownButtonFormField(
                 elevation: 0,
-                iconSize: 23.r,
-                onChanged: (_) {},
+                iconSize: 1.r,
+                onChanged: (val) {},
                 isDense: true,
-                isExpanded: true,
                 style: TextStyle(
                   fontSize: 15.sp,
                   color: Color(0xff8FD974),
                 ),
-                items: [
-                  //TODO: Implement gender selection
-                  DropdownMenuItem(
-                    child: SizedBox(
-                      width: 122.w,
+                items: ['Male', 'Female', 'Other'].map(
+                  (val) {
+                    return DropdownMenuItem<String>(
+                      value: val,
                       child: Text(
-                        "Male",
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
+                        val,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          color: Color(0xff8FD974),
+                        ),
                       ),
-                    ),
-                  ),
-                  DropdownMenuItem(
-                    child: SizedBox(
-                      width: 122.w,
-                      child: Text(
-                        "Female",
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
+                    );
+                  },
+                ).toList(),
+                hint: age == null
+                    ? Text(
+                        'Gender',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          color: Color(0xff8FD974),
+                        ),
+                      )
+                    : Text(
+                        age,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          color: Color(0xff8FD974),
+                        ),
                       ),
-                    ),
-                  ),
-
-                  DropdownMenuItem(
-                    child: SizedBox(
-                      width: 122.w,
-                      child: Text(
-                        "Other",
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-                hint: SizedBox(
-                  width: 122.w,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Select your Gender',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        color: Color(0xff8FD974),
-                      ),
-                    ),
-                  ),
-                ),
                 icon: Icon(
                   MdiIcons.chevronDown,
-                  size: 24.r,
+                  size: 15.r,
                   color: Color(0xffC5C6C7),
                 ),
                 decoration: InputDecoration(

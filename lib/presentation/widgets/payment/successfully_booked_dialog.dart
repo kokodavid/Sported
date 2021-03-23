@@ -104,9 +104,9 @@ class SuccessfulBookDialog extends StatelessWidget {
             //done btn
             MaterialButton(
               height: 46.h,
-              minWidth: 168.w,
+              // minWidth: 3.w,
               color: Color(0xff8FD974),
-              padding: EdgeInsets.all(0),
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
               shape: StadiumBorder(),
               elevation: 0.0,
               hoverElevation: 0,
@@ -114,19 +114,22 @@ class SuccessfulBookDialog extends StatelessWidget {
               highlightElevation: 0,
               focusElevation: 0,
               child: Text(
-                'Done',
+                'View Booking History',
                 style: TextStyle(
                   color: Colors.black,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w600,
                   fontSize: 15.sp,
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (_) => BlocProvider<NavBloc>(
                       create: (context) => NavBloc()..add(LoadPageTwo()),
-                      child: PagesSwitcher(),
+                      child: WillPopScope(
+                        onWillPop: () async => false,
+                        child: PagesSwitcher(),
+                      ),
                     ),
                   ),
                 );

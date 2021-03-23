@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sported_app/data/models/ourUser.dart';
+import 'package:sported_app/data/services/storage_repo.dart';
 import 'package:sported_app/view_controller/user_controller.dart';
 
 import '../../../locator.dart';
-import 'avatar.dart';
 
 class AvatarSection extends StatefulWidget {
   @override
@@ -15,8 +15,24 @@ class AvatarSection extends StatefulWidget {
 }
 
 class _AvatarSectionState extends State<AvatarSection> {
-  UserModel _currentUser = locator.get<UserController>().currentUser;
+  void getAviUrl() async {
+    final uid = FirebaseAuth.instance.currentUser.uid;
+    String aviUrl = await locator.get<StorageRepo>().getUserProfileImage(uid);
+    setState(() {
+      avatarUrl = aviUrl;
+    });
+    print("aviUrl | " + aviUrl);
+  }
+
+  @override
+  void initState() {
+    getAviUrl();
+    super.initState();
+  }
+
   File _image;
+  String avatarUrl;
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -24,6 +40,7 @@ class _AvatarSectionState extends State<AvatarSection> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         SizedBox(width: 129.w),
+
         //avi
         Align(
           alignment: Alignment.center,
@@ -32,9 +49,24 @@ class _AvatarSectionState extends State<AvatarSection> {
             width: 155.w,
             color: Colors.transparent,
             child: _image == null
-            ? Image.network(_currentUser?.avatarUrl) : Image.file(_image)
-
-
+                ? Center(
+                    child: avatarUrl == null
+                        ? Icon(
+                            Icons.person_rounded,
+                            color: Color(0xff31323B),
+                            size: 155.0.r,
+                          )
+                        : CircleAvatar(
+                            radius: 155.0.r,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: NetworkImage(avatarUrl),
+                          ),
+                  )
+                : CircleAvatar(
+                    radius: 155.0.r,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: FileImage(_image),
+                  ),
           ),
         ),
 
@@ -68,7 +100,8 @@ class _AvatarSectionState extends State<AvatarSection> {
               });
               await locator.get<UserController>().uploadProfilePicture(_image);
 
-              print(image.path.toString());
+              print("local _image path | " + _image.path.toString());
+              print("avatarURl | $avatarUrl");
             },
           ),
         ),

@@ -21,12 +21,6 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  @override
-  void initState() {
-    getUser();
-    super.initState();
-  }
-
   void getUser() async {
     UserModel currentUser = await locator.get<UserController>().getUserFromDB();
     _currentUser = currentUser;
@@ -37,10 +31,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
+
   UserModel _currentUser;
   String _username;
   String _email;
-  String empty = "Cannot be Edited.";
+  String empty = "Loading...";
   String age, gender, club1, club2, club3, buddy, coach, urlPaste;
   bool buddyYes = false;
   bool buddyNo = false;
@@ -64,6 +64,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         appBar: AppBar(
           backgroundColor: Color(0xff18181A),
           elevation: 0.0,
+          automaticallyImplyLeading: false,
           centerTitle: true,
           //TODO: Implement leading on condition
           title: Text(
@@ -89,7 +90,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               curve: Curves.fastLinearToSlowEaseIn,
               child: Column(
                 children: [
+                  //avatar
                   AvatarSection(),
+
+                  //forms
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.0.w),
                     child: Form(
@@ -154,6 +158,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                   ),
+
+                  //age & gender
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.0.w),
                     child: Row(
@@ -331,6 +337,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
+
+                  //sports clubs
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Column(
@@ -524,6 +532,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
+
+                  //willing
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Column(
@@ -640,6 +650,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
+
+                  //coaching
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Column(
@@ -777,6 +789,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
+
+                  //save
                   Column(
                     children: [
                       //btn
@@ -808,7 +822,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               //TODO: Implement save profile
                               await createUserProfile();
 
-                              Navigator.of(context).push(
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                   builder: (_) => BlocProvider<NavBloc>(
                                     create: (context) => NavBloc()..add(LoadPageThree()),

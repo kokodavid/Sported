@@ -43,7 +43,7 @@ dependencies:
   flutter_swiper: ^1.1.6
   syncfusion_flutter_datepicker: ^18.4.44-beta
   chips_choice: ^2.0.1
-  cached_network_image:
+  cached_network_image: ^2.5.1
   dio:
   mpesa_flutter_plugin: ^1.0.0
 

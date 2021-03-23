@@ -36,9 +36,10 @@ class AuthenticationService {
   }
 
   //2
-  Future<String> signUp({String email, String password}) async {
+  Future<String> signUp({String email, String password, String fullName}) async {
     try {
       await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      await _auth.currentUser.updateProfile(displayName: fullName);
       return "Registered Successfully";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -68,7 +69,13 @@ class AuthenticationService {
 
     print(doc.data());
 
-    return UserModel.fromMap(doc.data());
+    // return UserModel.fromMap(doc.data());
+    return UserModel(
+      email: _auth.currentUser.email,
+      uid: _auth.currentUser.uid,
+      username: _auth.currentUser.displayName,
+      avatarUrl: _auth.currentUser.photoURL,
+    );
   }
 
   Future<void> signOut() async {
@@ -88,16 +95,7 @@ class AuthenticationService {
     String buddy,
     String coach,
   }) async {
-    userProfile = UserProfile(
-        fullName: fullName,
-        age: age,
-        gender: gender,
-        clubA: clubA,
-        clubB: clubB,
-        clubC: clubC,
-        pasteUrl: pasteUrl,
-        buddy: buddy,
-        coach: coach);
+    userProfile = UserProfile(fullName: fullName, age: age, gender: gender, clubA: clubA, clubB: clubB, clubC: clubC, pasteUrl: pasteUrl, buddy: buddy, coach: coach);
 
     await userProfileRef.doc(uid).set(userProfile.toMap(userProfile)).catchError((e) {
       print(e);

@@ -42,27 +42,15 @@ class UserController {
     return await _storageRepo.getUserProfileImage(currentUser.uid);
   }
 
-  // Future<dynamic> signInWithEmailAndPassword(
-  //     {String email, String password}) async {
-  //   _currentUser = await _authRepo.signInWithEmailAndPassword(email, password);
-  //
-  //   _currentUser.avatarUrl = await getDownloadUrl();
-  //
-  //
-  // }
-
   Future<dynamic> signInWithEmailAndPassword({String email, String password}) async {
     try {
       _currentUser = await _authRepo.signInWithEmailAndPassword(email, password);
-
-      _currentUser.avatarUrl = await getDownloadUrl();
-
       return "Logged In Successfully";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        return "No user found for that email.";
+        return "User not registered. Sign Up to create a new account.";
       } else if (e.code == 'wrong-password') {
-        return "Wrong password provided for that user.";
+        return "Wrong email or password entered!";
       } else {
         return "Something Went Wrong.";
       }
@@ -72,15 +60,18 @@ class UserController {
   Future<UserModel> getUserFromDB() async {
     final DocumentSnapshot doc = await userRef.doc(currentUser.uid).get();
 
-    print(doc.data());
+    print("doc.data | ${doc.data()}");
 
-    return UserModel.fromMap(doc.data());
-  }
+    print(auth.currentUser.email);
+    print(auth.currentUser.uid);
+    print(auth.currentUser.displayName);
 
-  Future<void> loginUser({String email, String password}) async {
-    _currentUser = await _authRepo.signInWithEmailAndPassword(email, password);
-
-    _currentUser.avatarUrl = await getDownloadUrl();
+    // return UserModel.fromMap(doc.data());
+    return UserModel(
+      email: auth.currentUser.email,
+      uid: auth.currentUser.uid,
+      username: auth.currentUser.displayName,
+    );
   }
 
   Future<UserProfile> uploadProfile({
@@ -96,16 +87,7 @@ class UserController {
     String buddy,
     String coach,
   }) async {
-    userProfile = UserProfile(
-        fullName: fullName,
-        age: age,
-        gender: gender,
-        clubA: clubA,
-        clubB: clubB,
-        clubC: clubC,
-        pasteUrl: pasteUrl,
-        buddy: buddy,
-        coach: coach);
+    userProfile = UserProfile(fullName: fullName, age: age, gender: gender, clubA: clubA, clubB: clubB, clubC: clubC, pasteUrl: pasteUrl, buddy: buddy, coach: coach);
 
     await userProfileRef.doc(_currentUser.uid).set(userProfile.toMap(userProfile)).catchError((e) {
       print(e);

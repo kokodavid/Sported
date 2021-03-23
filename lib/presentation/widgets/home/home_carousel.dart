@@ -14,7 +14,6 @@ class HomeCarousel extends StatelessWidget {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: [
-
             //venues
             Padding(
               padding: EdgeInsets.only(left: 12.w, right: 12.w),
@@ -80,9 +79,10 @@ class HomeCarousel extends StatelessWidget {
                                 ),
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
-                              child: Image.asset(
-                                'assets/images/stadium.png',
+                              child: Image.network(
+                                'https://fastly.4sqi.net/img/general/600x600/407721430_DGyytCXxHEvZ8ECmP_-tfAeZakOPEHb4q7pZB9imNdk.jpg',
                                 fit: BoxFit.fitHeight,
+                                filterQuality: FilterQuality.medium,
                               ),
                             ),
                             //second
@@ -115,9 +115,10 @@ class HomeCarousel extends StatelessWidget {
                                   ),
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
-                                child: Image.asset(
-                                  'assets/images/stadium.png',
+                                child: Image.network(
+                                  'https://lh3.googleusercontent.com/p/AF1QipPkGabgYnFBS7eaDZSh_dXh0xZ1NphZBIXL-VjF=s1600-w400',
                                   fit: BoxFit.fitHeight,
+                                  filterQuality: FilterQuality.medium,
                                 ),
                               ),
                             ),
@@ -151,9 +152,10 @@ class HomeCarousel extends StatelessWidget {
                                   ),
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
-                                child: Image.asset(
-                                  'assets/images/stadium.png',
+                                child: Image.network(
+                                  'https://mapio.net/images-p/98041323.jpg',
                                   fit: BoxFit.fitHeight,
+                                  filterQuality: FilterQuality.medium,
                                 ),
                               ),
                             ),
