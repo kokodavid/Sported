@@ -12,6 +12,15 @@ import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/screens/venues_list_screen.dart';
 
 class PagesSwitcher extends StatelessWidget {
+  static Route route() {
+    return MaterialPageRoute<void>(
+      builder: (_) => BlocProvider<NavBloc>(
+        create: (context) => NavBloc()..add(LoadPageThree()),
+        child: PagesSwitcher(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NavBloc, NavState>(

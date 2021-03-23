@@ -529,10 +529,10 @@ class BookingsHistoryPage extends StatelessWidget {
                     );
                   } else if (state is BookingHistoryLoadFailure) {
                     return Container(
-                      height: 1.sh,
+                      height: 400.h,
                       child: Center(
                         child: Text(
-                          'Couldn\'nt load your booking history. \nPlease check your internet connection',
+                          'Couldn\'t load your booking history.',
                           style: regularStyle,
                         ),
                       ),

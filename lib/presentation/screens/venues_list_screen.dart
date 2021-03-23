@@ -131,14 +131,31 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
                       final handballVenues = state.handballVenues;
                       return FilteredVenues(filteredVenues: handballVenues, sportToBook: 'Handball');
                     }
-                    return Container(
-                      height: 200.h,
-                      child: Center(
-                        child: SpinKitRipple(
-                          color: Color(0xff9BEB81),
+
+                    if (state is FilterLoading) {
+                      return Container(
+                        height: 200.h,
+                        child: Center(
+                          child: SpinKitRipple(
+                            color: Color(0xff9BEB81),
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
+
+                    if (state is FilterFailure) {
+                      return Container(
+                        height: 500.h,
+                        child: Center(
+                          child: Text(
+                            'Couldn\'t load venues available. Check your internet connection.',
+                            style: regularStyle,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return null;
                   },
                 ),
                 // FilteredVenues(),

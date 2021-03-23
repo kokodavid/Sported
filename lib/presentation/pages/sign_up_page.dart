@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:provider/provider.dart';
-import 'package:sported_app/data/services/auth.dart';
+import 'package:sported_app/data/repositories/auth_repo.dart';
+import 'package:sported_app/data/services/authentication_service.dart';
 import 'package:sported_app/data/services/database.dart';
 import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/custom_snackbar.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
-import 'package:sported_app/services/authentication_service.dart';
+
 
 class SignUpPage extends StatefulWidget {
   final Function toggle;
@@ -24,7 +25,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _isLoading = false;
 
   FirebaseAuth auth = FirebaseAuth.instance;
-  AuthMethods authMethods = new AuthMethods();
+  AuthRepo authMethods = new AuthRepo();
   DatabaseMethods databaseMethods = new DatabaseMethods();
 
   final formKey = GlobalKey<FormState>();
@@ -199,7 +200,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     prefixIcon: Icons.lock_outlined,
                                   ),
                                   validator: (val) {
-                                    return val.length > 6 ? null : "Please provide a Password with 6+ characters";
+                                    return val.length > 6 ? null : "Password must have 6+ characters";
                                   },
                                   controller: passWordTextEditingController,
                                 ),
@@ -319,7 +320,7 @@ class _SignUpPageState extends State<SignUpPage> {
     });
     final logMessage = await context.read<AuthenticationService>().signUp(email: emailTextEditingController.text, password: passWordTextEditingController.text, fullName: userNameTextEditingController.text);
 
-    logMessage == "Registered Successfully" ? _showSuccessSnack(logMessage) : showCustomSnackbar(logMessage, _scaffoldKey);
+    logMessage == "Registered Successfully" ? null : showCustomSnackbar(logMessage, _scaffoldKey);
 
     print("LogMessage:" + logMessage);
 
@@ -335,25 +336,25 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   //When User "Signed Up", success snack will display.
-  _showSuccessSnack(String message) {
-    final snackbar = SnackBar(
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Color(0xffd0e9c8),
-      duration: Duration(milliseconds: 2000),
-      content: Text(
-        "$message",
-        style: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-    // ignore: deprecated_member_use
-    _scaffoldKey.currentState.hideCurrentSnackBar();
-    // ignore: deprecated_member_use
-    _scaffoldKey.currentState.showSnackBar(snackbar);
-    formKey.currentState.reset();
-  }
+  // _showSuccessSnack(String message) {
+  //   final snackbar = SnackBar(
+  //     behavior: SnackBarBehavior.floating,
+  //     backgroundColor: Color(0xffd0e9c8),
+  //     duration: Duration(milliseconds: 2000),
+  //     content: Text(
+  //       "$message",
+  //       style: TextStyle(
+  //         color: Colors.black,
+  //         fontWeight: FontWeight.w600,
+  //       ),
+  //     ),
+  //   );
+  //   // ignore: deprecated_member_use
+  //   _scaffoldKey.currentState.hideCurrentSnackBar();
+  //   // ignore: deprecated_member_use
+  //   _scaffoldKey.currentState.showSnackBar(snackbar);
+  //   formKey.currentState.reset();
+  // }
 
   // //When FirebaseAuth Catches error, error snack will display.
   // _showErrorSnack(String message) {

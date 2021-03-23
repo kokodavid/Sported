@@ -4,13 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
-import 'package:sported_app/data/services/auth.dart';
+import 'package:sported_app/data/repositories/auth_repo.dart';
+import 'package:sported_app/data/services/user_controller.dart';
 import 'package:sported_app/locator.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
-import 'package:sported_app/view_controller/user_controller.dart';
+
 
 class SignInPage extends StatefulWidget {
+  static Route route() {
+    return MaterialPageRoute<void>(builder: (_) => SignInPage());
+  }
+
   final Function toggle;
   SignInPage({this.toggle});
   @override
@@ -22,7 +27,7 @@ class _SignInPageState extends State<SignInPage> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  AuthMethods authMethods = AuthMethods();
+  AuthRepo authMethods = AuthRepo();
   TextEditingController passWordTextEditingController = new TextEditingController();
   TextEditingController emailTextEditingController = new TextEditingController();
   bool _isLoading = false;
@@ -316,6 +321,7 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
+  // ignore: non_constant_identifier_names
   _LoginUser() async {
     setState(() {
       _isSubmitting = true;
@@ -324,7 +330,7 @@ class _SignInPageState extends State<SignInPage> {
 
     final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(email: emailTextEditingController.text, password: passWordTextEditingController.text);
 
-    logMessage == "Logged In Successfully" ? _showSuccessSnack(logMessage) : _showErrorSnack(logMessage);
+    logMessage == "Logged In Successfully" ? null : _showErrorSnack(logMessage);
 
     //print("I am logMessage $logMessage");
 
@@ -363,25 +369,25 @@ class _SignInPageState extends State<SignInPage> {
   //   }
   // }
 
-  _showSuccessSnack(String message) async {
-    final snackbar = SnackBar(
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Color(0xffd0e9c8),
-      duration: Duration(milliseconds: 2000),
-      content: Text(
-        "$message",
-        style: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-    // ignore: deprecated_member_use
-    _scaffoldKey.currentState.hideCurrentSnackBar();
-    // ignore: deprecated_member_use
-    _scaffoldKey.currentState.showSnackBar(snackbar);
-    formKey.currentState.reset();
-  }
+  // _showSuccessSnack(String message) async {
+  //   final snackbar = SnackBar(
+  //     behavior: SnackBarBehavior.floating,
+  //     backgroundColor: Color(0xffd0e9c8),
+  //     duration: Duration(milliseconds: 2000),
+  //     content: Text(
+  //       "$message",
+  //       style: TextStyle(
+  //         color: Colors.black,
+  //         fontWeight: FontWeight.w600,
+  //       ),
+  //     ),
+  //   );
+  //   // ignore: deprecated_member_use
+  //   _scaffoldKey.currentState.hideCurrentSnackBar();
+  //   // ignore: deprecated_member_use
+  //   _scaffoldKey.currentState.showSnackBar(snackbar);
+  //   formKey.currentState.reset();
+  // }
 
   _showErrorSnack(String message) {
     final snackbar = SnackBar(

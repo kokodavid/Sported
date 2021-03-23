@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sported_app/data/services/storage_repo.dart';
-import 'package:sported_app/view_controller/user_controller.dart';
+import 'package:sported_app/data/repositories/storage_repo.dart';
+import 'package:sported_app/data/services/user_controller.dart';
 
 import '../../../locator.dart';
 
@@ -99,6 +99,7 @@ class _AvatarSectionState extends State<AvatarSection> {
                 }
               });
               await locator.get<UserController>().uploadProfilePicture(_image);
+              getAviUrl();
 
               print("local _image path | " + _image.path.toString());
               print("avatarURl | $avatarUrl");

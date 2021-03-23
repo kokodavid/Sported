@@ -1,14 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:sported_app/data/models/ourUser.dart';
 
-class AuthMethods {
+class AuthRepo {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  AuthMethods();
+  AuthRepo();
 
   Future<UserModel> getUser() async {
     var firebaseUser = await _auth.currentUser;
     return UserModel(uid: firebaseUser.uid);
+  }
+
+  Stream<UserModel> get user {
+    return _auth.authStateChanges().map((firebaseUser) {
+      return firebaseUser == null ? UserModel.empty : firebaseUser.toUser;
+    });
   }
 
   UserModel _userFromFirebaseUser(User user) {
@@ -22,8 +29,7 @@ class AuthMethods {
 
   Future signUpWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential result =
-          await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User firebaseUser = result.user;
       return _userFromFirebaseUser(firebaseUser);
     } catch (e) {
@@ -45,5 +51,12 @@ class AuthMethods {
     } catch (e) {
       print(e.toString());
     }
+  }
+}
+
+//user details to firebase User
+extension on firebase_auth.User {
+  UserModel get toUser {
+    return UserModel(uid: uid, email: email, username: displayName, avatarUrl: photoURL);
   }
 }

@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sported_app/data/models/UserProfile.dart';
 import 'package:sported_app/data/models/ourUser.dart';
-import 'package:sported_app/data/services/auth.dart';
-import 'package:sported_app/data/services/storage_repo.dart';
+import 'package:sported_app/data/repositories/auth_repo.dart';
+import 'package:sported_app/data/repositories/storage_repo.dart';
+import 'package:sported_app/data/services/authentication_service.dart';
 import 'package:sported_app/locator.dart';
-import 'package:sported_app/models/UserProfile.dart';
-import 'package:sported_app/services/authentication_service.dart';
 
 class UserController {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -17,7 +17,7 @@ class UserController {
   UserProfile userProfile = UserProfile();
   UserModel _currentUser;
 
-  AuthMethods _authRepo = locator.get<AuthMethods>();
+  AuthRepo _authRepo = locator.get<AuthRepo>();
   AuthenticationService _authenticationService = locator.get<AuthenticationService>();
   StorageRepo _storageRepo = locator.get<StorageRepo>();
 
@@ -35,7 +35,11 @@ class UserController {
   UserModel get currentUser => _currentUser;
 
   Future<void> uploadProfilePicture(File image) async {
-    _currentUser.avatarUrl = await locator.get<StorageRepo>().uploadFile(image);
+    print("before | ${auth.currentUser.photoURL}");
+
+    auth.currentUser.updateProfile(photoURL: await locator.get<StorageRepo>().uploadFile(image));
+
+    print("after | ${auth.currentUser.photoURL}");
   }
 
   Future<String> getDownloadUrl() async {

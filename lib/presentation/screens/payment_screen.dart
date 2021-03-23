@@ -532,7 +532,6 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
                         ),
                       ),
                       onPressed: () async {
-                        //TODO:STKPush
                         await paymentConfirm();
                       },
                     ),

@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sported_app/data/models/UserProfile.dart';
 import 'package:sported_app/data/models/ourUser.dart';
-import 'package:sported_app/data/services/auth.dart';
+import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/locator.dart';
-import 'package:sported_app/models/UserProfile.dart';
 
 class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  AuthMethods _authRepo = locator.get<AuthMethods>();
+  AuthRepo _authRepo = locator.get<AuthRepo>();
   UserModel userModel = UserModel();
   UserProfile userProfile = UserProfile();
 
@@ -78,8 +78,13 @@ class AuthenticationService {
     );
   }
 
-  Future<void> signOut() async {
-    await _auth.signOut();
+  Future<String> signOut() async {
+    try {
+      await _auth.signOut();
+      return "Signed Out Successfully";
+    } catch (_) {
+      return _;
+    }
   }
 
   Future<UserProfile> uploadProfile({

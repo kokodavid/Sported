@@ -4,21 +4,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/screenutil_init.dart';
 import 'package:mpesa_flutter_plugin/initializer.dart';
 import 'package:provider/provider.dart';
+import 'package:sported_app/business_logic/blocs/auth/authentication_bloc.dart';
 import 'package:sported_app/business_logic/cubits/filter_chips_cubit/filter_chips_cubit.dart';
 import 'package:sported_app/data/repositories/booking_history_repository.dart';
 import 'package:sported_app/data/repositories/venue_data_provider.dart';
 import 'package:sported_app/data/repositories/venue_repository.dart';
-import 'package:sported_app/helper/authenticate.dart';
-import 'package:sported_app/locator.dart';
-import 'package:sported_app/presentation/screens/payment_screen.dart';
-import 'package:sported_app/services/authentication_service.dart';
+import 'package:sported_app/presentation/screens/auth_unknown_screen.dart';
+import 'package:sported_app/presentation/shared/pages_switcher.dart';
 import 'package:sported_app/simple_bloc_observer.dart';
 
 import 'business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'business_logic/cubits/booking_history_cubit/booking_history_cubit.dart';
 import 'constants/constants.dart';
+import 'data/repositories/auth_repo.dart';
 import 'data/repositories/booking_history_data_provider.dart';
 import 'data/repositories/venue_repository.dart';
+import 'data/services/authentication_service.dart';
+import 'locator.dart';
+import 'presentation/shared/authenticate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,11 +34,13 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  NavigatorState get _navigator => _navigatorKey.currentState;
   @override
   Widget build(BuildContext context) {
     final VenueRepository venueRepository = VenueRepository(venueDataProvider: VenueDataProvider());
-    final BookingHistoryRepository bookingHistoryRepository =
-        BookingHistoryRepository(bookingHistoryDataProvider: BookingHistoryDataProvider());
+    final BookingHistoryRepository bookingHistoryRepository = BookingHistoryRepository(bookingHistoryDataProvider: BookingHistoryDataProvider());
+    final AuthRepo authenticationRepository = AuthRepo();
     return MultiProvider(
       providers: [
         Provider<AuthenticationService>(
@@ -48,6 +53,9 @@ class MyApp extends StatelessWidget {
         allowFontScaling: false,
         builder: () => MultiBlocProvider(
           providers: [
+            BlocProvider<AuthenticationBloc>(
+              create: (_) => AuthenticationBloc(authMethods: authenticationRepository),
+            ),
             BlocProvider<FilterBloc>(
               create: (_) => FilterBloc(venueRepository: venueRepository)..add(LoadFootball()),
             ),
@@ -55,11 +63,11 @@ class MyApp extends StatelessWidget {
               create: (_) => FilterChipsCubit(),
             ),
             BlocProvider<BookingHistoryCubit>(
-                create: (_) =>
-                    BookingHistoryCubit(bookingHistoryRepository: bookingHistoryRepository)
-                      ..loadBookingHistory()),
+              create: (_) => BookingHistoryCubit(bookingHistoryRepository: bookingHistoryRepository)..loadBookingHistory(),
+            ),
           ],
           child: MaterialApp(
+            navigatorKey: _navigatorKey,
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               canvasColor: Color(0xff31323B),
@@ -80,7 +88,35 @@ class MyApp extends StatelessWidget {
               highlightColor: Color(0x1a2f4826),
               scaffoldBackgroundColor: Color(0xff18181A),
             ),
-            home: Authenticate(),
+            home: BlocListener<AuthenticationBloc, AuthenticationState>(
+              child: AuthUnknownScreen(),
+              listener: (context, state) {
+                print("state.status | " + "${state.status}");
+
+                switch (state.status) {
+                  case AuthenticationStatus.authenticated:
+                    Future.delayed(Duration(seconds: 5), () {
+                      // 5s over, navigate to a new page
+                      _navigator.pushAndRemoveUntil<void>(
+                        PagesSwitcher.route(),
+                        (route) => false,
+                      );
+                    });
+                    break;
+                  case AuthenticationStatus.unauthenticated:
+                    Future.delayed(Duration(seconds: 5), () {
+                      // 5s over, navigate
+                      _navigator.pushAndRemoveUntil<void>(
+                        Authenticate.route(),
+                        (route) => false,
+                      );
+                    });
+                    break;
+                  default:
+                    break;
+                }
+              },
+            ),
           ),
         ),
       ),
