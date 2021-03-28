@@ -38,13 +38,10 @@ dependencies:
   keyboard_avoider: ^0.1.2
   google_maps_flutter: ^1.2.0
   convex_bottom_bar: ^2.7.1
-<<<<<<< HEAD
   flutter_swiper: ^1.1.6
   syncfusion_flutter_datepicker: ^18.4.44-beta
   chips_choice: ^2.0.1
   dio:
-=======
->>>>>>> b19fb6c2c06dc50074c6ea3c9bdc42789b61f711
   shared_preferences: ^0.5.12+4
 
 
