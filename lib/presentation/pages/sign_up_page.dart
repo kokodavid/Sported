@@ -2,12 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:provider/provider.dart';
+import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/data/services/authentication_service.dart';
 import 'package:sported_app/data/services/database.dart';
 import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
+import 'package:sported_app/presentation/shared/authenticate.dart';
 import 'package:sported_app/presentation/shared/custom_snackbar.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 
@@ -23,6 +26,28 @@ class _SignUpPageState extends State<SignUpPage> {
   bool isLoading = false;
   bool _isSubmitting;
   bool _isLoading = false;
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    print(googleUser.id);
+    print(googleUser.email);
+    print(googleUser.displayName);
+    print(googleUser.photoUrl);
+
+
+    // Create a new credential
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
   FirebaseAuth auth = FirebaseAuth.instance;
   AuthRepo authMethods = new AuthRepo();
@@ -272,7 +297,72 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           ),
 
-                          SizedBox(height: 56.h),
+                          SizedBox(height: 20.0.h),
+
+                          Text(
+                            'Or Sign Up using',
+                            style: regularStyle,
+                          ),
+
+                          SizedBox(height: 15.h),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              //facebook
+                              // MaterialButton(
+                              //   onPressed: () {
+                              //     _login();
+                              //   },
+                              //   padding: EdgeInsets.symmetric(horizontal: 8.r),
+                              //   splashColor: Colors.transparent,
+                              //   child: Row(
+                              //     mainAxisAlignment: MainAxisAlignment.start,
+                              //     crossAxisAlignment: CrossAxisAlignment.center,
+                              //     children: [
+                              //       CircleAvatar(
+                              //         radius: 19.r,
+                              //         backgroundColor: Colors.transparent,
+                              //         child: Image.asset(
+                              //           'assets/icons/facebook_icon.png',
+                              //           height: 19.r,
+                              //           width: 19.r,
+                              //         ),
+                              //       ),
+                              //       SizedBox(width: 4.w),
+                              //       Text('Facebook', style: regularStyle),
+                              //     ],
+                              //   ),
+                              // ),
+
+                              //google
+                              MaterialButton(
+                                onPressed: () {
+                                  // Navigator.pushReplacement(
+                                  //     context, MaterialPageRoute(builder: (context) => HomePage()));
+                                  signInWithGoogle();
+                                },
+                                padding: EdgeInsets.symmetric(horizontal: 8.r),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      child: Image.asset(
+                                        'assets/icons/google_icon.png',
+                                        height: 19.r,
+                                        width: 19.r,
+                                      ),
+                                    ),
+                                    SizedBox(width: 4.w),
+                                    Text('Google', style: regularStyle),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: 10.h),
 
                           //sign in cta
                           RichText(
@@ -318,7 +408,10 @@ class _SignUpPageState extends State<SignUpPage> {
       _isSubmitting = true;
       _isLoading = true;
     });
-    final logMessage = await context.read<AuthenticationService>().signUp(email: emailTextEditingController.text, password: passWordTextEditingController.text, fullName: userNameTextEditingController.text);
+    final logMessage = await context.read<AuthenticationService>().signUp(
+        email: emailTextEditingController.text,
+        password: passWordTextEditingController.text,
+        fullName: userNameTextEditingController.text);
 
     logMessage == "Registered Successfully" ? null : showCustomSnackbar(logMessage, _scaffoldKey);
 
@@ -326,7 +419,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (logMessage == "Registered Successfully") {
       createUserInFirestore();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authenticate()));
     } else {
       setState(() {
         _isSubmitting = false;

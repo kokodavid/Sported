@@ -49,6 +49,7 @@ class UserController {
   Future<dynamic> signInWithEmailAndPassword({String email, String password}) async {
     try {
       _currentUser = await _authRepo.signInWithEmailAndPassword(email, password);
+
       return "Logged In Successfully";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
