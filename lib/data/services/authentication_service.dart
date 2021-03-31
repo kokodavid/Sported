@@ -40,6 +40,7 @@ class AuthenticationService {
     try {
       await _auth.createUserWithEmailAndPassword(email: email, password: password);
       await _auth.currentUser.updateProfile(displayName: fullName);
+      await _auth.currentUser.sendEmailVerification();
       return "Registered Successfully";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

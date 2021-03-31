@@ -1,14 +1,23 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
+import 'package:sported_app/data/models/ourUser.dart';
 import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/data/services/user_controller.dart';
 import 'package:sported_app/locator.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
+
+import '../../constants/constants.dart';
+import 'package:http/http.dart' as http;
+import 'home_page.dart';
+
 
 class SignInPage extends StatefulWidget {
   static Route route() {
@@ -22,8 +31,60 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    print(googleUser.id);
+    print(googleUser.email);
+    print(googleUser.displayName);
+    print(googleUser.photoUrl);
+
+
+    // Create a new credential
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  String _message = 'Log in/out by pressing the buttons below.';
+
+  // Future<Null> _login() async {
+  //   final FacebookLoginResult result = await facebookSignIn.logIn(['email']);
+  //
+  //   switch (result.status) {
+  //     case FacebookLoginStatus.loggedIn:
+  //       final FacebookAccessToken accessToken = result.accessToken;
+  //       _showErrorSnack('''
+  //        Logged in!
+  //
+  //        Token: ${accessToken.token}
+  //        User id: ${accessToken.userId}
+  //        Expires: ${accessToken.expires}
+  //        Permissions: ${accessToken.permissions}
+  //        Declined permissions: ${accessToken.declinedPermissions}
+  //        ''');
+  //       break;
+  //     case FacebookLoginStatus.cancelledByUser:
+  //       _showErrorSnack('Login cancelled by the user.');
+  //       break;
+  //     case FacebookLoginStatus.error:
+  //       _showErrorSnack('Something went wrong with the login process.\n'
+  //           'Here\'s the error Facebook gave us: ${result.errorMessage}');
+  //       break;
+  //   }
+  // }
+
   bool _isSubmitting;
   FirebaseAuth auth = FirebaseAuth.instance;
+  UserModel _currentUser;
   final formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   AuthRepo authMethods = AuthRepo();
@@ -36,18 +97,18 @@ class _SignInPageState extends State<SignInPage> {
     FocusScopeNode currentFocus = FocusScope.of(context);
     Widget loadingIndicator = _isLoading
         ? new Container(
-            color: Color(0xff18181A),
-            width: 70.0,
-            height: 70.0,
-            child: new Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: new Center(
-                child: new LinearProgressIndicator(
-                  backgroundColor: Color(0xff8FD974),
-                ),
-              ),
-            ),
-          )
+      color: Color(0xff18181A),
+      width: 70.0,
+      height: 70.0,
+      child: new Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: new Center(
+          child: new LinearProgressIndicator(
+            backgroundColor: Color(0xff8FD974),
+          ),
+        ),
+      ),
+    )
         : new Container();
     return SafeArea(
       child: GestureDetector(
@@ -130,7 +191,7 @@ class _SignInPageState extends State<SignInPage> {
                         controller: emailTextEditingController,
                         style: TextStyle(
                           fontSize: 15.sp,
-                          color: Colors.white,
+                          color: Color(0xff707070),
                         ),
                         decoration: formInputDecoration(
                           hintText: "company@example.com",
@@ -166,7 +227,7 @@ class _SignInPageState extends State<SignInPage> {
                         controller: passWordTextEditingController,
                         style: TextStyle(
                           fontSize: 15.sp,
-                          color: Colors.white,
+                          color: Color(0xff707070),
                         ),
                         decoration: formInputDecoration(
                           hintText: "Password",
@@ -221,67 +282,70 @@ class _SignInPageState extends State<SignInPage> {
 
                 SizedBox(height: 20.0.h),
 
-                //social sign in
-                // Text(
-                //   'Or Sign In using',
-                //   style: regularStyle,
-                // ),
-                //
-                // SizedBox(height: 15.0.h),
-                //
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   crossAxisAlignment: CrossAxisAlignment.center,
-                //   children: [
-                //     //facebook
-                //     MaterialButton(
-                //       onPressed: () {},
-                //       padding: EdgeInsets.symmetric(horizontal: 8.r),
-                //       splashColor: Colors.transparent,
-                //       child: Row(
-                //         mainAxisAlignment: MainAxisAlignment.start,
-                //         crossAxisAlignment: CrossAxisAlignment.center,
-                //         children: [
-                //           CircleAvatar(
-                //             radius: 19.r,
-                //             backgroundColor: Colors.transparent,
-                //             child: Image.asset(
-                //               'assets/icons/facebook_icon.png',
-                //               height: 19.r,
-                //               width: 19.r,
-                //             ),
-                //           ),
-                //           SizedBox(width: 4.w),
-                //           Text('Facebook', style: regularStyle),
-                //         ],
-                //       ),
-                //     ),
-                //
-                //     //google
-                //     MaterialButton(
-                //       onPressed: () {
-                //         Navigator.pushReplacement(
-                //             context, MaterialPageRoute(builder: (context) => HomePage()));
-                //       },
-                //       padding: EdgeInsets.symmetric(horizontal: 8.r),
-                //       child: Row(
-                //         children: [
-                //           CircleAvatar(
-                //             backgroundColor: Colors.transparent,
-                //             child: Image.asset(
-                //               'assets/icons/google_icon.png',
-                //               height: 19.r,
-                //               width: 19.r,
-                //             ),
-                //           ),
-                //           SizedBox(width: 4.w),
-                //           Text('Google', style: regularStyle),
-                //         ],
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                //sign up cta
+                // social sign in
+                Text(
+                  'Or Sign In using',
+                  style: regularStyle,
+                ),
+
+                SizedBox(height: 15.0.h),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    //facebook
+                    // MaterialButton(
+                    //   onPressed: () {
+                    //     _login();
+                    //   },
+                    //   padding: EdgeInsets.symmetric(horizontal: 8.r),
+                    //   splashColor: Colors.transparent,
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.start,
+                    //     crossAxisAlignment: CrossAxisAlignment.center,
+                    //     children: [
+                    //       CircleAvatar(
+                    //         radius: 19.r,
+                    //         backgroundColor: Colors.transparent,
+                    //         child: Image.asset(
+                    //           'assets/icons/facebook_icon.png',
+                    //           height: 19.r,
+                    //           width: 19.r,
+                    //         ),
+                    //       ),
+                    //       SizedBox(width: 4.w),
+                    //       Text('Facebook', style: regularStyle),
+                    //     ],
+                    //   ),
+                    // ),
+
+                    //google
+                    MaterialButton(
+                      onPressed: () {
+                        // Navigator.pushReplacement(
+                        //     context, MaterialPageRoute(builder: (context) => HomePage()));
+                        signInWithGoogle();
+                      },
+                      padding: EdgeInsets.symmetric(horizontal: 8.r),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.transparent,
+                            child: Image.asset(
+                              'assets/icons/google_icon.png',
+                              height: 19.r,
+                              width: 19.r,
+                            ),
+                          ),
+                          SizedBox(width: 4.w),
+                          Text('Google', style: regularStyle),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                // sign up cta
                 SizedBox(height: 45.h),
                 RichText(
                   text: TextSpan(
@@ -327,29 +391,43 @@ class _SignInPageState extends State<SignInPage> {
       _isLoading = true;
     });
 
-    final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(email: emailTextEditingController.text, password: passWordTextEditingController.text);
+    final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(
+        email: emailTextEditingController.text,
+        password: passWordTextEditingController.text);
+
+    if(!auth.currentUser.emailVerified){
+
+      _showErrorSnack("An email has just been sent to you, Click the link provided to complete registration");
+      setState(() {
+        _isLoading = false;
+
+      });
+    }else if (auth.currentUser.emailVerified == true){
+      if (logMessage == "Logged In Successfully") {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => BlocProvider<NavBloc>(
+              create: (context) => NavBloc()..add(LoadPageThree()),
+              child: PagesSwitcher(),
+            ),
+          ),
+        );
+
+        return;
+      } else {
+        setState(() {
+          _isSubmitting = false;
+          _isLoading = false;
+        });
+      }
+
+    }
+
 
     logMessage == "Logged In Successfully" ? null : _showErrorSnack(logMessage);
 
     //print("I am logMessage $logMessage");
 
-    if (logMessage == "Logged In Successfully") {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => BlocProvider<NavBloc>(
-            create: (context) => NavBloc()..add(LoadPageThree()),
-            child: PagesSwitcher(),
-          ),
-        ),
-      );
-
-      return;
-    } else {
-      setState(() {
-        _isSubmitting = false;
-        _isLoading = false;
-      });
-    }
   }
 
   // login() async{
@@ -392,7 +470,7 @@ class _SignInPageState extends State<SignInPage> {
     final snackbar = SnackBar(
       behavior: SnackBarBehavior.floating,
       backgroundColor: Color(0xffd0e9c8),
-      duration: Duration(milliseconds: 2000),
+      duration: Duration(milliseconds: 2500),
       content: Text(
         "$message",
         style: TextStyle(
