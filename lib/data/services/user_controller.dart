@@ -61,40 +61,48 @@ class UserController {
     }
   }
 
-  Future<UserModel> getUserFromDB() async {
-    final DocumentSnapshot doc = await userRef.doc(currentUser.uid).get();
+  // Future<UserModel> getUserFromDB() async {
+  //   final DocumentSnapshot doc = await userRef.doc(currentUser.uid).get();
+  //
+  //   print("doc.data | ${doc.data()}");
+  //
+  //   print(auth.currentUser.email);
+  //   print(auth.currentUser.uid);
+  //   print(auth.currentUser.displayName);
+  //
+  //   // return UserModel.fromMap(doc.data());
+  //   return UserModel(
+  //     email: auth.currentUser.email,
+  //     uid: auth.currentUser.uid,
+  //     username: auth.currentUser.displayName,
+  //   );
+  // }
 
-    print("doc.data | ${doc.data()}");
+  // ignore: missing_return
+  // Future<UserProfile> uploadProfile({String uid, String fullName, String email, String age, String gender, String clubA, String clubB, String clubC, String pasteUrl, String buddy, String coach}) async {
+  //   userProfile = UserProfile(
+  //     fullName: fullName,
+  //     age: age,
+  //     gender: gender,
+  //     clubA: clubA,
+  //     clubB: clubB,
+  //     clubC: clubC,
+  //     pasteUrl: pasteUrl,
+  //     buddy: buddy,
+  //     coach: coach,
+  //     email: email,
+  //     uid: uid,
+  //   );
+  //
+  //   await userProfileRef.doc(auth.currentUser.uid).set(userProfile.toMap(userProfile)).catchError((e) => print("error uploading Profile | $e"));
+  // }pro
 
-    print(auth.currentUser.email);
-    print(auth.currentUser.uid);
-    print(auth.currentUser.displayName);
-
-    // return UserModel.fromMap(doc.data());
-    return UserModel(
-      email: auth.currentUser.email,
-      uid: auth.currentUser.uid,
-      username: auth.currentUser.displayName,
-    );
-  }
-
-  Future<UserProfile> uploadProfile({
-    String uid,
-    String fullName,
-    String email,
-    String age,
-    String gender,
-    String clubA,
-    String clubB,
-    String clubC,
-    String pasteUrl,
-    String buddy,
-    String coach,
-  }) async {
-    userProfile = UserProfile(fullName: fullName, age: age, gender: gender, clubA: clubA, clubB: clubB, clubC: clubC, pasteUrl: pasteUrl, buddy: buddy, coach: coach);
-
-    await userProfileRef.doc(_currentUser.uid).set(userProfile.toMap(userProfile)).catchError((e) {
-      print(e);
-    });
+  Future<UserProfile> loadUserProfile() async {
+    final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+    final userProfileFromJson = userProfileRef.get().then((value) => value.docs.map((e) => UserProfile.fromJson(e.data())).toList());
+    final allUsers = await userProfileFromJson;
+    final filteredUsers = allUsers.where((element) => element.uid == auth.currentUser.uid).toList();
+    final userProfile = filteredUsers[0];
+    return userProfile;
   }
 }

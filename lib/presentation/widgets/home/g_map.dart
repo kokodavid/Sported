@@ -18,7 +18,7 @@ class _GMapState extends State<GMap> {
   Set<Marker> markers;
   void setCustomMapPin() async {
     locationIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(size: Size(24.h, 24.h)),
+      ImageConfiguration(size: Size(48.h, 48.h)),
       'assets/icons/location_icon.png',
     );
   }
@@ -250,7 +250,7 @@ class _GMapState extends State<GMap> {
             markerId: MarkerId('marker2'),
             position: LatLng(-1.2593830167467919, 36.82361004197738),
             icon: locationIcon,
-            infoWindow: InfoWindow(title: 'Aga Khan Sports Club'),
+            infoWindow: InfoWindow(title: 'AgaKhan Sports Club'),
           ),
         );
       },

@@ -10,7 +10,6 @@ import 'package:sported_app/locator.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
 
-
 class SignInPage extends StatefulWidget {
   static Route route() {
     return MaterialPageRoute<void>(builder: (_) => SignInPage());
@@ -131,7 +130,7 @@ class _SignInPageState extends State<SignInPage> {
                         controller: emailTextEditingController,
                         style: TextStyle(
                           fontSize: 15.sp,
-                          color: Color(0xff707070),
+                          color: Colors.white,
                         ),
                         decoration: formInputDecoration(
                           hintText: "company@example.com",
@@ -167,7 +166,7 @@ class _SignInPageState extends State<SignInPage> {
                         controller: passWordTextEditingController,
                         style: TextStyle(
                           fontSize: 15.sp,
-                          color: Color(0xff707070),
+                          color: Colors.white,
                         ),
                         decoration: formInputDecoration(
                           hintText: "Password",

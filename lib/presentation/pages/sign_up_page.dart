@@ -1,16 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:provider/provider.dart';
+import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/data/services/authentication_service.dart';
 import 'package:sported_app/data/services/database.dart';
 import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/custom_snackbar.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
-
 
 class SignUpPage extends StatefulWidget {
   final Function toggle;
@@ -133,7 +134,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   controller: userNameTextEditingController,
                                   style: TextStyle(
                                     fontSize: 15.sp,
-                                    color: Color(0xff707070),
+                                    color: Colors.white,
                                   ),
                                   decoration: formInputDecoration(
                                     hintText: "Full Name",
@@ -163,7 +164,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   controller: emailTextEditingController,
                                   style: TextStyle(
                                     fontSize: 15.sp,
-                                    color: Color(0xff707070),
+                                    color: Colors.white,
                                   ),
                                   decoration: formInputDecoration(
                                     hintText: "Email",
@@ -193,7 +194,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   obscureText: true,
                                   style: TextStyle(
                                     fontSize: 15.sp,
-                                    color: Color(0xff707070),
+                                    color: Colors.white,
                                   ),
                                   decoration: formInputDecoration(
                                     hintText: "Password",
@@ -225,7 +226,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   controller: confirmPassWordTextEditingController,
                                   style: TextStyle(
                                     fontSize: 15.sp,
-                                    color: Color(0xff707070),
+                                    color: Colors.white,
                                   ),
                                   decoration: formInputDecoration(
                                     hintText: "Confirm Password",
@@ -326,7 +327,20 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (logMessage == "Registered Successfully") {
       createUserInFirestore();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
+      await BlocProvider.of<EditProfileCubit>(context).updateUserProfile(
+        uid: auth.currentUser.email,
+        email: auth.currentUser.email,
+        fullName: userNameTextEditingController.text,
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BlocProvider<EditProfileCubit>(
+            create: (context) => EditProfileCubit()..getUserProfile(),
+            child: EditProfileScreen(),
+          ),
+        ),
+      );
     } else {
       setState(() {
         _isSubmitting = false;

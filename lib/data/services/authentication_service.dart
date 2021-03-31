@@ -86,24 +86,4 @@ class AuthenticationService {
       return _;
     }
   }
-
-  Future<UserProfile> uploadProfile({
-    String uid,
-    String fullName,
-    String email,
-    String age,
-    String gender,
-    String clubA,
-    String clubB,
-    String clubC,
-    String pasteUrl,
-    String buddy,
-    String coach,
-  }) async {
-    userProfile = UserProfile(fullName: fullName, age: age, gender: gender, clubA: clubA, clubB: clubB, clubC: clubC, pasteUrl: pasteUrl, buddy: buddy, coach: coach);
-
-    await userProfileRef.doc(uid).set(userProfile.toMap(userProfile)).catchError((e) {
-      print(e);
-    });
-  }
 }
