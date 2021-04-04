@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  buttons_tabbar:
+    dependency: "direct main"
+    description:
+      name: buttons_tabbar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   cached_network_image:
     dependency: "direct main"
     description:
@@ -244,6 +251,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  flutter_launcher_icons:
+    dependency: "direct dev"
+    description:
+      name: flutter_launcher_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.1"
   flutter_page_indicator:
     dependency: transitive
     description:
@@ -475,6 +489,13 @@ packages:
     dependency: transitive
     description:
       name: octo_image
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
+  palette_generator:
+    dependency: "direct main"
+    description:
+      name: palette_generator
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
@@ -756,6 +777,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.5.1"
+  yaml:
+    dependency: transitive
+    description:
+      name: yaml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.1"
 sdks:
   dart: ">=2.12.0 <3.0.0"
   flutter: ">=2.0.0"

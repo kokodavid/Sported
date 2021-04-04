@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +13,6 @@ import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
 
 import '../../constants/constants.dart';
-import 'package:http/http.dart' as http;
-import 'home_page.dart';
-
 
 class SignInPage extends StatefulWidget {
   static Route route() {
@@ -31,7 +26,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
@@ -42,7 +36,6 @@ class _SignInPageState extends State<SignInPage> {
     print(googleUser.email);
     print(googleUser.displayName);
     print(googleUser.photoUrl);
-
 
     // Create a new credential
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
@@ -97,18 +90,18 @@ class _SignInPageState extends State<SignInPage> {
     FocusScopeNode currentFocus = FocusScope.of(context);
     Widget loadingIndicator = _isLoading
         ? new Container(
-      color: Color(0xff18181A),
-      width: 70.0,
-      height: 70.0,
-      child: new Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: new Center(
-          child: new LinearProgressIndicator(
-            backgroundColor: Color(0xff8FD974),
-          ),
-        ),
-      ),
-    )
+            color: Color(0xff18181A),
+            width: 70.0,
+            height: 70.0,
+            child: new Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: new Center(
+                child: new LinearProgressIndicator(
+                  backgroundColor: Color(0xff8FD974),
+                ),
+              ),
+            ),
+          )
         : new Container();
     return SafeArea(
       child: GestureDetector(
@@ -191,7 +184,7 @@ class _SignInPageState extends State<SignInPage> {
                         controller: emailTextEditingController,
                         style: TextStyle(
                           fontSize: 15.sp,
-                          color: Color(0xff707070),
+                          color: Colors.white,
                         ),
                         decoration: formInputDecoration(
                           hintText: "company@example.com",
@@ -227,7 +220,7 @@ class _SignInPageState extends State<SignInPage> {
                         controller: passWordTextEditingController,
                         style: TextStyle(
                           fontSize: 15.sp,
-                          color: Color(0xff707070),
+                          color: Colors.white,
                         ),
                         decoration: formInputDecoration(
                           hintText: "Password",
@@ -391,18 +384,14 @@ class _SignInPageState extends State<SignInPage> {
       _isLoading = true;
     });
 
-    final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(
-        email: emailTextEditingController.text,
-        password: passWordTextEditingController.text);
+    final logMessage = await locator.get<UserController>().signInWithEmailAndPassword(email: emailTextEditingController.text, password: passWordTextEditingController.text);
 
-    if(!auth.currentUser.emailVerified){
-
+    if (!auth.currentUser.emailVerified) {
       _showErrorSnack("An email has just been sent to you, Click the link provided to complete registration");
       setState(() {
         _isLoading = false;
-
       });
-    }else if (auth.currentUser.emailVerified == true){
+    } else if (auth.currentUser.emailVerified == true) {
       if (logMessage == "Logged In Successfully") {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
@@ -420,14 +409,11 @@ class _SignInPageState extends State<SignInPage> {
           _isLoading = false;
         });
       }
-
     }
-
 
     logMessage == "Logged In Successfully" ? null : _showErrorSnack(logMessage);
 
     //print("I am logMessage $logMessage");
-
   }
 
   // login() async{

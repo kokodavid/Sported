@@ -13,9 +13,8 @@ part 'authentication_state.dart';
 class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   final AuthRepo _authMethods;
   StreamSubscription<UserModel> _userSubscription;
-  AuthenticationBloc({
-    @required AuthRepo authMethods,
-  })  : assert(authMethods != null),
+  AuthenticationBloc({@required AuthRepo authMethods})
+      : assert(authMethods != null),
         _authMethods = authMethods,
         super(const AuthenticationState.unknown()) {
     _userSubscription = _authMethods.user.listen(
@@ -29,8 +28,8 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       yield _mapAuthenticationUserChangedToState(event);
     } else if (event is AuthenticationLogoutRequested) {
       unawaited(_authMethods.signOut());
-      // } else if (event is AuthenticationDeleteRequested) {
-      //   await _authenticationRepository.deleteAccount();
+    } else if (event is AuthenticationDeleteRequested) {
+      await _authMethods.deleteAccountAndProfileData();
     }
   }
 

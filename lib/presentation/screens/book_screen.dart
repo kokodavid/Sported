@@ -399,7 +399,7 @@ class _BookScreenState extends State<BookScreen> {
                           enabled: isBooked ? false : true,
                           controller: phoneNumber,
                           style: TextStyle(
-                            color: Color(0xff707070),
+                            color: Colors.white,
                             fontSize: 15.sp,
                           ),
                           decoration: InputDecoration(
@@ -592,7 +592,7 @@ class _BookScreenState extends State<BookScreen> {
           isBooked = true;
         });
         //show snackbar
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -609,7 +609,7 @@ class _BookScreenState extends State<BookScreen> {
           isBooked = true;
         });
         //show snackbar
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -626,7 +626,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -643,7 +643,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -660,7 +660,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -677,7 +677,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -694,7 +694,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -711,7 +711,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -728,7 +728,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -745,7 +745,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -762,7 +762,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -779,7 +779,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -796,7 +796,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -813,7 +813,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -830,7 +830,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 
@@ -847,7 +847,7 @@ class _BookScreenState extends State<BookScreen> {
         setState(() {
           isBooked = true;
         });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
+        showCustomSnackbar('Slot is already booked', _scaffoldKey);
       }
     }
 

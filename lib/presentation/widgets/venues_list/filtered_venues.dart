@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
 import 'package:sported_app/presentation/screens/book_screen.dart';
@@ -103,50 +105,74 @@ class FilteredVenues extends StatelessWidget {
                                     itemCount: venue.sportsOffered.length,
                                     itemBuilder: (BuildContext context, int index) {
                                       final sportName = venue.sportsOffered[index].sportName;
-                                      return Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          //sport
-                                          Column(
+                                      return BlocBuilder<FilterBloc, FilterState>(
+                                        builder: (context, state) {
+                                          return Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              ImageIcon(
-                                                AssetImage(
-                                                  sportName == "Football"
-                                                      ? 'assets/icons/football_icon.png'
-                                                      : sportName == 'Table Tennis'
-                                                          ? 'assets/icons/table_tennis_icon.png'
-                                                          : sportName == "Badminton"
-                                                              ? 'assets/icons/badminton_icon.png'
-                                                              : sportName == 'Volleyball'
-                                                                  ? 'assets/icons/volleyball_icon.png'
-                                                                  : sportName == "Handball"
-                                                                      ? 'assets/icons/handball_icon.png'
-                                                                      : sportName == 'Swimming'
-                                                                          ? 'assets/icons/swimming_icon.png'
-                                                                          : sportName == 'Tennis'
-                                                                              ? 'assets/icons/tennis_icon.png'
-                                                                              : sportName == 'Rugby'
-                                                                                  ? 'assets/icons/rugby_icon.png'
-                                                                                  : sportName == 'Cricket'
-                                                                                      ? 'assets/icons/cricket_icon.png'
-                                                                                      : sportName == "Basketball"
-                                                                                          ? 'assets/icons/basketball_icon.png'
-                                                                                          : '',
-                                                ),
-                                                color: Colors.white,
-                                                size: 18.r,
+                                              //sport
+                                              Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  ImageIcon(
+                                                    AssetImage(
+                                                      sportName == "Football"
+                                                          ? 'assets/icons/football_icon.png'
+                                                          : sportName == 'Table Tennis'
+                                                              ? 'assets/icons/table_tennis_icon.png'
+                                                              : sportName == "Badminton"
+                                                                  ? 'assets/icons/badminton_icon.png'
+                                                                  : sportName == 'Volleyball'
+                                                                      ? 'assets/icons/volleyball_icon.png'
+                                                                      : sportName == "Handball"
+                                                                          ? 'assets/icons/handball_icon.png'
+                                                                          : sportName == 'Swimming'
+                                                                              ? 'assets/icons/swimming_icon.png'
+                                                                              : sportName == 'Tennis'
+                                                                                  ? 'assets/icons/tennis_icon.png'
+                                                                                  : sportName == 'Rugby'
+                                                                                      ? 'assets/icons/rugby_icon.png'
+                                                                                      : sportName == 'Cricket'
+                                                                                          ? 'assets/icons/cricket_icon.png'
+                                                                                          : sportName == "Basketball"
+                                                                                              ? 'assets/icons/basketball_icon.png'
+                                                                                              : '',
+                                                    ),
+                                                    color: state is FootballLoaded && sportName == 'Football'
+                                                        ? Color(0xff8FD974)
+                                                        : state is VolleyballLoaded && sportName == 'Volleyball'
+                                                            ? Color(0xff8FD974)
+                                                            : state is TableTennisLoaded && sportName == 'Table Tennis'
+                                                                ? Color(0xff8FD974)
+                                                                : state is CricketLoaded && sportName == 'Cricket'
+                                                                    ? Color(0xff8FD974)
+                                                                    : state is BadmintonLoaded && sportName == 'Badminton'
+                                                                        ? Color(0xff8FD974)
+                                                                        : state is HandballLoaded && sportName == 'Handball'
+                                                                            ? Color(0xff8FD974)
+                                                                            : state is SwimmingLoaded && sportName == 'Swimming'
+                                                                                ? Color(0xff8FD974)
+                                                                                : state is TennisLoaded && sportName == 'Tennis'
+                                                                                    ? Color(0xff8FD974)
+                                                                                    : state is BasketballLoaded && sportName == 'Basketball'
+                                                                                        ? Color(0xff8FD974)
+                                                                                        : state is RugbyLoaded && sportName == 'Rugby'
+                                                                                            ? Color(0xff8FD974)
+                                                                                            : Colors.white,
+                                                    size: 18.r,
+                                                  ),
+                                                  SizedBox(height: 2.0.h),
+                                                  Text(
+                                                    sportName,
+                                                    style: labelStyle.copyWith(fontSize: 9.sp),
+                                                  )
+                                                ],
                                               ),
-                                              SizedBox(height: 2.0.h),
-                                              Text(
-                                                sportName,
-                                                style: labelStyle.copyWith(fontSize: 9.sp),
-                                              )
+                                              SizedBox(width: 4.w),
                                             ],
-                                          ),
-                                          SizedBox(width: 4.w),
-                                        ],
+                                          );
+                                        },
                                       );
                                     },
                                   ),

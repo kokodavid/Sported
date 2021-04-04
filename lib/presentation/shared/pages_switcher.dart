@@ -4,11 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
+import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/presentation/pages/bookings_page.dart';
 import 'package:sported_app/presentation/pages/buddies_page.dart';
 import 'package:sported_app/presentation/pages/events_page.dart';
 import 'package:sported_app/presentation/pages/home_page.dart';
-import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
+import 'package:sported_app/presentation/pages/profile_page.dart';
 import 'package:sported_app/presentation/screens/venues_list_screen.dart';
 
 class PagesSwitcher extends StatelessWidget {
@@ -21,11 +22,14 @@ class PagesSwitcher extends StatelessWidget {
     );
   }
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NavBloc, NavState>(
       builder: (context, state) {
         return SafeArea(
+          top: state is LoadedPageOne ? false : true,
           child: NotificationListener<OverscrollIndicatorNotification>(
             // ignore: missing_return
             onNotification: (overscroll) {
@@ -35,7 +39,7 @@ class PagesSwitcher extends StatelessWidget {
               onWillPop: state is LoadedPageThree ? () async => true : () async => false,
               child: Scaffold(
                 body: state is LoadedPageOne
-                    ? EditProfileScreen()
+                    ? ProfilePage(scaffoldKey: _scaffoldKey)
                     : state is LoadedPageTwo
                         ? BookingsHistoryPage()
                         : state is LoadedPageThree
@@ -82,6 +86,7 @@ class PagesSwitcher extends StatelessWidget {
                     initialActiveIndex: 2,
                     onTap: (int i) {
                       if (i == 0) {
+                        BlocProvider.of<EditProfileCubit>(context)..getUserProfile();
                         return BlocProvider.of<NavBloc>(context).add(LoadPageOne());
                       }
                       if (i == 1) {

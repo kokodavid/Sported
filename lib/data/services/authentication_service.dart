@@ -56,13 +56,12 @@ class AuthenticationService {
   }
 
   //3
-  Future<void> addUserToDB({String uid, String username, String email}) async {
-    userModel = UserModel(uid: uid, username: username, email: email);
-
-    await userRef.doc(uid).set(userModel.toMap(userModel)).catchError((e) {
-      print(e);
-    });
-  }
+  // Future<void> addUserToDB({String uid, String username, String email}) async {
+  //   userProfile = UserProfile(uid: uid, fullName: username, email: email);
+  //   await userProfileRef.doc(uid).set(userProfile.toMap(userProfile)).catchError((e) {
+  //     print(e);
+  //   });
+  // }
 
   //4
   Future<UserModel> getUserFromDB({String uid}) async {
@@ -86,25 +85,5 @@ class AuthenticationService {
     } catch (_) {
       return _;
     }
-  }
-
-  Future<UserProfile> uploadProfile({
-    String uid,
-    String fullName,
-    String email,
-    String age,
-    String gender,
-    String clubA,
-    String clubB,
-    String clubC,
-    String pasteUrl,
-    String buddy,
-    String coach,
-  }) async {
-    userProfile = UserProfile(fullName: fullName, age: age, gender: gender, clubA: clubA, clubB: clubB, clubC: clubC, pasteUrl: pasteUrl, buddy: buddy, coach: coach);
-
-    await userProfileRef.doc(uid).set(userProfile.toMap(userProfile)).catchError((e) {
-      print(e);
-    });
   }
 }

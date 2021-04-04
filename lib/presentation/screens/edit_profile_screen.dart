@@ -1,20 +1,23 @@
+import 'dart:io';
+
+import 'package:chips_choice/chips_choice.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import "package:firebase_auth/firebase_auth.dart" as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:sported_app/business_logic/blocs/auth/authentication_bloc.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
+import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
-import 'package:sported_app/data/models/ourUser.dart';
-import 'package:sported_app/data/services/authentication_service.dart';
+import 'package:sported_app/data/repositories/storage_repo.dart';
 import 'package:sported_app/data/services/user_controller.dart';
-import 'package:sported_app/presentation/shared/authenticate.dart';
-import 'package:sported_app/presentation/shared/custom_snackbar.dart';
+import 'package:sported_app/presentation/shared/filter_chips/custom_chip_content.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
-import 'package:sported_app/presentation/widgets/edit_profile/avatar_section.dart';
 
 import '../../locator.dart';
 
@@ -26,45 +29,96 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  void getUser() async {
-    UserModel currentUser = await locator.get<UserController>().getUserFromDB();
-    _currentUser = currentUser;
+  //vars
+  File _image;
 
+  //updated
+  String updatedAvatarUrl;
+  String updatedFullName;
+  bool isLoggingOut = false;
+  String empty = "";
+
+  //new Data
+  String newAge;
+  String newGender;
+  String newClubA;
+  String newClubB;
+  String newClubC;
+  String newBuddy;
+  String newCoach;
+  String newCertLink;
+  List<String> newSports = [];
+
+  //upload Data
+  String uploadAge;
+  String uploadClubA;
+  String uploadClubB;
+  String uploadClubC;
+  String uploadCertLink;
+  String uploadGender;
+  String uploadBuddy;
+  String uploadCoach;
+  Iterable<String> uploadSports;
+
+  //firebase data;
+  String firestoreAge;
+  String firestoreGender;
+  String firestoreCertLink;
+  String firestoreClubA;
+  String firestoreClubB;
+  String firestoreClubC;
+  String firestoreBuddy;
+  String firestoreCoach;
+  List<String> firestoreSports = [];
+
+  bool previousSelectionCleared = false;
+  bool isCompetitive = false;
+  bool isLeisure = false;
+  TextEditingController fullNameTextEditingController;
+  TextEditingController emailTextEditingController;
+  TextEditingController pasteUrlTextEdittingController;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final editProfileFormKey = GlobalKey<FormState>();
+  final ageFormKey = GlobalKey<FormState>();
+  final genderFormKey = GlobalKey<FormState>();
+
+  final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+
+  //selected sports
+  final sportsClubKey = GlobalKey<FormState>();
+  final experienceLevel = GlobalKey<FormState>();
+
+  // row 1
+  List<String> options = [
+    'assets/icons/football_icon.png',
+    'assets/icons/cricket_icon.png',
+    'assets/icons/badminton_icon.png',
+    'assets/icons/basketball_icon.png',
+    'assets/icons/tennis_icon.png',
+    'assets/icons/swimming_icon.png',
+    'assets/icons/volleyball_icon.png',
+    'assets/icons/rugby_icon.png',
+    'assets/icons/table_tennis_icon.png',
+    'assets/icons/handball_icon.png',
+  ];
+
+  //functions
+  void getUpdatedAvatarUrl() async {
+    final uid = FirebaseAuth.instance.currentUser.uid;
+    String downloadUrl = await locator.get<StorageRepo>().getUserProfileImage(uid);
     setState(() {
-      _username = _currentUser.username;
-      _email = _currentUser.email;
+      updatedAvatarUrl = downloadUrl;
     });
   }
 
   @override
   void initState() {
-    getUser();
+    getUpdatedAvatarUrl();
     super.initState();
   }
 
-  UserModel _currentUser;
-  bool isLoggingOut = false;
-  String _username;
-  String _email;
-  String empty = "Loading...";
-  String age, gender, club1, club2, club3, buddy, coach, urlPaste;
-  bool buddyYes = false;
-  bool buddyNo = false;
-  bool coachYes = false;
-  bool coachNo = false;
-
-  TextEditingController fullNameTextEditingController;
-  TextEditingController emailTextEditingController;
-  TextEditingController pasteUrl = new TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    final editProfileFormKey = GlobalKey<FormState>();
-    final ageFormKey = GlobalKey<FormState>();
-    final genderFormKey = GlobalKey<FormState>();
-    final sportsClubKey = GlobalKey<FormState>();
-    final _scaffoldKey = GlobalKey<ScaffoldState>();
-
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -72,8 +126,157 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         appBar: AppBar(
           backgroundColor: Color(0xff18181A),
           elevation: 0.0,
-          automaticallyImplyLeading: false,
           centerTitle: true,
+          leading: BlocBuilder<EditProfileCubit, EditProfileState>(
+            builder: (context, state) {
+              if (state is EditProfileLoadSuccess) {
+                firestoreAge = state.userProfile.age;
+                firestoreGender = state.userProfile.gender;
+                firestoreClubA = state.userProfile.clubA;
+                firestoreClubB = state.userProfile.clubB;
+                firestoreClubC = state.userProfile.clubC;
+                firestoreBuddy = state.userProfile.buddy;
+                firestoreCoach = state.userProfile.coach;
+                firestoreCertLink = state.userProfile.pasteUrl;
+                firestoreSports = state.userProfile.sportsPlayed;
+
+                return IconButton(
+                  onPressed: () async {
+                    await currentUser.updateProfile(
+                      photoURL: updatedAvatarUrl,
+                      displayName: updatedFullName,
+                    );
+
+                    if (uploadSports != null && previousSelectionCleared == false) {
+                      final firestoreSportsList = firestoreSports.toList(growable: true);
+                      firestoreSportsList.insertAll(firestoreSportsList.length, uploadSports);
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider<NavBloc>(
+                                create: (_) => NavBloc()..add(LoadPageOne()),
+                              ),
+                              BlocProvider<EditProfileCubit>(
+                                create: (_) => EditProfileCubit()
+                                  ..updateUserProfile(
+                                    age: uploadAge ??= firestoreAge,
+                                    clubA: uploadClubA ??= firestoreClubA,
+                                    clubB: uploadClubB ??= firestoreClubB,
+                                    clubC: uploadClubC ??= firestoreClubC,
+                                    coach: uploadCoach ??= firestoreCoach,
+                                    buddy: uploadBuddy ??= firestoreBuddy,
+                                    gender: uploadGender ??= firestoreGender,
+                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    fullName: updatedFullName ??= currentUser.displayName,
+                                    sportsPlayed: firestoreSportsList,
+                                  ),
+                              ),
+                            ],
+                            child: PagesSwitcher(),
+                          ),
+                        ),
+                      );
+                    } else if (uploadSports == null && previousSelectionCleared == false) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider<NavBloc>(
+                                create: (_) => NavBloc()..add(LoadPageOne()),
+                              ),
+                              BlocProvider<EditProfileCubit>(
+                                create: (_) => EditProfileCubit()
+                                  ..updateUserProfile(
+                                    age: uploadAge ??= firestoreAge,
+                                    clubA: uploadClubA ??= firestoreClubA,
+                                    clubB: uploadClubB ??= firestoreClubB,
+                                    clubC: uploadClubC ??= firestoreClubC,
+                                    coach: uploadCoach ??= firestoreCoach,
+                                    buddy: uploadBuddy ??= firestoreBuddy,
+                                    gender: uploadGender ??= firestoreGender,
+                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    fullName: updatedFullName ??= currentUser.displayName,
+                                    sportsPlayed: state.userProfile.sportsPlayed,
+                                  ),
+                              ),
+                            ],
+                            child: PagesSwitcher(),
+                          ),
+                        ),
+                      );
+                    } else if (uploadSports != null && previousSelectionCleared == true) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider<NavBloc>(
+                                create: (_) => NavBloc()..add(LoadPageOne()),
+                              ),
+                              BlocProvider<EditProfileCubit>(
+                                create: (_) => EditProfileCubit()
+                                  ..updateUserProfile(
+                                    age: uploadAge ??= firestoreAge,
+                                    clubA: uploadClubA ??= firestoreClubA,
+                                    clubB: uploadClubB ??= firestoreClubB,
+                                    clubC: uploadClubC ??= firestoreClubC,
+                                    coach: uploadCoach ??= firestoreCoach,
+                                    buddy: uploadBuddy ??= firestoreBuddy,
+                                    gender: uploadGender ??= firestoreGender,
+                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    fullName: updatedFullName ??= currentUser.displayName,
+                                    sportsPlayed: uploadSports.toList(),
+                                  ),
+                              ),
+                            ],
+                            child: PagesSwitcher(),
+                          ),
+                        ),
+                      );
+                    } else if (uploadSports == null && previousSelectionCleared == true) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider<NavBloc>(
+                                create: (_) => NavBloc()..add(LoadPageOne()),
+                              ),
+                              BlocProvider<EditProfileCubit>(
+                                create: (_) => EditProfileCubit()
+                                  ..updateUserProfile(
+                                    age: uploadAge ??= firestoreAge,
+                                    clubA: uploadClubA ??= firestoreClubA,
+                                    clubB: uploadClubB ??= firestoreClubB,
+                                    clubC: uploadClubC ??= firestoreClubC,
+                                    coach: uploadCoach ??= firestoreCoach,
+                                    buddy: uploadBuddy ??= firestoreBuddy,
+                                    gender: uploadGender ??= firestoreGender,
+                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    fullName: updatedFullName ??= currentUser.displayName,
+                                    sportsPlayed: [],
+                                  ),
+                              ),
+                            ],
+                            child: PagesSwitcher(),
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  icon: Icon(Icons.arrow_back),
+                );
+              }
+              return Container();
+            },
+          ),
           title: Text(
             'Edit Profile',
             style: TextStyle(
@@ -98,7 +301,79 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               children: [
                 //avatar
-                AvatarSection(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SizedBox(width: 129.w),
+
+                    //avi
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        height: 117.h,
+                        width: 155.w,
+                        color: Colors.transparent,
+                        child: _image == null
+                            ? Center(
+                                child: updatedAvatarUrl == null
+                                    ? Icon(
+                                        Icons.person_rounded,
+                                        color: Color(0xff31323B),
+                                        size: 155.0.r,
+                                      )
+                                    : CircleAvatar(
+                                        radius: 155.0.r,
+                                        backgroundColor: Colors.transparent,
+                                        backgroundImage: NetworkImage(updatedAvatarUrl),
+                                      ),
+                              )
+                            : CircleAvatar(
+                                radius: 155.0.r,
+                                backgroundColor: Colors.transparent,
+                                backgroundImage: FileImage(_image),
+                              ),
+                      ),
+                    ),
+
+                    SizedBox(width: 18.w),
+
+                    //pick image
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: IconButton(
+                        padding: EdgeInsets.all(0),
+                        constraints: BoxConstraints(
+                          minWidth: 20.w,
+                          maxWidth: 20.w,
+                          maxHeight: 20.h,
+                          minHeight: 20.h,
+                        ),
+                        icon: Icon(
+                          Icons.camera_alt_outlined,
+                          size: 20.r,
+                          color: Colors.white,
+                        ),
+                        onPressed: () async {
+                          // ignore: deprecated_member_use
+                          File image = await ImagePicker.pickImage(source: ImageSource.gallery);
+                          setState(() {
+                            if (image != null) {
+                              _image = File(image.path);
+                            } else {
+                              print('No image selected.');
+                            }
+                          });
+                          await locator.get<UserController>().uploadProfilePicture(_image);
+                          getUpdatedAvatarUrl();
+                          print("avatarURl | $updatedAvatarUrl");
+                        },
+                      ),
+                    ),
+
+                    SizedBox(width: 90.w),
+                  ],
+                ),
 
                 //forms
                 Padding(
@@ -119,20 +394,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         SizedBox(height: 10.0.h),
                         //full name field
                         TextFormField(
-                          readOnly: true,
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            color: Color(0xff707070),
-                          ),
+                          readOnly: false,
+                          initialValue: currentUser.displayName ?? empty,
+                          style: regularStyle.copyWith(color: Colors.white),
                           controller: fullNameTextEditingController,
                           decoration: formInputDecoration(
-                            hintText: _username ?? empty,
+                            hintText: 'Enter full name',
                             isDense: true,
-                            // labelText: _username,
                             prefixIcon: Icons.person_outline,
                           ),
                           validator: (val) {
-                            return val.isEmpty || val.length < 2 ? "Try another Username" : null;
+                            return val.isEmpty || val.length < 2 ? "Full name cannot be less than 2 characters" : null;
+                          },
+                          onChanged: (val) {
+                            setState(() {
+                              updatedFullName = val;
+                            });
                           },
                         ),
                         SizedBox(height: 20.0.h),
@@ -148,12 +425,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         //email field
                         TextFormField(
                           readOnly: true,
-                          style: regularStyle,
+                          initialValue: currentUser.email ?? empty,
+                          style: regularStyle.copyWith(color: Colors.white),
                           controller: emailTextEditingController,
                           decoration: formInputDecoration(
-                            // labelText: _email,
                             isDense: true,
-                            hintText: _email ?? empty,
+                            hintText: "Enter email",
                             prefixIcon: Icons.email_outlined,
                           ),
                           validator: (val) {
@@ -167,182 +444,366 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
 
                 //age & gender
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0.w),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            //age title
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Age',
-                                style: regularStyle,
-                              ),
-                            ),
+                BlocBuilder<EditProfileCubit, EditProfileState>(
+                  builder: (context, state) {
+                    if (state is EditProfileLoadSuccess) {
+                      //check if newData is null(must be null) then
+                      //show 'age' & no color on gender
+                      //on changed, set age and gender to uploadData & newData
+                      //if firestore data has data show firestore age & firestore gender
+                      //set age & gender to uploadData & newData then
+                      //check if newData is null(not null) then
+                      //show newData
+                      //set age & gender to uploaData
 
-                            //age range dropdown
-                            SizedBox(height: 10.0.h),
-                            Form(
-                              key: ageFormKey,
-                              child: Container(
-                                width: 170.w,
-                                child: DropdownButtonFormField(
-                                  elevation: 0,
-                                  iconSize: 1.r,
-                                  isDense: true,
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    color: Color(0xff8FD974),
+                      //if firestore data is null show 'age' & no color on gender
+                      //show 'age' & no color on gender
+                      //on changed, set age and gender to uploadData & newData
+
+                      //on save pass upload Data
+                      final firestoreAge = state.userProfile.age;
+                      final firestoreGender = state.userProfile.gender;
+
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+                        child: Row(
+                          children: <Widget>[
+                            //age
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  //age title
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Age',
+                                      style: regularStyle,
+                                    ),
                                   ),
-                                  items: [
-                                    '10-15',
-                                    '15-20',
-                                    '20-25',
-                                    '25-30',
-                                    '30-40',
-                                    'above 40',
-                                  ].map(
-                                    (val) {
-                                      return DropdownMenuItem<String>(
-                                        value: val,
-                                        child: Text(val),
-                                      );
-                                    },
-                                  ).toList(),
-                                  hint: age == null
-                                      ? Text(
-                                          'Age',
-                                          style: TextStyle(
-                                            fontSize: 15.sp,
-                                            color: Color(0xff8FD974),
+
+                                  //age range dropdown
+                                  SizedBox(height: 10.0.h),
+                                  Form(
+                                    key: ageFormKey,
+                                    child: Container(
+                                      width: 170.w,
+                                      child: DropdownButtonFormField(
+                                        elevation: 0,
+                                        iconSize: 1.r,
+                                        isDense: true,
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: Color(0xff8FD974),
+                                        ),
+                                        items: [
+                                          '10-15',
+                                          '15-20',
+                                          '20-25',
+                                          '25-30',
+                                          '30-40',
+                                          'above 40',
+                                        ].map(
+                                          (val) {
+                                            return DropdownMenuItem<String>(
+                                              value: val,
+                                              child: Text(val),
+                                            );
+                                          },
+                                        ).toList(),
+                                        hint: newAge == null
+                                            ? firestoreAge == null
+                                                ? Text(
+                                                    'Age',
+                                                    style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      color: Color(0xff8FD974),
+                                                    ),
+                                                  )
+                                                : Text(
+                                                    firestoreAge,
+                                                    style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      color: Color(0xff8FD974),
+                                                    ),
+                                                  )
+                                            : Text(
+                                                newAge,
+                                                style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  color: Color(0xff8FD974),
+                                                ),
+                                              ),
+                                        icon: Icon(
+                                          MdiIcons.chevronDown,
+                                          size: 15.r,
+                                          color: Color(0xffC5C6C7),
+                                        ),
+                                        decoration: InputDecoration(
+                                          alignLabelWithHint: true,
+                                          enabled: true,
+                                          fillColor: Color(0xff31323B),
+                                          filled: true,
+                                          border: UnderlineInputBorder(
+                                            borderSide: BorderSide.none,
+                                            borderRadius: BorderRadius.circular(8.r),
                                           ),
-                                        )
-                                      : Text(
-                                          age,
-                                          style: TextStyle(
-                                            fontSize: 15.sp,
-                                            color: Color(0xff8FD974),
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide.none,
+                                            borderRadius: BorderRadius.circular(8.r),
                                           ),
                                         ),
-                                  icon: Icon(
-                                    MdiIcons.chevronDown,
-                                    size: 15.r,
-                                    color: Color(0xffC5C6C7),
-                                  ),
-                                  decoration: InputDecoration(
-                                    alignLabelWithHint: true,
-                                    enabled: true,
-                                    fillColor: Color(0xff31323B),
-                                    filled: true,
-                                    border: UnderlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.circular(8.r),
+                                        onChanged: (val) {
+                                          setState(() {
+                                            newAge = val;
+                                            uploadAge = val;
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      age = val;
-                                    });
-                                  },
-                                ),
+
+                                  SizedBox(height: 20.0.h),
+                                ],
                               ),
                             ),
 
-                            SizedBox(height: 20.0.h),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            //age title
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Gender',
-                                style: regularStyle,
-                              ),
-                            ),
-
-                            //age range dropdown
-                            SizedBox(height: 10.0.h),
-                            Form(
-                              key: genderFormKey,
-                              child: Container(
-                                width: 170.w,
-                                child: DropdownButtonFormField(
-                                  elevation: 0,
-                                  iconSize: 1.r,
-                                  isDense: true,
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    color: Color(0xff8FD974),
+                            //gender
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  //age title
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Gender',
+                                      style: regularStyle,
+                                    ),
                                   ),
-                                  items: ['Male', 'Female', 'Other'].map(
-                                    (val) {
-                                      return DropdownMenuItem<String>(
-                                        value: val,
-                                        child: Text(val),
-                                      );
-                                    },
-                                  ).toList(),
-                                  hint: gender == null
-                                      ? Text(
-                                          'Gender',
-                                          style: TextStyle(
-                                            fontSize: 15.sp,
-                                            color: Color(0xff8FD974),
-                                          ),
-                                        )
-                                      : Text(
-                                          gender,
-                                          style: TextStyle(
-                                            fontSize: 15.sp,
-                                          ),
+
+                                  SizedBox(height: 10.0.h),
+
+                                  //gender selection
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      //male
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            newGender = 'Male';
+                                            uploadGender = 'Male';
+                                          });
+                                        },
+                                        padding: EdgeInsets.all(0),
+                                        icon: Icon(
+                                          MdiIcons.genderMale,
+                                          color: newGender == 'Male'
+                                              ? Color(0xff8FD974)
+                                              : firestoreGender == "Male"
+                                                  ? Color(0xff2F4826)
+                                                  : Color(0xff31323B),
                                         ),
-                                  icon: Icon(
-                                    MdiIcons.chevronDown,
-                                    size: 15.r,
-                                    color: Color(0xffC5C6C7),
+                                      ),
+                                      //female
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            newGender = 'Female';
+                                            uploadGender = 'Female';
+                                          });
+                                        },
+                                        padding: EdgeInsets.all(0),
+                                        icon: Icon(
+                                          MdiIcons.genderFemale,
+                                          color: newGender == 'Female'
+                                              ? Color(0xff8FD974)
+                                              : firestoreGender == "Female"
+                                                  ? Color(0xffD9F2D0)
+                                                  : Color(0xff31323B),
+                                        ),
+                                      ),
+
+                                      //non-binary
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            newGender = 'Non-binary';
+                                            uploadGender = 'Non-binary';
+                                          });
+                                        },
+                                        padding: EdgeInsets.all(0),
+                                        icon: Icon(
+                                          MdiIcons.genderNonBinary,
+                                          color: newGender == 'Non-binary'
+                                              ? Color(0xff8FD974)
+                                              : firestoreGender == "Non-binary"
+                                                  ? Color(0xffD9F2D0)
+                                                  : Color(0xff31323B),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  decoration: InputDecoration(
-                                    alignLabelWithHint: true,
-                                    enabled: true,
-                                    fillColor: Color(0xff31323B),
-                                    filled: true,
-                                    border: UnderlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                  ),
-                                  onChanged: (val) {
-                                    gender = val;
-                                  },
-                                ),
+
+                                  SizedBox(height: 20.0.h),
+                                ],
                               ),
                             ),
-
-                            SizedBox(height: 20.0.h),
                           ],
                         ),
+                      );
+                    }
+                    if (state is EditProfileLoadFailure) {
+                      return Container();
+                    }
+
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //age title
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Age',
+                                    style: regularStyle,
+                                  ),
+                                ),
+
+                                //age range dropdown
+                                SizedBox(height: 10.0.h),
+                                Form(
+                                  key: ageFormKey,
+                                  child: Container(
+                                    width: 170.w,
+                                    child: DropdownButtonFormField(
+                                      elevation: 0,
+                                      iconSize: 1.r,
+                                      isDense: true,
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        color: Color(0xff8FD974),
+                                      ),
+                                      items: [
+                                        '10-15',
+                                        '15-20',
+                                        '20-25',
+                                        '25-30',
+                                        '30-40',
+                                        'above 40',
+                                      ].map(
+                                        (val) {
+                                          return DropdownMenuItem<String>(
+                                            value: val,
+                                            child: Text(val),
+                                          );
+                                        },
+                                      ).toList(),
+                                      hint: Text(
+                                        'Age',
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: Color(0xff8FD974),
+                                        ),
+                                      ),
+                                      icon: Icon(
+                                        MdiIcons.chevronDown,
+                                        size: 15.r,
+                                        color: Color(0xffC5C6C7),
+                                      ),
+                                      decoration: InputDecoration(
+                                        alignLabelWithHint: true,
+                                        enabled: true,
+                                        fillColor: Color(0xff31323B),
+                                        filled: true,
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                          borderRadius: BorderRadius.circular(8.r),
+                                        ),
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                          borderRadius: BorderRadius.circular(8.r),
+                                        ),
+                                      ),
+                                      onChanged: (val) {},
+                                    ),
+                                  ),
+                                ),
+
+                                SizedBox(height: 20.0.h),
+                              ],
+                            ),
+                          ),
+
+                          //gender
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //age title
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Gender',
+                                    style: regularStyle,
+                                  ),
+                                ),
+
+                                //age range dropdown
+                                SizedBox(height: 10.0.h),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    //male
+                                    IconButton(
+                                      onPressed: () {},
+                                      padding: EdgeInsets.all(0),
+                                      icon: Icon(
+                                        MdiIcons.genderMale,
+                                        color: Color(0xff31323B),
+                                      ),
+                                    ),
+                                    //female
+                                    IconButton(
+                                      onPressed: () {},
+                                      padding: EdgeInsets.all(0),
+                                      icon: Icon(
+                                        MdiIcons.genderFemale,
+                                        color: Color(0xff31323B),
+                                      ),
+                                    ),
+
+                                    //non-binary
+                                    IconButton(
+                                      onPressed: () {},
+                                      padding: EdgeInsets.all(0),
+                                      icon: Icon(
+                                        MdiIcons.genderNonBinary,
+                                        color: Color(0xff31323B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20.0.h),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
 
                 //sports clubs
@@ -361,453 +822,1572 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       SizedBox(height: 10.h),
 
                       //forms
-                      Form(
-                        key: sportsClubKey,
-                        child: Column(
-                          children: [
-                            //club 1
-                            DropdownButtonFormField(
-                              elevation: 0,
-                              iconSize: 23.r,
-                              isDense: true,
-                              isExpanded: false,
-                              hint: club1 == null
-                                  ? Text('Please select a sports club', style: labelStyle)
-                                  : Text(
-                                      club1,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xff8FD974),
+                      BlocBuilder<EditProfileCubit, EditProfileState>(
+                        builder: (context, state) {
+                          if (state is EditProfileLoadSuccess) {
+                            final firestoreClubA = state.userProfile.clubA;
+                            final firestoreClubB = state.userProfile.clubB;
+                            final firestoreClubC = state.userProfile.clubC;
+                            return Form(
+                              key: sportsClubKey,
+                              child: Column(
+                                children: [
+                                  //club A
+                                  DropdownButtonFormField(
+                                    elevation: 0,
+                                    iconSize: 23.r,
+                                    isDense: true,
+                                    isExpanded: false,
+                                    hint: newClubA == null
+                                        ? firestoreClubA == null
+                                            ? Text(
+                                                'Please select a sports club',
+                                                style: labelStyle,
+                                              )
+                                            : Text(
+                                                firestoreClubA,
+                                                style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  color: Color(0xff8FD974),
+                                                ),
+                                              )
+                                        : Text(
+                                            newClubA,
+                                            style: TextStyle(
+                                              fontSize: 15.sp,
+                                              color: Color(0xff8FD974),
+                                            ),
+                                          ),
+                                    icon: Icon(
+                                      MdiIcons.chevronDown,
+                                      color: Color(0xffC5C6C7),
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: Color(0xff8FD974),
+                                    ),
+                                    items: [
+                                      'None',
+                                      'AgaKhan',
+                                      'Jaffery Turf',
+                                    ].map(
+                                      (val) {
+                                        return DropdownMenuItem<String>(
+                                          value: val,
+                                          child: Text(val),
+                                        );
+                                      },
+                                    ).toList(),
+                                    decoration: InputDecoration(
+                                      enabled: true,
+                                      fillColor: Color(0xff31323B),
+                                      filled: true,
+                                      border: UnderlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.circular(8.r),
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.circular(8.r),
                                       ),
                                     ),
-                              icon: Icon(
-                                MdiIcons.chevronDown,
-                                color: Color(0xffC5C6C7),
-                              ),
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                color: Color(0xff8FD974),
-                              ),
-                              items: [
-                                'No',
-                                'Aga khan',
-                                'Jaffery Turf',
-                                'Arena One',
-                              ].map(
-                                (val) {
-                                  return DropdownMenuItem<String>(
-                                    value: val,
-                                    child: Text(val),
-                                  );
-                                },
-                              ).toList(),
-                              decoration: InputDecoration(
-                                enabled: true,
-                                fillColor: Color(0xff31323B),
-                                filled: true,
-                                border: UnderlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                              ),
-                              onChanged: (val) {
-                                setState(() {
-                                  club1 = val;
-                                });
-                              },
-                            ),
-                            SizedBox(height: 10),
-                            DropdownButtonFormField(
-                              elevation: 0,
-                              iconSize: 23.r,
-                              isDense: true,
-                              isExpanded: false,
-                              hint: club2 == null
-                                  ? Text('Please select a sports club', style: labelStyle)
-                                  : Text(
-                                      club2,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xff8FD974),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        newClubA = val;
+                                        uploadClubA = val;
+                                      });
+                                    },
+                                  ),
+                                  SizedBox(height: 10),
+                                  DropdownButtonFormField(
+                                    elevation: 0,
+                                    iconSize: 23.r,
+                                    isDense: true,
+                                    isExpanded: false,
+                                    hint: newClubB == null
+                                        ? firestoreClubB == null
+                                            ? Text(
+                                                'Please select a sports club',
+                                                style: labelStyle,
+                                              )
+                                            : Text(
+                                                firestoreClubB,
+                                                style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  color: Color(0xff8FD974),
+                                                ),
+                                              )
+                                        : Text(
+                                            newClubB,
+                                            style: TextStyle(
+                                              fontSize: 15.sp,
+                                              color: Color(0xff8FD974),
+                                            ),
+                                          ),
+                                    icon: Icon(
+                                      MdiIcons.chevronDown,
+                                      color: Color(0xffC5C6C7),
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: Color(0xff8FD974),
+                                    ),
+                                    items: [
+                                      'None',
+                                      'AgaKhan',
+                                      'Jaffery Turf',
+                                    ].map(
+                                      (val) {
+                                        return DropdownMenuItem<String>(
+                                          value: val,
+                                          child: Text(val),
+                                        );
+                                      },
+                                    ).toList(),
+                                    decoration: InputDecoration(
+                                      enabled: true,
+                                      fillColor: Color(0xff31323B),
+                                      filled: true,
+                                      border: UnderlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.circular(8.r),
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.circular(8.r),
                                       ),
                                     ),
-                              icon: Icon(
-                                MdiIcons.chevronDown,
-                                color: Color(0xffC5C6C7),
-                              ),
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                color: Color(0xff8FD974),
-                              ),
-                              items: [
-                                'No',
-                                'Aga khan',
-                                'Jaffery Turf',
-                                'Arena One',
-                              ].map(
-                                (val) {
-                                  return DropdownMenuItem<String>(
-                                    value: val,
-                                    child: Text(val),
-                                  );
-                                },
-                              ).toList(),
-                              decoration: InputDecoration(
-                                enabled: true,
-                                fillColor: Color(0xff31323B),
-                                filled: true,
-                                border: UnderlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                              ),
-                              onChanged: (val) {
-                                setState(() {
-                                  club2 = val;
-                                });
-                              },
-                            ),
-                            SizedBox(height: 10),
-                            DropdownButtonFormField(
-                              elevation: 0,
-                              iconSize: 23.r,
-                              isDense: true,
-                              isExpanded: false,
-                              hint: club3 == null
-                                  ? Text('Please select a sports club', style: labelStyle)
-                                  : Text(
-                                      club3,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xff8FD974),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        newClubB = val;
+                                        uploadClubB = val;
+                                      });
+                                    },
+                                  ),
+                                  SizedBox(height: 10),
+                                  DropdownButtonFormField(
+                                    elevation: 0,
+                                    iconSize: 23.r,
+                                    isDense: true,
+                                    isExpanded: false,
+                                    hint: newClubC == null
+                                        ? firestoreClubC == null
+                                            ? Text(
+                                                'Please select a sports club',
+                                                style: labelStyle,
+                                              )
+                                            : Text(
+                                                firestoreClubC,
+                                                style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  color: Color(0xff8FD974),
+                                                ),
+                                              )
+                                        : Text(
+                                            newClubC,
+                                            style: TextStyle(
+                                              fontSize: 15.sp,
+                                              color: Color(0xff8FD974),
+                                            ),
+                                          ),
+                                    icon: Icon(
+                                      MdiIcons.chevronDown,
+                                      color: Color(0xffC5C6C7),
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: Color(0xff8FD974),
+                                    ),
+                                    items: [
+                                      'None',
+                                      'AgaKhan',
+                                      'Jaffery Turf',
+                                    ].map(
+                                      (val) {
+                                        return DropdownMenuItem<String>(
+                                          value: val,
+                                          child: Text(val),
+                                        );
+                                      },
+                                    ).toList(),
+                                    decoration: InputDecoration(
+                                      enabled: true,
+                                      fillColor: Color(0xff31323B),
+                                      filled: true,
+                                      border: UnderlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.circular(8.r),
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.circular(8.r),
                                       ),
                                     ),
-                              icon: Icon(
-                                MdiIcons.chevronDown,
-                                color: Color(0xffC5C6C7),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        newClubC = val;
+                                        uploadClubC = val;
+                                      });
+                                    },
+                                  ),
+                                  SizedBox(height: 20),
+                                  //divider
+                                  Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
+                                  SizedBox(height: 20.h),
+                                ],
                               ),
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                color: Color(0xff8FD974),
-                              ),
-                              items: [
-                                'No',
-                                'Aga khan',
-                                'Jaffery Turf',
-                                'Arena One',
-                              ].map(
-                                (val) {
-                                  return DropdownMenuItem<String>(
-                                    value: val,
-                                    child: Text(val),
-                                  );
-                                },
-                              ).toList(),
-                              decoration: InputDecoration(
-                                enabled: true,
-                                fillColor: Color(0xff31323B),
-                                filled: true,
-                                border: UnderlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                              ),
-                              onChanged: (val) {
-                                club3 = val;
-                              },
-                            ),
-                            SizedBox(height: 20),
-                            //divider
-                            Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
+                            );
+                          }
 
-                            SizedBox(height: 20.h),
-                          ],
+                          if (state is EditProfileLoadFailure) {
+                            return Container();
+                          }
+                          return Form(
+                            key: sportsClubKey,
+                            child: Column(
+                              children: [
+                                //club A
+                                DropdownButtonFormField(
+                                  elevation: 0,
+                                  iconSize: 23.r,
+                                  isDense: true,
+                                  isExpanded: false,
+                                  hint: Text(
+                                    'Please select a sports club',
+                                    style: labelStyle,
+                                  ),
+                                  icon: Icon(
+                                    MdiIcons.chevronDown,
+                                    color: Color(0xffC5C6C7),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    color: Color(0xff8FD974),
+                                  ),
+                                  items: [
+                                    'None',
+                                    'AgaKhan',
+                                    'Jaffery Turf',
+                                  ].map(
+                                    (val) {
+                                      return DropdownMenuItem<String>(
+                                        value: val,
+                                        child: Text(val),
+                                      );
+                                    },
+                                  ).toList(),
+                                  decoration: InputDecoration(
+                                    enabled: true,
+                                    fillColor: Color(0xff31323B),
+                                    filled: true,
+                                    border: UnderlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                  ),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      newClubA = val;
+                                      uploadClubA = val;
+                                    });
+                                  },
+                                ),
+                                SizedBox(height: 10),
+                                DropdownButtonFormField(
+                                  elevation: 0,
+                                  iconSize: 23.r,
+                                  isDense: true,
+                                  isExpanded: false,
+                                  hint: Text(
+                                    'Please select a sports club',
+                                    style: labelStyle,
+                                  ),
+                                  icon: Icon(
+                                    MdiIcons.chevronDown,
+                                    color: Color(0xffC5C6C7),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    color: Color(0xff8FD974),
+                                  ),
+                                  items: [
+                                    'None',
+                                    'AgaKhan',
+                                    'Jaffery Turf',
+                                  ].map(
+                                    (val) {
+                                      return DropdownMenuItem<String>(
+                                        value: val,
+                                        child: Text(val),
+                                      );
+                                    },
+                                  ).toList(),
+                                  decoration: InputDecoration(
+                                    enabled: true,
+                                    fillColor: Color(0xff31323B),
+                                    filled: true,
+                                    border: UnderlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                  ),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      newClubA = val;
+                                      uploadClubA = val;
+                                    });
+                                  },
+                                ),
+
+                                SizedBox(height: 10),
+                                DropdownButtonFormField(
+                                  elevation: 0,
+                                  iconSize: 23.r,
+                                  isDense: true,
+                                  isExpanded: false,
+                                  hint: Text(
+                                    'Please select a sports club',
+                                    style: labelStyle,
+                                  ),
+                                  icon: Icon(
+                                    MdiIcons.chevronDown,
+                                    color: Color(0xffC5C6C7),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    color: Color(0xff8FD974),
+                                  ),
+                                  items: [
+                                    'None',
+                                    'AgaKhan',
+                                    'Jaffery Turf',
+                                  ].map(
+                                    (val) {
+                                      return DropdownMenuItem<String>(
+                                        value: val,
+                                        child: Text(val),
+                                      );
+                                    },
+                                  ).toList(),
+                                  decoration: InputDecoration(
+                                    enabled: true,
+                                    fillColor: Color(0xff31323B),
+                                    filled: true,
+                                    border: UnderlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                  ),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      newClubA = val;
+                                      uploadClubA = val;
+                                    });
+                                  },
+                                ),
+
+                                SizedBox(height: 20),
+                                //divider
+                                Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
+                                SizedBox(height: 20.h),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                //select sports
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      //title
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'What sports do you play?',
+                          style: regularStyle,
                         ),
                       ),
+
+                      SizedBox(height: 20.h),
+
+                      BlocBuilder<EditProfileCubit, EditProfileState>(
+                        builder: (_, state) {
+                          if (state is EditProfileLoadSuccess) {
+                            firestoreSports = state.userProfile.sportsPlayed;
+                            return Column(
+                              children: [
+                                CustomChipContent(
+                                  child: ChipsChoice<String>.multiple(
+                                    wrapped: true,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    runSpacing: 20.h,
+                                    value: newSports == null
+                                        ? firestoreSports == null
+                                            ? newSports
+                                            : previousSelectionCleared == true
+                                                ? newSports
+                                                : firestoreSports
+                                        : newSports,
+                                    onChanged: (val) => setState(() {
+                                      newSports = val;
+                                      uploadSports = val;
+                                    }),
+                                    choiceItems: C2Choice.listFrom<String, String>(
+                                      source: options,
+                                      value: (i, v) => v,
+                                      label: (i, v) => v,
+                                    ),
+                                    choiceBuilder: (item) {
+                                      return AnimatedContainer(
+                                        width: 42.h,
+                                        height: 42.h,
+                                        margin: EdgeInsets.only(right: 10.w),
+                                        duration: const Duration(milliseconds: 150),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: item.selected
+                                              ? Color(0xff8FD974)
+                                              : firestoreSports != null
+                                                  ? previousSelectionCleared == true
+                                                      ? Color(0xff31323B)
+                                                      : firestoreSports.contains(item.value)
+                                                          ? Color(0xff2F4826)
+                                                          : Color(0xff31323B)
+                                                  : Color(0xff31323B),
+                                        ),
+                                        child: InkWell(
+                                          onTap: () {
+                                            item.select(!item.selected);
+                                            if (!item.selected) {
+                                              showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (_) => Dialog(
+                                                  backgroundColor: Color(0xff18181A),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
+                                                  child: Container(
+                                                    height: 400.h,
+                                                    width: 360.w,
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [
+                                                        //title
+                                                        Container(
+                                                          padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
+                                                          child: Text(
+                                                            'Select Level',
+                                                            style: TextStyle(
+                                                              color: Color(0xffFEFEFE),
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        //divider
+                                                        Divider(height: 0.5.h, thickness: 0.5.h, color: Color(0xff07070a)),
+
+                                                        SizedBox(height: 24.h),
+
+                                                        //level title
+                                                        Padding(
+                                                          padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
+                                                          child: Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Text(
+                                                              'Level',
+                                                              style: regularStyle,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 16.h),
+
+                                                        //level dropdown
+                                                        Padding(
+                                                          padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                                                          child: SizedBox(
+                                                            child: Form(
+                                                              key: experienceLevel,
+                                                              child: Column(
+                                                                children: [
+                                                                  //dropdown
+                                                                  DropdownButtonFormField(
+                                                                    elevation: 0,
+                                                                    iconSize: 23.r,
+                                                                    isDense: true,
+                                                                    isExpanded: true,
+                                                                    hint: Text(
+                                                                      'Select your experience level',
+                                                                      style: labelStyle,
+                                                                    ),
+                                                                    icon: Icon(
+                                                                      MdiIcons.chevronDown,
+                                                                      size: 24.r,
+                                                                      color: Color(0xffC5C6C7),
+                                                                    ),
+                                                                    style: TextStyle(
+                                                                      fontSize: 15.sp,
+                                                                      color: Color(0xff8FD974),
+                                                                    ),
+                                                                    items:
+                                                                        //TODO: Implement choose level selection
+                                                                        [
+                                                                      'Beginner',
+                                                                      'Intermediate',
+                                                                      'Proffesional',
+                                                                    ].map((val) {
+                                                                      return DropdownMenuItem<String>(
+                                                                        value: val,
+                                                                        child: SizedBox(
+                                                                          width: 246.w,
+                                                                          child: Text(
+                                                                            val,
+                                                                            maxLines: 1,
+                                                                            softWrap: true,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    }).toList(),
+                                                                    decoration: InputDecoration(
+                                                                      enabled: true,
+                                                                      fillColor: Color(0xff31323B),
+                                                                      filled: true,
+                                                                      border: UnderlineInputBorder(
+                                                                        borderSide: BorderSide.none,
+                                                                        borderRadius: BorderRadius.circular(8.r),
+                                                                      ),
+                                                                      enabledBorder: UnderlineInputBorder(
+                                                                        borderSide: BorderSide.none,
+                                                                        borderRadius: BorderRadius.circular(8.r),
+                                                                      ),
+                                                                    ),
+                                                                    onChanged: (val) {
+                                                                      // newExperience = val;
+                                                                      // uploadExperience = val;
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 20.h),
+
+                                                        //difficulty title
+                                                        Padding(
+                                                          padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
+                                                          child: Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Text(
+                                                              'Difficulty',
+                                                              style: regularStyle,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 16.h),
+
+                                                        //difficulty btns
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            //competitive
+                                                            MaterialButton(
+                                                              height: 46.h,
+                                                              minWidth: 147.w,
+                                                              color: isCompetitive ? Color(0xff8FD974) : Color(0xff31323B),
+                                                              padding: EdgeInsets.all(0),
+                                                              shape: StadiumBorder(),
+                                                              elevation: 0.0,
+                                                              hoverElevation: 0,
+                                                              disabledElevation: 0,
+                                                              highlightElevation: 0,
+                                                              focusElevation: 0,
+                                                              child: Text(
+                                                                'Competitive',
+                                                                style: TextStyle(
+                                                                  color: isCompetitive ? Colors.black : Color(0xff707070),
+                                                                  fontWeight: FontWeight.w400,
+                                                                  fontSize: 15.sp,
+                                                                ),
+                                                              ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  isCompetitive = true;
+                                                                });
+                                                              },
+                                                            ),
+
+                                                            SizedBox(width: 12.0.w),
+
+                                                            //leisure
+                                                            MaterialButton(
+                                                              height: 46.h,
+                                                              minWidth: 147.w,
+                                                              color: isLeisure ? Color(0xff31323B) : Color(0xff8FD974),
+                                                              shape: StadiumBorder(),
+                                                              padding: EdgeInsets.all(0),
+                                                              elevation: 0.0,
+                                                              hoverElevation: 0,
+                                                              disabledElevation: 0,
+                                                              highlightElevation: 0,
+                                                              focusElevation: 0,
+                                                              child: Text(
+                                                                'Leisure',
+                                                                style: TextStyle(
+                                                                  color: isLeisure ? Color(0xff707070) : Colors.black,
+                                                                  fontWeight: FontWeight.w400,
+                                                                  fontSize: 15.sp,
+                                                                ),
+                                                              ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  isLeisure = true;
+                                                                });
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+
+                                                        SizedBox(height: 48.h),
+
+                                                        //continue btn
+                                                        MaterialButton(
+                                                          height: 46.h,
+                                                          minWidth: 147.w,
+                                                          color: Color(0xff8FD974),
+                                                          padding: EdgeInsets.all(0),
+                                                          shape: StadiumBorder(),
+                                                          elevation: 0.0,
+                                                          hoverElevation: 0,
+                                                          disabledElevation: 0,
+                                                          highlightElevation: 0,
+                                                          focusElevation: 0,
+                                                          child: Text(
+                                                            'Continue',
+                                                            style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontWeight: FontWeight.w400,
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                          onPressed: () {
+                                                            //TODO: Pop with data
+                                                            Navigator.pop(context);
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: <Widget>[
+                                              Visibility(
+                                                visible: item.selected,
+                                                child: ImageIcon(
+                                                  AssetImage(item.label),
+                                                  size: 24.r,
+                                                  color: item.selected ? Color(0xff28282B) : Colors.white,
+                                                ),
+                                              ),
+                                              ImageIcon(
+                                                AssetImage(item.label),
+                                                size: 24.r,
+                                                color: item.selected ? Color(0xff28282B) : Colors.white,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                firestoreSports != null
+                                    ? Padding(
+                                        padding: EdgeInsets.only(top: 10.h),
+                                        child: MaterialButton(
+                                          height: 32.h,
+                                          color: Color(0xff8FD974),
+                                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8.r),
+                                          ),
+                                          elevation: 0.0,
+                                          hoverElevation: 0,
+                                          disabledElevation: 0,
+                                          highlightElevation: 0,
+                                          focusElevation: 0,
+                                          child: Text(
+                                            'Clear Previous Selection',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14.sp,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              previousSelectionCleared = true;
+                                            });
+                                          },
+                                        ),
+                                      )
+                                    : Container(),
+                              ],
+                            );
+                          }
+                          return CustomChipContent(
+                            child: ChipsChoice<String>.multiple(
+                              wrapped: true,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              runSpacing: 20.h,
+                              value: newSports,
+                              onChanged: (val) => setState(() => newSports = val),
+                              choiceItems: C2Choice.listFrom<String, String>(
+                                source: options,
+                                value: (i, v) => v,
+                                label: (i, v) => v,
+                              ),
+                              choiceBuilder: (item) {
+                                return AnimatedContainer(
+                                  width: 42.h,
+                                  height: 42.h,
+                                  margin: EdgeInsets.only(right: 10.w),
+                                  duration: const Duration(milliseconds: 150),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(0xff31323B),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {},
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: <Widget>[
+                                        Visibility(
+                                          visible: item.selected,
+                                          child: ImageIcon(
+                                            AssetImage(item.label),
+                                            size: 24.r,
+                                            color: item.selected ? Color(0xff28282B) : Colors.white,
+                                          ),
+                                        ),
+                                        ImageIcon(
+                                          AssetImage(item.label),
+                                          size: 24.r,
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+
+                      SizedBox(height: 20.0.h),
+
+                      //divider
+                      Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
+
+                      SizedBox(height: 20.0.h),
                     ],
                   ),
                 ),
 
                 //willing
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    children: [
-                      //padded content
-                      Padding(
+                BlocBuilder<EditProfileCubit, EditProfileState>(
+                  builder: (context, state) {
+                    if (state is EditProfileLoadSuccess) {
+                      firestoreBuddy = state.userProfile.buddy;
+                      return Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
                         child: Column(
                           children: [
-                            //title
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Are you willing to sport with others?',
-                                style: regularStyle,
+                            //padded content
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20.w),
+                              child: Column(
+                                children: [
+                                  //title
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Are you willing to sport with others?',
+                                      style: regularStyle,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.0.h),
+                                  //sub
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Sported is platform that can help you find players to sport with!',
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        color: Color(0xff8FD974),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.0.h),
+                                  //btns
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      //yes
+                                      MaterialButton(
+                                        height: 30.h,
+                                        color: newBuddy == "Yes"
+                                            ? Color(0xff8FD974)
+                                            : firestoreBuddy == "Yes"
+                                                ? Color(0xff2F4826)
+                                                : Color(0xff31323B),
+                                        minWidth: 56.w,
+                                        padding: EdgeInsets.all(0),
+                                        shape: StadiumBorder(),
+                                        elevation: 0.0,
+                                        hoverElevation: 0,
+                                        disabledElevation: 0,
+                                        highlightElevation: 0,
+                                        focusElevation: 0,
+                                        child: Text(
+                                          'Yes',
+                                          style: TextStyle(
+                                            color: newBuddy == "Yes"
+                                                ? Colors.black
+                                                : firestoreBuddy == "Yes"
+                                                    ? Colors.white
+                                                    : Colors.white,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15.sp,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            newBuddy = "Yes";
+                                            uploadBuddy = "Yes";
+                                          });
+                                        },
+                                      ),
+                                      SizedBox(width: 12.0.w),
+                                      //no
+                                      MaterialButton(
+                                        height: 30.h,
+                                        color: newBuddy == "No"
+                                            ? Color(0xff8FD974)
+                                            : firestoreBuddy == "No"
+                                                ? Color(0xff2F4826)
+                                                : Color(0xff31323B),
+                                        minWidth: 56.w,
+                                        shape: StadiumBorder(),
+                                        padding: EdgeInsets.all(0),
+                                        elevation: 0.0,
+                                        hoverElevation: 0,
+                                        disabledElevation: 0,
+                                        highlightElevation: 0,
+                                        focusElevation: 0,
+                                        child: Text(
+                                          'No',
+                                          style: TextStyle(
+                                            color: newBuddy == "No"
+                                                ? Colors.black
+                                                : firestoreBuddy == "No"
+                                                    ? Colors.white
+                                                    : Colors.white,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15.sp,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            newBuddy = "No";
+                                            uploadBuddy = "No";
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10.0.h),
+                                  //etc
+                                  Text(
+                                    'We will only let other Sported users find you if you are willing to be found and matched according to sporting interests',
+                                    style: hintStyle.copyWith(fontSize: 11.sp),
+                                  ),
+                                  SizedBox(height: 20.0.h),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 10.0.h),
-                            //sub
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Sported is platform that can help you find players to sport with!',
-                                style: TextStyle(
-                                  fontSize: 11.sp,
-                                  color: Color(0xff8FD974),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 10.0.h),
-                            //btns
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                //yes
-                                MaterialButton(
-                                  height: 30.h,
-                                  color: buddyYes ? Color(0xff8FD974) : Color(0xff31323B),
-                                  minWidth: 56.w,
-                                  padding: EdgeInsets.all(0),
-                                  shape: StadiumBorder(
-                                    side: BorderSide(
-                                      color: Color(0xff3E3E3E),
-                                    ),
-                                  ),
-                                  elevation: 0.0,
-                                  hoverElevation: 0,
-                                  disabledElevation: 0,
-                                  highlightElevation: 0,
-                                  focusElevation: 0,
-                                  child: Text(
-                                    'Yes',
-                                    style: TextStyle(
-                                      color: Color(0xff707070),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15.sp,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      buddy = "Yes";
-                                      buddyYes = !buddyYes;
-                                    });
-                                    print("Yes");
-                                  },
-                                ),
-                                SizedBox(width: 12.0.w),
-                                MaterialButton(
-                                  height: 30.h,
-                                  color: buddyNo ? Color(0xff8FD974) : Color(0xff31323B),
-                                  minWidth: 56.w,
-                                  shape: StadiumBorder(
-                                    side: BorderSide(
-                                      color: Color(0xff3E3E3E),
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.all(0),
-                                  elevation: 0.0,
-                                  hoverElevation: 0,
-                                  disabledElevation: 0,
-                                  highlightElevation: 0,
-                                  focusElevation: 0,
-                                  child: Text(
-                                    'No',
-                                    style: TextStyle(
-                                      color: Color(0xff707070),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15.sp,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      buddy = "No";
-                                      buddyNo = !buddyNo;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10.0.h),
-                            //etc
-                            Text(
-                              'We will only let other Sported users find you if you are willing to be found and matched according to sporting interests',
-                              style: hintStyle.copyWith(fontSize: 11.sp),
-                            ),
+                            //divider
+                            Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
                             SizedBox(height: 20.0.h),
                           ],
                         ),
+                      );
+                    }
+
+                    if (state is EditProfileLoadFailure) {
+                      return Container();
+                    }
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Column(
+                        children: [
+                          //padded content
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: Column(
+                              children: [
+                                //title
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Are you willing to sport with others?',
+                                    style: regularStyle,
+                                  ),
+                                ),
+                                SizedBox(height: 10.0.h),
+                                //sub
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Sported is platform that can help you find players to sport with!',
+                                    style: TextStyle(
+                                      fontSize: 11.sp,
+                                      color: Color(0xff8FD974),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10.0.h),
+                                //btns
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    //yes
+                                    MaterialButton(
+                                      height: 30.h,
+                                      color: Color(0xff31323B),
+                                      minWidth: 56.w,
+                                      padding: EdgeInsets.all(0),
+                                      shape: StadiumBorder(),
+                                      elevation: 0.0,
+                                      hoverElevation: 0,
+                                      disabledElevation: 0,
+                                      highlightElevation: 0,
+                                      focusElevation: 0,
+                                      child: Text(
+                                        'Yes',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 15.sp,
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                    SizedBox(width: 12.0.w),
+                                    MaterialButton(
+                                      height: 30.h,
+                                      color: Color(0xff31323B),
+                                      minWidth: 56.w,
+                                      shape: StadiumBorder(),
+                                      padding: EdgeInsets.all(0),
+                                      elevation: 0.0,
+                                      hoverElevation: 0,
+                                      disabledElevation: 0,
+                                      highlightElevation: 0,
+                                      focusElevation: 0,
+                                      child: Text(
+                                        'No',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 15.sp,
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10.0.h),
+                                //etc
+                                Text(
+                                  'We will only let other Sported users find you if you are willing to be found and matched according to sporting interests',
+                                  style: hintStyle.copyWith(fontSize: 11.sp),
+                                ),
+                                SizedBox(height: 20.0.h),
+                              ],
+                            ),
+                          ),
+                          //divider
+                          Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
+                          SizedBox(height: 20.0.h),
+                        ],
                       ),
-                      //divider
-                      Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
-                      SizedBox(height: 20.0.h),
-                    ],
-                  ),
+                    );
+                  },
                 ),
 
                 //coaching
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      //padded content
-                      Padding(
+                BlocBuilder<EditProfileCubit, EditProfileState>(
+                  builder: (context, state) {
+                    if (state is EditProfileLoadSuccess) {
+                      firestoreCoach = state.userProfile.coach;
+
+                      return Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            //title
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Are you able to train someone who is looking to learn?',
-                                style: regularStyle,
-                              ),
-                            ),
-                            SizedBox(height: 10.0.h),
-                            //btns
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                //yes
-                                MaterialButton(
-                                  height: 30.h,
-                                  color: coachYes ? Color(0xff8FD974) : Color(0xff31323B),
-                                  minWidth: 56.w,
-                                  padding: EdgeInsets.all(0),
-                                  shape: StadiumBorder(
-                                    side: BorderSide(
-                                      color: Color(0xff3E3E3E),
-                                    ),
-                                  ),
-                                  elevation: 0.0,
-                                  hoverElevation: 0,
-                                  disabledElevation: 0,
-                                  highlightElevation: 0,
-                                  focusElevation: 0,
-                                  child: Text(
-                                    'Yes',
-                                    style: TextStyle(
-                                      color: Color(0xff707070),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15.sp,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      coach = "Yes";
-                                      coachYes = !coachYes;
-                                    });
-                                    print("Yes");
-                                  },
-                                ),
-                                SizedBox(width: 12.0.w),
-                                MaterialButton(
-                                  height: 30.h,
-                                  color: coachNo ? Color(0xff8FD974) : Color(0xff31323B),
-                                  minWidth: 56.w,
-                                  shape: StadiumBorder(
-                                    side: BorderSide(
-                                      color: Color(0xff3E3E3E),
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.all(0),
-                                  elevation: 0.0,
-                                  hoverElevation: 0,
-                                  disabledElevation: 0,
-                                  highlightElevation: 0,
-                                  focusElevation: 0,
-                                  child: Text(
-                                    'No',
-                                    style: TextStyle(
-                                      color: Color(0xff707070),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15.sp,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      coach = "No";
-                                      coachNo = !coachNo;
-                                    });
-                                    print("Yes");
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10.0.h),
-                            //etc
-                            RichText(
-                              text: TextSpan(
-                                text: 'Do you hold any certifications or credentials to be able to coach?',
-                                style: TextStyle(
-                                  fontSize: 11.sp,
-                                  color: Color(0xff8FD974),
-                                ),
+                            //padded content
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20.w),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  TextSpan(
-                                    text: ' If you do, please share a link to your portfolio.',
-                                    style: hintStyle.copyWith(fontSize: 11.sp),
+                                  //title
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Are you able to train someone who is looking to learn?',
+                                      style: regularStyle,
+                                    ),
                                   ),
+                                  SizedBox(height: 10.0.h),
+                                  //btns
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      //yes
+                                      MaterialButton(
+                                        height: 30.h,
+                                        color: newCoach == "Yes"
+                                            ? Color(0xff8FD974)
+                                            : firestoreCoach == "Yes"
+                                                ? Color(0xff2F4826)
+                                                : Color(0xff31323B),
+                                        minWidth: 56.w,
+                                        padding: EdgeInsets.all(0),
+                                        shape: StadiumBorder(),
+                                        elevation: 0.0,
+                                        hoverElevation: 0,
+                                        disabledElevation: 0,
+                                        highlightElevation: 0,
+                                        focusElevation: 0,
+                                        child: Text(
+                                          'Yes',
+                                          style: TextStyle(
+                                            color: newCoach == "Yes"
+                                                ? Colors.black
+                                                : firestoreCoach == "Yes"
+                                                    ? Colors.white
+                                                    : Colors.white,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15.sp,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            newCoach = "Yes";
+                                            uploadCoach = "Yes";
+                                          });
+                                        },
+                                      ),
+
+                                      SizedBox(width: 12.0.w),
+                                      //no
+                                      MaterialButton(
+                                        height: 30.h,
+                                        color: newCoach == "No"
+                                            ? Color(0xff8FD974)
+                                            : firestoreCoach == "No"
+                                                ? Color(0xff2F4826)
+                                                : Color(0xff31323B),
+                                        minWidth: 56.w,
+                                        shape: StadiumBorder(),
+                                        padding: EdgeInsets.all(0),
+                                        elevation: 0.0,
+                                        hoverElevation: 0,
+                                        disabledElevation: 0,
+                                        highlightElevation: 0,
+                                        focusElevation: 0,
+                                        child: Text(
+                                          'No',
+                                          style: TextStyle(
+                                            color: newCoach == "No"
+                                                ? Colors.black
+                                                : firestoreCoach == "No"
+                                                    ? Colors.white
+                                                    : Colors.white,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15.sp,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            newCoach = "No";
+                                            uploadCoach = "No";
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10.0.h),
+                                  //etc
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'Do you hold any certifications or credentials to be able to coach?',
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        color: Color(0xff8FD974),
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text: ' If you do, please share a link to your portfolio.',
+                                          style: hintStyle.copyWith(fontSize: 11.sp),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.0.h),
+
+                                  //certs
+                                  Container(
+                                    child: Padding(
+                                      padding: MediaQuery.of(context).viewInsets,
+                                      child: BlocBuilder<EditProfileCubit, EditProfileState>(
+                                        builder: (context, state) {
+                                          if (state is EditProfileLoadSuccess) {
+                                            final firestoreCertLink = state.userProfile.pasteUrl;
+                                            return TextFormField(
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.sp,
+                                              ),
+                                              initialValue: firestoreCertLink ?? empty,
+                                              controller: pasteUrlTextEdittingController,
+                                              onChanged: (val) {
+                                                setState(() {
+                                                  newCertLink = val;
+                                                  uploadCertLink = val;
+                                                });
+                                              },
+                                              decoration: formInputDecoration(
+                                                isDense: true,
+                                                hintText: newCertLink == null
+                                                    ? firestoreCertLink == null
+                                                        ? 'Paste URL'
+                                                        : firestoreCertLink
+                                                    : newCertLink,
+                                                prefixIcon: Icons.link,
+                                              ),
+                                            );
+                                          }
+
+                                          if (state is EditProfileLoadFailure) {
+                                            return Container();
+                                          }
+                                          return TextFormField(
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15.sp,
+                                            ),
+                                            controller: pasteUrlTextEdittingController,
+                                            decoration: formInputDecoration(
+                                              isDense: true,
+                                              hintText: 'Paste URL',
+                                              prefixIcon: Icons.link,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 20.0.h),
                                 ],
                               ),
                             ),
-                            SizedBox(height: 10.0.h),
-                            Padding(
-                              padding: MediaQuery.of(context).viewInsets,
-                              child: TextFormField(
-                                maxLines: 1,
-                                style: TextStyle(
-                                  color: Color(0xff707070),
-                                  fontSize: 15.sp,
-                                ),
-                                controller: pasteUrl,
-                                decoration: formInputDecoration(
-                                  isDense: true,
-                                  hintText: 'Paste URL',
-                                  prefixIcon: Icons.link,
-                                ),
-                              ),
-                            ),
+                            //divider
+                            Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
                             SizedBox(height: 20.0.h),
                           ],
                         ),
+                      );
+                    }
+
+                    if (state is EditProfileLoadFailure) {
+                      return Container();
+                    }
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          //padded content
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //title
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Are you able to train someone who is looking to learn?',
+                                    style: regularStyle,
+                                  ),
+                                ),
+                                SizedBox(height: 10.0.h),
+                                //btns
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    //yes
+                                    MaterialButton(
+                                      height: 30.h,
+                                      color: Color(0xff31323B),
+                                      minWidth: 56.w,
+                                      padding: EdgeInsets.all(0),
+                                      shape: StadiumBorder(),
+                                      elevation: 0.0,
+                                      hoverElevation: 0,
+                                      disabledElevation: 0,
+                                      highlightElevation: 0,
+                                      focusElevation: 0,
+                                      child: Text(
+                                        'Yes',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 15.sp,
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                    SizedBox(width: 12.0.w),
+                                    MaterialButton(
+                                      height: 30.h,
+                                      color: Color(0xff31323B),
+                                      minWidth: 56.w,
+                                      shape: StadiumBorder(),
+                                      padding: EdgeInsets.all(0),
+                                      elevation: 0.0,
+                                      hoverElevation: 0,
+                                      disabledElevation: 0,
+                                      highlightElevation: 0,
+                                      focusElevation: 0,
+                                      child: Text(
+                                        'No',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 15.sp,
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(height: 10.0.h),
+                                //etc
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Do you hold any certifications or credentials to be able to coach?',
+                                    style: TextStyle(
+                                      fontSize: 11.sp,
+                                      color: Color(0xff8FD974),
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: ' If you do, please share a link to your portfolio.',
+                                        style: hintStyle.copyWith(fontSize: 11.sp),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 10.0.h),
+
+                                //certs
+                                Container(
+                                  child: Padding(
+                                    padding: MediaQuery.of(context).viewInsets,
+                                    child: BlocBuilder<EditProfileCubit, EditProfileState>(
+                                      builder: (context, state) {
+                                        if (state is EditProfileLoadSuccess) {
+                                          final firestoreCertLink = state.userProfile.pasteUrl;
+                                          return TextFormField(
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15.sp,
+                                            ),
+                                            controller: pasteUrlTextEdittingController,
+                                            onChanged: (val) {
+                                              setState(() {
+                                                newCertLink = val;
+                                                uploadCertLink = val;
+                                              });
+                                            },
+                                            decoration: formInputDecoration(
+                                              isDense: true,
+                                              hintText: newCertLink == null
+                                                  ? firestoreCertLink == null
+                                                      ? 'Paste URL'
+                                                      : firestoreCertLink
+                                                  : newCertLink,
+                                              prefixIcon: Icons.link,
+                                            ),
+                                          );
+                                        }
+
+                                        if (state is EditProfileLoadFailure) {
+                                          return Container();
+                                        }
+                                        return TextFormField(
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15.sp,
+                                          ),
+                                          controller: pasteUrlTextEdittingController,
+                                          decoration: formInputDecoration(
+                                            isDense: true,
+                                            hintText: 'Loading...',
+                                            prefixIcon: Icons.link,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 20.0.h),
+                              ],
+                            ),
+                          ),
+                          //divider
+                          Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
+                          SizedBox(height: 20.0.h),
+                        ],
                       ),
-                      //divider
-                      Divider(height: 1.h, thickness: 1.0.h, color: Color(0xff2E2D2D)),
-                      SizedBox(height: 20.0.h),
-                    ],
-                  ),
+                    );
+                  },
                 ),
 
                 //save & logout
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //btn
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        MaterialButton(
+                    BlocBuilder<EditProfileCubit, EditProfileState>(
+                      builder: (context, state) {
+                        if (state is EditProfileLoadSuccess) {
+                          firestoreAge = state.userProfile.age;
+                          firestoreGender = state.userProfile.gender;
+                          firestoreClubA = state.userProfile.clubA;
+                          firestoreClubB = state.userProfile.clubB;
+                          firestoreClubC = state.userProfile.clubC;
+                          firestoreBuddy = state.userProfile.buddy;
+                          firestoreCoach = state.userProfile.coach;
+                          firestoreCertLink = state.userProfile.pasteUrl;
+                          firestoreSports = state.userProfile.sportsPlayed;
+
+                          return MaterialButton(
+                            height: 40.h,
+                            color: Color(0xff8FD974),
+                            minWidth: 112.w,
+                            padding: EdgeInsets.all(0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            elevation: 0.0,
+                            hoverElevation: 0,
+                            disabledElevation: 0,
+                            highlightElevation: 0,
+                            focusElevation: 0,
+                            child: Text(
+                              'Save',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.sp,
+                              ),
+                            ),
+                            onPressed: () async {
+                              //TODO: Implement save profile
+                              await currentUser.updateProfile(
+                                photoURL: updatedAvatarUrl,
+                                displayName: updatedFullName,
+                              );
+
+                              if (uploadSports != null && previousSelectionCleared == false) {
+                                final firestoreSportsList = firestoreSports.toList(growable: true);
+                                firestoreSportsList.insertAll(firestoreSportsList.length, uploadSports);
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => MultiBlocProvider(
+                                      providers: [
+                                        BlocProvider<NavBloc>(
+                                          create: (_) => NavBloc()..add(LoadPageThree()),
+                                        ),
+                                        BlocProvider<EditProfileCubit>(
+                                          create: (_) => EditProfileCubit()
+                                            ..updateUserProfile(
+                                              age: uploadAge ??= firestoreAge,
+                                              clubA: uploadClubA ??= firestoreClubA,
+                                              clubB: uploadClubB ??= firestoreClubB,
+                                              clubC: uploadClubC ??= firestoreClubC,
+                                              coach: uploadCoach ??= firestoreCoach,
+                                              buddy: uploadBuddy ??= firestoreBuddy,
+                                              gender: uploadGender ??= firestoreGender,
+                                              pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                              uid: currentUser.uid,
+                                              email: currentUser.email,
+                                              fullName: updatedFullName ??= currentUser.displayName,
+                                              sportsPlayed: firestoreSportsList,
+                                            ),
+                                        ),
+                                      ],
+                                      child: PagesSwitcher(),
+                                    ),
+                                  ),
+                                );
+                              } else if (uploadSports == null && previousSelectionCleared == false) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => MultiBlocProvider(
+                                      providers: [
+                                        BlocProvider<NavBloc>(
+                                          create: (_) => NavBloc()..add(LoadPageThree()),
+                                        ),
+                                        BlocProvider<EditProfileCubit>(
+                                          create: (_) => EditProfileCubit()
+                                            ..updateUserProfile(
+                                              age: uploadAge ??= firestoreAge,
+                                              clubA: uploadClubA ??= firestoreClubA,
+                                              clubB: uploadClubB ??= firestoreClubB,
+                                              clubC: uploadClubC ??= firestoreClubC,
+                                              coach: uploadCoach ??= firestoreCoach,
+                                              buddy: uploadBuddy ??= firestoreBuddy,
+                                              gender: uploadGender ??= firestoreGender,
+                                              pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                              uid: currentUser.uid,
+                                              email: currentUser.email,
+                                              fullName: updatedFullName ??= currentUser.displayName,
+                                              sportsPlayed: state.userProfile.sportsPlayed,
+                                            ),
+                                        ),
+                                      ],
+                                      child: PagesSwitcher(),
+                                    ),
+                                  ),
+                                );
+                              } else if (uploadSports != null && previousSelectionCleared == true) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => MultiBlocProvider(
+                                      providers: [
+                                        BlocProvider<NavBloc>(
+                                          create: (_) => NavBloc()..add(LoadPageThree()),
+                                        ),
+                                        BlocProvider<EditProfileCubit>(
+                                          create: (_) => EditProfileCubit()
+                                            ..updateUserProfile(
+                                              age: uploadAge ??= firestoreAge,
+                                              clubA: uploadClubA ??= firestoreClubA,
+                                              clubB: uploadClubB ??= firestoreClubB,
+                                              clubC: uploadClubC ??= firestoreClubC,
+                                              coach: uploadCoach ??= firestoreCoach,
+                                              buddy: uploadBuddy ??= firestoreBuddy,
+                                              gender: uploadGender ??= firestoreGender,
+                                              pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                              uid: currentUser.uid,
+                                              email: currentUser.email,
+                                              fullName: updatedFullName ??= currentUser.displayName,
+                                              sportsPlayed: uploadSports.toList(),
+                                            ),
+                                        ),
+                                      ],
+                                      child: PagesSwitcher(),
+                                    ),
+                                  ),
+                                );
+                              } else if (uploadSports == null && previousSelectionCleared == true) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => MultiBlocProvider(
+                                      providers: [
+                                        BlocProvider<NavBloc>(
+                                          create: (_) => NavBloc()..add(LoadPageThree()),
+                                        ),
+                                        BlocProvider<EditProfileCubit>(
+                                          create: (_) => EditProfileCubit()
+                                            ..updateUserProfile(
+                                              age: uploadAge ??= firestoreAge,
+                                              clubA: uploadClubA ??= firestoreClubA,
+                                              clubB: uploadClubB ??= firestoreClubB,
+                                              clubC: uploadClubC ??= firestoreClubC,
+                                              coach: uploadCoach ??= firestoreCoach,
+                                              buddy: uploadBuddy ??= firestoreBuddy,
+                                              gender: uploadGender ??= firestoreGender,
+                                              pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                              uid: currentUser.uid,
+                                              email: currentUser.email,
+                                              fullName: updatedFullName ??= currentUser.displayName,
+                                              sportsPlayed: [],
+                                            ),
+                                        ),
+                                      ],
+                                      child: PagesSwitcher(),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        }
+                        if (state is EditProfileLoadFailure) {
+                          return Container();
+                        }
+                        return MaterialButton(
                           height: 40.h,
                           color: Color(0xff8FD974),
-                          minWidth: 112.w,
+                          minWidth: 240.w,
                           padding: EdgeInsets.all(0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.r),
@@ -817,105 +2397,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           disabledElevation: 0,
                           highlightElevation: 0,
                           focusElevation: 0,
-                          child: Text(
-                            'Save',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.sp,
-                            ),
-                          ),
-                          onPressed: () async {
-                            //TODO: Implement save profile
-                            await createUserProfile();
-
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (_) => BlocProvider<NavBloc>(
-                                  create: (context) => NavBloc()..add(LoadPageThree()),
-                                  child: PagesSwitcher(),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Updating Profile...',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15.sp,
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 20.0.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        MaterialButton(
-                          height: 40.h,
-                          color: Color(0x1AF44336),
-                          minWidth: 112.w,
-                          padding: EdgeInsets.all(0),
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: Color(0x80F44336),
-                              width: 1.5.w,
-                            ),
-                            borderRadius: BorderRadius.circular(8.r),
+                              SizedBox(width: 32.w),
+                              SpinKitRipple(
+                                size: 36.r,
+                                color: Colors.black,
+                              )
+                            ],
                           ),
-                          elevation: 0.0,
-                          hoverElevation: 0,
-                          disabledElevation: 0,
-                          highlightElevation: 0,
-                          focusElevation: 0,
-                          child: isLoggingOut == false
-                              ? Text(
-                                  'Log Out',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15.sp,
-                                  ),
-                                )
-                              : Container(
-                                  width: 24.h,
-                                  height: 24.h,
-                                  child: SpinKitRipple(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                          onPressed: () async {
-                            final logmessage = await context.read<AuthenticationService>().signOut();
-                            if (logmessage == "Signed Out Successfully") {
-                              BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogoutRequested());
-                              await showCustomSnackbar("Signing Out...", _scaffoldKey);
-                              Future.delayed(Duration(seconds: 2), () {
-                                // 5s over, navigate
-                                Navigator.of(context).pushReplacement(
-                                  Authenticate.route(),
-                                );
-                              });
-                            } else {
-                              showCustomSnackbar("Signing Out Failed", _scaffoldKey);
-                            }
-                          },
-                        ),
-                      ],
+                          onPressed: () async {},
+                        );
+                      },
                     ),
-
-                    SizedBox(height: 20.0.h),
                   ],
-                )
+                ),
+
+                SizedBox(height: 20.0.h)
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  createUserProfile() async {
-    try {
-      await locator.get<UserController>().uploadProfile(age: age, clubC: club3, clubB: club2, clubA: club1, coach: coach, buddy: buddy, gender: gender, pasteUrl: pasteUrl.text);
-      print("Age:" + age);
-      print("Url:" + pasteUrl.text);
-    } catch (e) {
-      print("Error:" + e.toString());
-    }
   }
 }

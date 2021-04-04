@@ -16,8 +16,8 @@ InputDecoration formInputDecoration({
     enabled: true,
     fillColor: Color(0xff31323B),
     filled: true,
-    hintStyle: hintStyle,
-    labelStyle: labelStyle,
+    hintStyle: hintStyle.copyWith(color: Colors.white),
+    labelStyle: labelStyle.copyWith(color: Colors.white),
     prefixIcon: Icon(
       prefixIcon,
       color: Color(0xff8FD974),
