@@ -76,7 +76,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isLeisure = false;
   TextEditingController fullNameTextEditingController;
   TextEditingController emailTextEditingController;
-  TextEditingController pasteUrl = new TextEditingController();
+  TextEditingController pasteUrlTextEdittingController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final editProfileFormKey = GlobalKey<FormState>();
   final ageFormKey = GlobalKey<FormState>();
@@ -102,15 +102,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'assets/icons/handball_icon.png',
   ];
 
-  // row 2
-  List<String> options2 = [
-    'assets/icons/swimming_icon.png',
-    'assets/icons/volleyball_icon.png',
-    'assets/icons/rugby_icon.png',
-    'assets/icons/table_tennis_icon.png',
-    'assets/icons/handball_icon.png',
-  ];
-
   //functions
   void getUpdatedAvatarUrl() async {
     final uid = FirebaseAuth.instance.currentUser.uid;
@@ -128,7 +119,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("newsports | $newSports");
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -157,38 +147,129 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       displayName: updatedFullName,
                     );
 
-                    final firestoreSportsList = firestoreSports.toList(growable: true);
-                    firestoreSportsList.insertAll(firestoreSportsList.length, uploadSports);
-
-                    return Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (_) => MultiBlocProvider(
-                          providers: [
-                            BlocProvider<NavBloc>(
-                              create: (_) => NavBloc()..add(LoadPageOne()),
-                            ),
-                            BlocProvider<EditProfileCubit>(
-                              create: (_) => EditProfileCubit()
-                                ..updateUserProfile(
-                                  age: uploadAge ??= firestoreAge,
-                                  clubA: uploadClubA ??= firestoreClubA,
-                                  clubB: uploadClubB ??= firestoreClubB,
-                                  clubC: uploadClubC ??= firestoreClubC,
-                                  coach: uploadCoach ??= firestoreCoach,
-                                  buddy: uploadBuddy ??= firestoreBuddy,
-                                  gender: uploadGender ??= firestoreGender,
-                                  pasteUrl: uploadCertLink ??= firestoreCertLink,
-                                  sportsPlayed: firestoreSportsList,
-                                  fullName: updatedFullName ??= currentUser.displayName,
-                                  uid: currentUser.uid,
-                                  email: currentUser.email,
-                                ),
-                            ),
-                          ],
-                          child: PagesSwitcher(),
+                    if (uploadSports != null && previousSelectionCleared == false) {
+                      final firestoreSportsList = firestoreSports.toList(growable: true);
+                      firestoreSportsList.insertAll(firestoreSportsList.length, uploadSports);
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider<NavBloc>(
+                                create: (_) => NavBloc()..add(LoadPageOne()),
+                              ),
+                              BlocProvider<EditProfileCubit>(
+                                create: (_) => EditProfileCubit()
+                                  ..updateUserProfile(
+                                    age: uploadAge ??= firestoreAge,
+                                    clubA: uploadClubA ??= firestoreClubA,
+                                    clubB: uploadClubB ??= firestoreClubB,
+                                    clubC: uploadClubC ??= firestoreClubC,
+                                    coach: uploadCoach ??= firestoreCoach,
+                                    buddy: uploadBuddy ??= firestoreBuddy,
+                                    gender: uploadGender ??= firestoreGender,
+                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    fullName: updatedFullName ??= currentUser.displayName,
+                                    sportsPlayed: firestoreSportsList,
+                                  ),
+                              ),
+                            ],
+                            child: PagesSwitcher(),
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else if (uploadSports == null && previousSelectionCleared == false) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider<NavBloc>(
+                                create: (_) => NavBloc()..add(LoadPageOne()),
+                              ),
+                              BlocProvider<EditProfileCubit>(
+                                create: (_) => EditProfileCubit()
+                                  ..updateUserProfile(
+                                    age: uploadAge ??= firestoreAge,
+                                    clubA: uploadClubA ??= firestoreClubA,
+                                    clubB: uploadClubB ??= firestoreClubB,
+                                    clubC: uploadClubC ??= firestoreClubC,
+                                    coach: uploadCoach ??= firestoreCoach,
+                                    buddy: uploadBuddy ??= firestoreBuddy,
+                                    gender: uploadGender ??= firestoreGender,
+                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    fullName: updatedFullName ??= currentUser.displayName,
+                                    sportsPlayed: state.userProfile.sportsPlayed,
+                                  ),
+                              ),
+                            ],
+                            child: PagesSwitcher(),
+                          ),
+                        ),
+                      );
+                    } else if (uploadSports != null && previousSelectionCleared == true) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider<NavBloc>(
+                                create: (_) => NavBloc()..add(LoadPageOne()),
+                              ),
+                              BlocProvider<EditProfileCubit>(
+                                create: (_) => EditProfileCubit()
+                                  ..updateUserProfile(
+                                    age: uploadAge ??= firestoreAge,
+                                    clubA: uploadClubA ??= firestoreClubA,
+                                    clubB: uploadClubB ??= firestoreClubB,
+                                    clubC: uploadClubC ??= firestoreClubC,
+                                    coach: uploadCoach ??= firestoreCoach,
+                                    buddy: uploadBuddy ??= firestoreBuddy,
+                                    gender: uploadGender ??= firestoreGender,
+                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    fullName: updatedFullName ??= currentUser.displayName,
+                                    sportsPlayed: uploadSports.toList(),
+                                  ),
+                              ),
+                            ],
+                            child: PagesSwitcher(),
+                          ),
+                        ),
+                      );
+                    } else if (uploadSports == null && previousSelectionCleared == true) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider<NavBloc>(
+                                create: (_) => NavBloc()..add(LoadPageOne()),
+                              ),
+                              BlocProvider<EditProfileCubit>(
+                                create: (_) => EditProfileCubit()
+                                  ..updateUserProfile(
+                                    age: uploadAge ??= firestoreAge,
+                                    clubA: uploadClubA ??= firestoreClubA,
+                                    clubB: uploadClubB ??= firestoreClubB,
+                                    clubC: uploadClubC ??= firestoreClubC,
+                                    coach: uploadCoach ??= firestoreCoach,
+                                    buddy: uploadBuddy ??= firestoreBuddy,
+                                    gender: uploadGender ??= firestoreGender,
+                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    fullName: updatedFullName ??= currentUser.displayName,
+                                    sportsPlayed: [],
+                                  ),
+                              ),
+                            ],
+                            child: PagesSwitcher(),
+                          ),
+                        ),
+                      );
+                    }
                   },
                   icon: Icon(Icons.arrow_back),
                 );
@@ -1365,7 +1446,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                             MaterialButton(
                                                               height: 46.h,
                                                               minWidth: 147.w,
-                                                              color: isCompetitive ? Color(0xff31323B) : Color(0xff8FD974),
+                                                              color: isLeisure ? Color(0xff31323B) : Color(0xff8FD974),
                                                               shape: StadiumBorder(),
                                                               padding: EdgeInsets.all(0),
                                                               elevation: 0.0,
@@ -1376,14 +1457,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                               child: Text(
                                                                 'Leisure',
                                                                 style: TextStyle(
-                                                                  color: isCompetitive ? Color(0xff707070) : Colors.black,
+                                                                  color: isLeisure ? Color(0xff707070) : Colors.black,
                                                                   fontWeight: FontWeight.w400,
                                                                   fontSize: 15.sp,
                                                                 ),
                                                               ),
                                                               onPressed: () {
                                                                 setState(() {
-                                                                  isCompetitive = false;
+                                                                  isLeisure = true;
                                                                 });
                                                               },
                                                             ),
@@ -1483,6 +1564,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           }
                           return CustomChipContent(
                             child: ChipsChoice<String>.multiple(
+                              wrapped: true,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              runSpacing: 20.h,
                               value: newSports,
                               onChanged: (val) => setState(() => newSports = val),
                               choiceItems: C2Choice.listFrom<String, String>(
@@ -1912,7 +1996,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 color: Colors.white,
                                                 fontSize: 15.sp,
                                               ),
-                                              controller: pasteUrl,
+                                              initialValue: firestoreCertLink ?? empty,
+                                              controller: pasteUrlTextEdittingController,
                                               onChanged: (val) {
                                                 setState(() {
                                                   newCertLink = val;
@@ -1940,7 +2025,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               color: Colors.white,
                                               fontSize: 15.sp,
                                             ),
-                                            controller: pasteUrl,
+                                            controller: pasteUrlTextEdittingController,
                                             decoration: formInputDecoration(
                                               isDense: true,
                                               hintText: 'Paste URL',
@@ -2073,7 +2158,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               color: Colors.white,
                                               fontSize: 15.sp,
                                             ),
-                                            controller: pasteUrl,
+                                            controller: pasteUrlTextEdittingController,
                                             onChanged: (val) {
                                               setState(() {
                                                 newCertLink = val;
@@ -2101,7 +2186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             color: Colors.white,
                                             fontSize: 15.sp,
                                           ),
-                                          controller: pasteUrl,
+                                          controller: pasteUrlTextEdittingController,
                                           decoration: formInputDecoration(
                                             isDense: true,
                                             hintText: 'Loading...',

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart' as LocationManager;
 
 class GMap extends StatefulWidget {
   @override
@@ -18,31 +17,31 @@ class _GMapState extends State<GMap> {
   Set<Marker> markers;
   void setCustomMapPin() async {
     locationIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(size: Size(48.h, 48.h)),
-      'assets/icons/location_icon.png',
+      ImageConfiguration(size: Size(50.h, 50.h)),
+      'assets/icons/group_6655.png',
     );
   }
-
-  //curr location
-  Future<LatLng> getUserLocation() async {
-    LocationManager.LocationData currentLocation;
-    final location = LocationManager.Location();
-    try {
-      currentLocation = await location.getLocation();
-      final lat = currentLocation.latitude;
-      final lng = currentLocation.longitude;
-      final center = LatLng(lat, lng);
-      return center;
-    } on Exception {
-      currentLocation = null;
-      return null;
-    }
-  }
+  //
+  // //curr location
+  // Future<LatLng> getUserLocation() async {
+  //   LocationManager.LocationData currentLocation;
+  //   final location = LocationManager.Location();
+  //   try {
+  //     currentLocation = await location.getLocation();
+  //     final lat = currentLocation.latitude;
+  //     final lng = currentLocation.longitude;
+  //     final center = LatLng(lat, lng);
+  //     return center;
+  //   } on Exception {
+  //     currentLocation = null;
+  //     return null;
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-    getUserLocation();
+    // getUserLocation();
     setCustomMapPin();
   }
 

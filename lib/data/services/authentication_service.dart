@@ -56,13 +56,12 @@ class AuthenticationService {
   }
 
   //3
-  Future<void> addUserToDB({String uid, String username, String email}) async {
-    userModel = UserModel(uid: uid, username: username, email: email);
-
-    await userRef.doc(uid).set(userModel.toMap(userModel)).catchError((e) {
-      print(e);
-    });
-  }
+  // Future<void> addUserToDB({String uid, String username, String email}) async {
+  //   userProfile = UserProfile(uid: uid, fullName: username, email: email);
+  //   await userProfileRef.doc(uid).set(userProfile.toMap(userProfile)).catchError((e) {
+  //     print(e);
+  //   });
+  // }
 
   //4
   Future<UserModel> getUserFromDB({String uid}) async {

@@ -1,21 +1,17 @@
-class UserProfile {
-  String fullName;
-  String email;
-  String age;
-  String gender;
-  String clubA;
-  String clubB;
-  String clubC;
-  String pasteUrl;
-  String buddy;
-  String coach;
-  String uid;
-  List<String> sportsPlayed;
+// To parse this JSON data, do
+//
+//     final userProfile = userProfileFromJson(jsonString);
 
+import 'dart:convert';
+
+List<UserProfile> userProfileFromJson(String str) => List<UserProfile>.from(json.decode(str).map((x) => UserProfile.fromJson(x)));
+
+String userProfileToJson(List<UserProfile> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+class UserProfile {
   UserProfile({
     this.fullName,
     this.email,
-    this.uid,
     this.age,
     this.gender,
     this.clubA,
@@ -24,38 +20,50 @@ class UserProfile {
     this.pasteUrl,
     this.buddy,
     this.coach,
+    this.uid,
     this.sportsPlayed,
   });
 
-  Map toMap(UserProfile userProfile) {
-    var data = Map<String, dynamic>();
-    data["fullName"] = userProfile.fullName;
-    data["email"] = userProfile.email;
-    data["uid"] = userProfile.uid;
-    data["age"] = userProfile.age;
-    data["gender"] = userProfile.gender;
-    data["clubA"] = userProfile.clubA;
-    data["clubB"] = userProfile.clubB;
-    data["clubC"] = userProfile.clubC;
-    data["pasteUrl"] = userProfile.pasteUrl;
-    data["buddy"] = userProfile.buddy;
-    data["coach"] = userProfile.coach;
-    data["sportsPlayed"] = List<dynamic>.from(sportsPlayed.map((x) => x));
-    return data;
-  }
+  final String fullName;
+  final String email;
+  final String age;
+  final String gender;
+  final String clubA;
+  final String clubB;
+  final String clubC;
+  final String pasteUrl;
+  final String buddy;
+  final String coach;
+  final String uid;
+  final List<String> sportsPlayed;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-        uid: json["uid"],
         fullName: json["fullName"],
-        coach: json["coach"],
-        buddy: json["buddy"],
-        clubC: json["clubC"],
+        email: json["email"],
+        age: json["age"],
+        gender: json["gender"],
         clubA: json["clubA"],
         clubB: json["clubB"],
+        clubC: json["clubC"],
         pasteUrl: json["pasteUrl"],
-        gender: json["gender"],
-        age: json["age"],
-        email: json["email"],
-        sportsPlayed: List<String>.from(json["sportsPlayed"]?.map((x) => x)),
+        buddy: json["buddy"],
+        coach: json["coach"],
+        uid: json["uid"],
+        sportsPlayed: List<String>.from(json["sportsPlayed"].map((x) => x)),
       );
+
+  Map<String, dynamic> toJson() => {
+        "fullName": fullName,
+        "email": email,
+        "age": age,
+        "gender": gender,
+        "clubA": clubA,
+        "clubB": clubB,
+        "clubC": clubC,
+        "pasteUrl": pasteUrl,
+        "buddy": buddy,
+        "coach": coach,
+        "uid": uid,
+        "sportsPlayed": List<dynamic>.from(sportsPlayed.map((x) => x)),
+      };
 }

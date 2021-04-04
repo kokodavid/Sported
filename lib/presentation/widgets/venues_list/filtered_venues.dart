@@ -139,11 +139,27 @@ class FilteredVenues extends StatelessWidget {
                                                                                               ? 'assets/icons/basketball_icon.png'
                                                                                               : '',
                                                     ),
-                                                    color: state is FootballLoaded && sportName =='Football'
+                                                    color: state is FootballLoaded && sportName == 'Football'
                                                         ? Color(0xff8FD974)
-                                                        : state is VolleyballLoaded&& sportName =='Volleyball'
+                                                        : state is VolleyballLoaded && sportName == 'Volleyball'
                                                             ? Color(0xff8FD974)
-                                                            : Colors.white,
+                                                            : state is TableTennisLoaded && sportName == 'Table Tennis'
+                                                                ? Color(0xff8FD974)
+                                                                : state is CricketLoaded && sportName == 'Cricket'
+                                                                    ? Color(0xff8FD974)
+                                                                    : state is BadmintonLoaded && sportName == 'Badminton'
+                                                                        ? Color(0xff8FD974)
+                                                                        : state is HandballLoaded && sportName == 'Handball'
+                                                                            ? Color(0xff8FD974)
+                                                                            : state is SwimmingLoaded && sportName == 'Swimming'
+                                                                                ? Color(0xff8FD974)
+                                                                                : state is TennisLoaded && sportName == 'Tennis'
+                                                                                    ? Color(0xff8FD974)
+                                                                                    : state is BasketballLoaded && sportName == 'Basketball'
+                                                                                        ? Color(0xff8FD974)
+                                                                                        : state is RugbyLoaded && sportName == 'Rugby'
+                                                                                            ? Color(0xff8FD974)
+                                                                                            : Colors.white,
                                                     size: 18.r,
                                                   ),
                                                   SizedBox(height: 2.0.h),

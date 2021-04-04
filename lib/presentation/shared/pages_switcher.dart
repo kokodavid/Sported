@@ -47,7 +47,7 @@ class PagesSwitcher extends StatelessWidget {
                             : state is LoadedPageFour
                                 ? EventsPage()
                                 : state is LoadedPageFive
-                                    ? BuddiesPage(scaffoldKey: _scaffoldKey)
+                                    ? BuddiesPage()
                                     : state is LoadedVenuesPage
                                         ? VenuesListScreen()
                                         : null,

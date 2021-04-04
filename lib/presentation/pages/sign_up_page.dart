@@ -2,18 +2,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:provider/provider.dart';
 import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
-import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/data/services/authentication_service.dart';
 import 'package:sported_app/data/services/database.dart';
-import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
+import 'package:sported_app/data/services/user_controller.dart';
+import 'package:sported_app/locator.dart';
 import 'package:sported_app/presentation/shared/authenticate.dart';
 import 'package:sported_app/presentation/shared/custom_snackbar.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
@@ -40,7 +39,6 @@ class _SignUpPageState extends State<SignUpPage> {
     print(googleUser.email);
     print(googleUser.displayName);
     print(googleUser.photoUrl);
-
 
     // Create a new credential
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
@@ -342,8 +340,6 @@ class _SignUpPageState extends State<SignUpPage> {
                               //google
                               MaterialButton(
                                 onPressed: () {
-                                  // Navigator.pushReplacement(
-                                  //     context, MaterialPageRoute(builder: (context) => HomePage()));
                                   signInWithGoogle();
                                 },
                                 padding: EdgeInsets.symmetric(horizontal: 8.r),
@@ -399,7 +395,6 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  //TODO: Implement email verification before pushing edit profile
   signMeUp() {
     if (formKey.currentState.validate()) {
       _registerUser();
@@ -411,21 +406,19 @@ class _SignUpPageState extends State<SignUpPage> {
       _isSubmitting = true;
       _isLoading = true;
     });
-    final logMessage = await context.read<AuthenticationService>().signUp(
-        email: emailTextEditingController.text,
-        password: passWordTextEditingController.text,
-        fullName: userNameTextEditingController.text);
+    final logMessage = await context.read<AuthenticationService>().signUp(email: emailTextEditingController.text, password: passWordTextEditingController.text, fullName: userNameTextEditingController.text);
 
     logMessage == "Registered Successfully" ? null : showCustomSnackbar(logMessage, _scaffoldKey);
 
     print("LogMessage:" + logMessage);
 
     if (logMessage == "Registered Successfully") {
-      createUserInFirestore();
+      createUserProfile();
       await BlocProvider.of<EditProfileCubit>(context).updateUserProfile(
-        uid: auth.currentUser.email,
+        uid: auth.currentUser.uid,
         email: auth.currentUser.email,
         fullName: userNameTextEditingController.text,
+        sportsPlayed: [],
       );
       Navigator.pushReplacement(
         context,
@@ -477,7 +470,16 @@ class _SignUpPageState extends State<SignUpPage> {
   //   _scaffoldKey.currentState.showSnackBar(snackbar);
   // }
 
-  createUserInFirestore() async {
-    context.read<AuthenticationService>().addUserToDB(uid: auth.currentUser.uid, username: userNameTextEditingController.text, email: emailTextEditingController.text);
+  createUserProfile() async {
+    try {
+      await locator.get<UserController>().uploadProfile(
+        fullName: userNameTextEditingController.text,
+        email: emailTextEditingController.text,
+        uid: auth.currentUser.uid,
+        sportsPlayed: [],
+      );
+    } catch (e) {
+      print("Error:" + e.toString());
+    }
   }
 }

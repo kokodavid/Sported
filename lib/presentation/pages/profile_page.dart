@@ -208,9 +208,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           }
 
                           if (state is EditProfileLoadSuccess) {
-                            // print(state.userProfile.sportsPlayed.length);
                             return Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 //gender
@@ -234,7 +233,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               : state.userProfile.gender == "Non-binary"
                                                   ? MdiIcons.genderNonBinary
                                                   : Icons.warning_amber_rounded,
-                                      color: state.userProfile.gender == null ? Color(0xffF78179) : Color(0xff8FD974),
+                                      color: state.userProfile.gender == null ? Colors.amber : Color(0xff8FD974),
                                       size: 32.r,
                                     ),
                                     SizedBox(height: 10.h),
@@ -245,7 +244,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               ? 'Female'
                                               : state.userProfile.gender == "Non-binary"
                                                   ? 'Non-binary'
-                                                  : "None",
+                                                  : "Not Specified",
                                       style: hintStyle,
                                     ),
                                   ],
@@ -300,10 +299,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   : state.userProfile.age == "25-30"
                                                       ? 'Late-twenties'
                                                       : state.userProfile.age == "30-40"
-                                                          ? 'Early-thirties'
+                                                          ? 'Thirties'
                                                           : state.userProfile.age == "above 40"
                                                               ? 'Above 40'
-                                                              : 'Not specified',
+                                                              : 'Not Specified',
                                       style: hintStyle,
                                     ),
                                   ],
@@ -313,6 +312,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                                 //sports
                                 Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     //title
                                     Text(
@@ -323,70 +324,93 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ),
                                     ),
 
+                                    SizedBox(height: 15.h),
+
                                     //sports
                                     Row(
                                       children: [
-                                        Container(
-                                          width: 130.w,
-                                          height: 90.h,
-                                          child: BlocBuilder<EditProfileCubit, EditProfileState>(
-                                            builder: (context, state) {
-                                              if (state is EditProfileLoadSuccess) {
-                                                return ListView.builder(
-                                                  itemCount: state.userProfile.sportsPlayed.length,
-                                                  shrinkWrap: true,
-                                                  scrollDirection: Axis.horizontal,
-                                                  itemBuilder: (BuildContext context, int index) {
-                                                    final sport = state.userProfile.sportsPlayed[index];
+                                        BlocBuilder<EditProfileCubit, EditProfileState>(
+                                          builder: (context, state) {
+                                            if (state is EditProfileLoadSuccess) {
+                                              if (state.userProfile.sportsPlayed.isNotEmpty) {
+                                                return Container(
+                                                  width: 131.w,
+                                                  height: 58.w,
+                                                  child: ListView.builder(
+                                                    itemCount: state.userProfile.sportsPlayed.length,
+                                                    shrinkWrap: true,
+                                                    scrollDirection: Axis.horizontal,
+                                                    itemBuilder: (BuildContext context, int index) {
+                                                      final sport = state.userProfile.sportsPlayed[index];
+                                                      return Padding(
+                                                        padding: EdgeInsets.only(right: 20.h),
+                                                        child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            //avi
+                                                            ImageIcon(
+                                                              AssetImage(
+                                                                sport,
+                                                              ),
+                                                              color: Color(0xff8FD974),
+                                                              size: 32.r,
+                                                            ),
 
-                                                    return Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      children: [
-                                                        //avi
-                                                        ImageIcon(
-                                                          AssetImage(
-                                                            sport,
-                                                          ),
-                                                          color: Colors.white,
-                                                          size: 18.r,
+                                                            SizedBox(height: 10.h),
+
+                                                            //name
+                                                            Text(
+                                                              sport == "assets/icons/football_icon.png"
+                                                                  ? 'Football'
+                                                                  : sport == 'assets/icons/table_tennis_icon.png'
+                                                                      ? 'Table Tennis'
+                                                                      : sport == 'assets/icons/badminton_icon.png'
+                                                                          ? 'Badminton'
+                                                                          : sport == 'assets/icons/volleyball_icon.png'
+                                                                              ? 'Volleyball'
+                                                                              : sport == 'assets/icons/handball_icon.png'
+                                                                                  ? 'Handball'
+                                                                                  : sport == 'assets/icons/swimming_icon.png'
+                                                                                      ? 'Swimming'
+                                                                                      : sport == 'assets/icons/tennis_icon.png'
+                                                                                          ? 'Tennis'
+                                                                                          : sport == 'assets/icons/rugby_icon.png'
+                                                                                              ? 'Rugby'
+                                                                                              : sport == 'assets/icons/cricket_icon.png'
+                                                                                                  ? 'Cricket'
+                                                                                                  : sport == 'assets/icons/basketball_icon.png'
+                                                                                                      ? 'Basketball'
+                                                                                                      : '',
+                                                              style: hintStyle,
+                                                            ),
+                                                          ],
                                                         ),
-
-                                                        SizedBox(height: 2.0.h),
-
-                                                        //name
-                                                        Text(
-                                                          sport == "assets/icons/football_icon.png"
-                                                              ? 'Football'
-                                                              : sport == 'assets/icons/table_tennis_icon.png'
-                                                                  ? 'Table Tennis'
-                                                                  : sport == 'assets/icons/badminton_icon.png'
-                                                                      ? 'Badminton'
-                                                                      : sport == 'assets/icons/volleyball_icon.png'
-                                                                          ? 'Volleyball'
-                                                                          : sport == 'assets/icons/handball_icon.png'
-                                                                              ? 'Handball'
-                                                                              : sport == 'assets/icons/swimming_icon.png'
-                                                                                  ? 'Swimming'
-                                                                                  : sport == 'assets/icons/tennis_icon.png'
-                                                                                      ? 'Tennis'
-                                                                                      : sport == 'assets/icons/rugby_icon.png'
-                                                                                          ? 'Rugby'
-                                                                                          : sport == 'assets/icons/cricket_icon.png'
-                                                                                              ? 'Cricket'
-                                                                                              : sport == 'assets/icons/basketball_icon.png'
-                                                                                                  ? 'Basketball'
-                                                                                                  : '',
-                                                          style: hintStyle,
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
+                                                      );
+                                                    },
+                                                  ),
+                                                );
+                                              } else {
+                                                return Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.warning_amber_rounded,
+                                                      color: Colors.amber,
+                                                      size: 32.r,
+                                                    ),
+                                                    SizedBox(height: 10.h),
+                                                    Text(
+                                                      'Not Specified',
+                                                      style: hintStyle,
+                                                    ),
+                                                  ],
                                                 );
                                               }
-                                              return Container();
-                                            },
-                                          ),
+                                            }
+                                            return Container();
+                                          },
                                         ),
                                       ],
                                     ),
@@ -524,73 +548,98 @@ class _ProfilePageState extends State<ProfilePage> {
                                   BlocBuilder<EditProfileCubit, EditProfileState>(
                                     builder: (_, state) {
                                       if (state is EditProfileLoadSuccess) {
-                                        return Container(
-                                          width: 146.w,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              SizedBox(width: 20.w),
-                                              Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'CLUBS',
-                                                    style: TextStyle(
-                                                      color: Color(0xff707070),
-                                                      fontSize: 15.sp,
-                                                      fontWeight: FontWeight.w300,
+                                        if (state.userProfile.clubA == null && state.userProfile.clubB == null && state.userProfile.clubC == null) {
+                                          return Container(
+                                            width: 146.w,
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.warning_amber_rounded,
+                                                  color: Colors.amber,
+                                                  size: 32.r,
+                                                ),
+                                                SizedBox(height: 10.h),
+                                                Text(
+                                                  'Not Specified',
+                                                  style: hintStyle,
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        } else
+                                          return Container(
+                                            width: 146.w,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(width: 20.w),
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'CLUBS',
+                                                      style: TextStyle(
+                                                        color: Color(0xff707070),
+                                                        fontSize: 15.sp,
+                                                        fontWeight: FontWeight.w300,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  state.userProfile.clubA == null || state.userProfile.clubA == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
-                                                  state.userProfile.clubA == null || state.userProfile.clubA == 'None'
-                                                      ? Container()
-                                                      : Text(
-                                                          state.userProfile.clubA,
-                                                          style: TextStyle(
-                                                            color: Color(0xff8FD974),
-                                                            fontSize: 14.sp,
-                                                            fontWeight: FontWeight.w400,
+                                                    state.userProfile.clubA == null || state.userProfile.clubA == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubA == null || state.userProfile.clubA == 'None'
+                                                        ? Container()
+                                                        : Text(
+                                                            state.userProfile.clubA,
+                                                            style: TextStyle(
+                                                              color: Color(0xff8FD974),
+                                                              fontSize: 14.sp,
+                                                              fontWeight: FontWeight.w400,
+                                                            ),
                                                           ),
-                                                        ),
-                                                  state.userProfile.clubB == null || state.userProfile.clubB == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
-                                                  state.userProfile.clubB == null || state.userProfile.clubB == 'None'
-                                                      ? Container()
-                                                      : Text(
-                                                          state.userProfile.clubB,
-                                                          style: TextStyle(
-                                                            color: Color(0xff8FD974),
-                                                            fontSize: 14.sp,
-                                                            fontWeight: FontWeight.w400,
+                                                    state.userProfile.clubB == null || state.userProfile.clubB == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubB == null || state.userProfile.clubB == 'None'
+                                                        ? Container()
+                                                        : Text(
+                                                            state.userProfile.clubB,
+                                                            style: TextStyle(
+                                                              color: Color(0xff8FD974),
+                                                              fontSize: 14.sp,
+                                                              fontWeight: FontWeight.w400,
+                                                            ),
                                                           ),
-                                                        ),
-                                                  state.userProfile.clubC == null || state.userProfile.clubC == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
-                                                  state.userProfile.clubC == null || state.userProfile.clubC == 'None'
-                                                      ? Container()
-                                                      : Text(
-                                                          state.userProfile.clubC,
-                                                          style: TextStyle(
-                                                            color: Color(0xff8FD974),
-                                                            fontSize: 14.sp,
-                                                            fontWeight: FontWeight.w400,
+                                                    state.userProfile.clubC == null || state.userProfile.clubC == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubC == null || state.userProfile.clubC == 'None'
+                                                        ? Container()
+                                                        : Text(
+                                                            state.userProfile.clubC,
+                                                            style: TextStyle(
+                                                              color: Color(0xff8FD974),
+                                                              fontSize: 14.sp,
+                                                              fontWeight: FontWeight.w400,
+                                                            ),
                                                           ),
-                                                        ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        );
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          );
                                       }
                                       if (state is EditProfileLoadFailure) {
                                         return Container();
                                       }
-                                      return Container(
-                                        width: 146.w,
-                                        child: SpinKitRipple(
-                                          color: Color(0xff8FD974),
-                                        ),
-                                      );
+
+                                      if (state is EditProfileLoadInProgress) {
+                                        return Container(
+                                          width: 146.w,
+                                          child: SpinKitRipple(
+                                            color: Color(0xff8FD974),
+                                          ),
+                                        );
+                                      }
+                                      return Container();
                                     },
                                   ),
                                 ],
@@ -627,7 +676,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   BlocBuilder<EditProfileCubit, EditProfileState>(
                                     builder: (_, state) {
                                       if (state is EditProfileLoadSuccess) {
-                                        if (state.userProfile.pasteUrl != null) {
+                                        if (state.userProfile.pasteUrl.length >= 1) {
+                                          print("url | " + state.userProfile.pasteUrl);
                                           return Row(
                                             children: [
                                               //indicator
@@ -655,8 +705,41 @@ class _ProfilePageState extends State<ProfilePage> {
                                               ),
                                             ],
                                           );
-                                        } else
-                                          return Container();
+                                        } else if (state.userProfile.pasteUrl.length == 0) {
+                                          return Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.warning_amber_rounded,
+                                                color: Colors.amber,
+                                                size: 32.r,
+                                              ),
+                                              SizedBox(height: 5.h),
+                                              Text(
+                                                'Not Specified',
+                                                style: hintStyle,
+                                              ),
+                                            ],
+                                          );
+                                        } else {
+                                          return Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.warning_amber_rounded,
+                                                color: Colors.amber,
+                                                size: 32.r,
+                                              ),
+                                              SizedBox(height: 5.h),
+                                              Text(
+                                                'Not Specified',
+                                                style: hintStyle,
+                                              ),
+                                            ],
+                                          );
+                                        }
                                       }
 
                                       if (state is EditProfileLoadFailure) {
@@ -665,7 +748,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                       return Container();
                                     },
                                   ),
-                                  SizedBox(height: 10.0.h),
                                 ],
                               ),
                             ),

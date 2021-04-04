@@ -26,14 +26,41 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   }
 
   //update / upload
-  Future<void> updateUserProfile({String uid, String fullName, String email, String age, String gender, String clubA, String clubB, String clubC, String pasteUrl, String buddy, String coach, List<String> sportsPlayed}) async {
+  Future<void> updateUserProfile({
+    String uid,
+    String fullName,
+    String email,
+    String age,
+    String gender,
+    String clubA,
+    String clubB,
+    String clubC,
+    String pasteUrl,
+    String buddy,
+    String coach,
+    List<String> sportsPlayed,
+  }) async {
     try {
       emit(EditProfileLoadInProgress());
       uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
       UserProfile uploadProfile = UserProfile();
       final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
-      uploadProfile = UserProfile(fullName: fullName, age: age, gender: gender, clubA: clubA, clubB: clubB, clubC: clubC, pasteUrl: pasteUrl, buddy: buddy, coach: coach, email: email, uid: uid, sportsPlayed: sportsPlayed);
-      await userProfileRef.doc(uid).set(uploadProfile.toMap(uploadProfile)).catchError((e) => print("error uploading Profile | $e"));
+      uploadProfile = UserProfile(
+        fullName: fullName,
+        age: age,
+        gender: gender,
+        clubA: clubA,
+        clubB: clubB,
+        clubC: clubC,
+        pasteUrl: pasteUrl,
+        buddy: buddy,
+        coach: coach,
+        email: email,
+        uid: uid,
+        sportsPlayed: sportsPlayed,
+      );
+      final profileMapData = uploadProfile.toJson();
+      await userProfileRef.doc(uid).set(profileMapData).catchError((e) => print("error uploading Profile | $e"));
       final userProfile = await locator.get<UserController>().loadUserProfile();
       print("updatedUser | ${userProfile.fullName} ");
       emit(EditProfileLoadSuccess(userProfile: userProfile));
@@ -42,16 +69,4 @@ class EditProfileCubit extends Cubit<EditProfileState> {
       print("get updated profile error | $_");
     }
   }
-
-  // Future<void> loadProfilePage()async{
-  //   try {
-  //     emit(EditProfileLoadInProgress());
-  //     final userProfile = await locator.get<UserController>().loadUserProfile();
-  //     print("user | $userProfile ");
-  //     emit(ProfilePageLoadSuccess(userProfile: userProfile));
-  //   } catch (_) {
-  //     emit(EditProfileLoadFailure());
-  //     print("load profile page error | $_");
-  //   }
-  // }
 }
