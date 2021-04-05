@@ -882,8 +882,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                     items: [
                                       'None',
-                                      'AgaKhan',
-                                      'Jaffery Turf',
+                                      'Aga Khan Sports Club',
+                                      'Nairobi Jaffery Sports Club',
                                     ].map(
                                       (val) {
                                         return DropdownMenuItem<String>(
@@ -948,8 +948,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                     items: [
                                       'None',
-                                      'AgaKhan',
-                                      'Jaffery Turf',
+                                      'Aga Khan Sports Club',
+                                      'Nairobi Jaffery Sports Club',
                                     ].map(
                                       (val) {
                                         return DropdownMenuItem<String>(
@@ -1014,8 +1014,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                     items: [
                                       'None',
-                                      'AgaKhan',
-                                      'Jaffery Turf',
+                                      'Aga Khan Sports Club',
+                                      'Nairobi Jaffery Sports Club',
                                     ].map(
                                       (val) {
                                         return DropdownMenuItem<String>(
@@ -1080,8 +1080,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   items: [
                                     'None',
-                                    'AgaKhan',
-                                    'Jaffery Turf',
+                                    'Aga Khan Sports Club',
+                                    'Nairobi Jaffery Sports Club',
                                   ].map(
                                     (val) {
                                       return DropdownMenuItem<String>(
@@ -1130,8 +1130,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   items: [
                                     'None',
-                                    'AgaKhan',
-                                    'Jaffery Turf',
+                                    'Aga Khan Sports Club',
+                                    'Nairobi Jaffery Sports Club',
                                   ].map(
                                     (val) {
                                       return DropdownMenuItem<String>(
@@ -1181,8 +1181,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   items: [
                                     'None',
-                                    'AgaKhan',
-                                    'Jaffery Turf',
+                                    'Aga Khan Sports Club',
+                                    'Nairobi Jaffery Sports Club',
                                   ].map(
                                     (val) {
                                       return DropdownMenuItem<String>(
