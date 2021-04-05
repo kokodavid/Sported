@@ -197,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   clipper: TrapeziumClipper(),
                   child: Container(
                     width: 1.sw,
-                    height: 230.h,
+                    height: 220.h,
                     color: Color(0xff25262C),
                     child: Padding(
                       padding: EdgeInsets.only(top: 96.h, left: 32.w, right: 32.w, bottom: 32.w),
@@ -334,7 +334,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             if (state is EditProfileLoadSuccess) {
                                               if (state.userProfile.sportsPlayed.isNotEmpty) {
                                                 return Container(
-                                                  width: 131.w,
+                                                  width: 130.w,
                                                   height: 58.w,
                                                   child: ListView.builder(
                                                     itemCount: state.userProfile.sportsPlayed.length,
@@ -354,7 +354,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                 sport,
                                                               ),
                                                               color: Color(0xff8FD974),
-                                                              size: 32.r,
+                                                              size: 15.r,
                                                             ),
 
                                                             SizedBox(height: 10.h),
@@ -432,7 +432,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-          SizedBox(height: 40.h),
+          SizedBox(height: 10.h),
 
           //details
           DefaultTabController(
@@ -831,9 +831,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MaterialButton(
-                      height: 40.h,
+                      height: 30.h,
                       color: Color(0x1AF44336),
-                      minWidth: 112.w,
+                      minWidth: 100.w,
                       padding: EdgeInsets.all(0),
                       shape: RoundedRectangleBorder(
                         side: BorderSide(
@@ -886,9 +886,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MaterialButton(
-                      height: 40.h,
+                      height: 30.h,
                       color: Color(0x1AF44336),
-                      minWidth: 112.w,
+                      minWidth: 100.w,
                       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
                       shape: RoundedRectangleBorder(
                         side: BorderSide(
