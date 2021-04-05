@@ -119,7 +119,7 @@ class _BookScreenState extends State<BookScreen> {
     super.initState();
   }
 
-  List<int> timeStrings = [
+  List<int> compareTime = [
     6,
     7,
     8,
@@ -343,6 +343,8 @@ class _BookScreenState extends State<BookScreen> {
                                   onChanged: (val) {
                                     setState(() => selectedSlot = val);
 
+                                    // final sd = TimeOfDay.fromDateTime(DateTime.parse(selectedDate));
+                                    // print(sd.hour);
                                     //ensure a date is selected
                                     if (selectedDate == "null" || selectedDate == '') {
                                       showCustomSnackbar('Please select a date to book', _scaffoldKey);
@@ -359,7 +361,7 @@ class _BookScreenState extends State<BookScreen> {
                                     label: (index, label) => label,
                                     disabled: (index, label) {
                                       final thisHour = DateTime.now().hour;
-                                      final timePassed = thisHour >= timeStrings[index];
+                                      final timePassed = thisHour >= compareTime[index] && DateTime.parse(selectedDate).day == DateTime.now().day;
 
                                       if (timePassed || (label == '6 - 7 AM' && slotOneBooked.isNotEmpty)) {
                                         return true;
