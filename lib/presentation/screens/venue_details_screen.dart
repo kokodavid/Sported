@@ -69,7 +69,7 @@ class VenueDetailsScreen extends StatelessWidget {
                       child: Image.network(
                         image,
                         fit: BoxFit.fitWidth,
-                        filterQuality: FilterQuality.medium,
+                        filterQuality: FilterQuality.low,
                         loadingBuilder: (_, __, ___) {
                           if (___ == null) return __;
                           return SpinKitRipple(

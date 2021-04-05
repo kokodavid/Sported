@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
         FutureBuilder(
           future: buildHeavyWidget(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
               return snapshot.data;
             }
             return Container(

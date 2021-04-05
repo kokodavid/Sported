@@ -79,6 +79,19 @@ class AuthenticationService {
     );
   }
 
+  Future<String> deleteAccount() async {
+    try {
+      final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+      await userProfileRef.doc(_auth.currentUser.uid).delete();
+      await _auth.currentUser.delete();
+
+      return "Deleted Successfully";
+    } catch (_) {
+      print("delete account error | $_");
+      return _;
+    }
+  }
+
   Future<String> signOut() async {
     try {
       await _auth.signOut();

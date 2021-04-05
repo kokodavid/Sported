@@ -72,8 +72,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   List<String> firestoreSports = [];
 
   bool previousSelectionCleared = false;
-  bool isCompetitive = false;
-  bool isLeisure = false;
+  String isCompetitive;
+  String isLeisure;
   TextEditingController fullNameTextEditingController;
   TextEditingController emailTextEditingController;
   TextEditingController pasteUrlTextEdittingController;
@@ -594,7 +594,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       //male
                                       Column(
                                         children: [
-                                          Text("Male",style: regularStyle),
+                                          Text("Male", style: regularStyle),
                                           IconButton(
                                             onPressed: () {
                                               setState(() {
@@ -617,7 +617,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       //female
                                       Column(
                                         children: [
-                                          Text("Female",style: regularStyle),
+                                          Text("Female", style: regularStyle),
                                           IconButton(
                                             onPressed: () {
                                               setState(() {
@@ -640,7 +640,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       //non-binary
                                       Column(
                                         children: [
-                                          Text("Others",style: regularStyle),
+                                          Text("Others", style: regularStyle),
                                           IconButton(
                                             onPressed: () {
                                               setState(() {
@@ -1260,10 +1260,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 ? newSports
                                                 : firestoreSports
                                         : newSports,
-                                    onChanged: (val) => setState(() {
-                                      newSports = val;
-                                      uploadSports = val;
-                                    }),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        newSports = val;
+                                        uploadSports = val;
+                                      });
+                                    },
                                     choiceItems: C2Choice.listFrom<String, String>(
                                       source: options,
                                       value: (i, v) => v,
@@ -1288,237 +1290,244 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                   : Color(0xff31323B),
                                         ),
                                         child: InkWell(
-                                          onTap: () {
-                                            item.select(!item.selected);
-                                            if (!item.selected) {
-                                              showDialog(
-                                                context: context,
-                                                barrierDismissible: false,
-                                                builder: (_) => Dialog(
-                                                  backgroundColor: Color(0xff18181A),
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
-                                                  child: Container(
-                                                    height: 400.h,
-                                                    width: 360.w,
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      children: [
-                                                        //title
-                                                        Container(
-                                                          padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
-                                                          child: Text(
-                                                            'Select Level',
-                                                            style: TextStyle(
-                                                              color: Color(0xffFEFEFE),
-                                                              fontSize: 15.sp,
-                                                            ),
-                                                          ),
-                                                        ),
-
-                                                        //divider
-                                                        Divider(height: 0.5.h, thickness: 0.5.h, color: Color(0xff07070a)),
-
-                                                        SizedBox(height: 24.h),
-
-                                                        //level title
-                                                        Padding(
-                                                          padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
-                                                          child: Align(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: Text(
-                                                              'Level',
-                                                              style: regularStyle,
-                                                            ),
-                                                          ),
-                                                        ),
-
-                                                        SizedBox(height: 16.h),
-
-                                                        //level dropdown
-                                                        Padding(
-                                                          padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                                                          child: SizedBox(
-                                                            child: Form(
-                                                              key: experienceLevel,
+                                          onTap: firestoreSports.contains(item.value)
+                                              ? () {}
+                                              : () {
+                                                  item.select(!item.selected);
+                                                  if (!item.selected) {
+                                                    return showDialog(
+                                                      context: context,
+                                                      useRootNavigator: false,
+                                                      barrierDismissible: false,
+                                                      builder: (context) => StatefulBuilder(
+                                                        builder: (context, setState) {
+                                                          return Dialog(
+                                                            backgroundColor: Color(0xff18181A),
+                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
+                                                            child: Container(
+                                                              height: 400.h,
+                                                              width: 360.w,
                                                               child: Column(
+                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                                crossAxisAlignment: CrossAxisAlignment.center,
                                                                 children: [
-                                                                  //dropdown
-                                                                  DropdownButtonFormField(
-                                                                    elevation: 0,
-                                                                    iconSize: 23.r,
-                                                                    isDense: true,
-                                                                    isExpanded: true,
-                                                                    hint: Text(
-                                                                      'Select your experience level',
-                                                                      style: labelStyle,
+                                                                  //title
+                                                                  Container(
+                                                                    padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
+                                                                    child: Text(
+                                                                      'Select Level',
+                                                                      style: TextStyle(
+                                                                        color: Color(0xffFEFEFE),
+                                                                        fontSize: 15.sp,
+                                                                      ),
                                                                     ),
-                                                                    icon: Icon(
-                                                                      MdiIcons.chevronDown,
-                                                                      size: 24.r,
-                                                                      color: Color(0xffC5C6C7),
+                                                                  ),
+
+                                                                  //divider
+                                                                  Divider(height: 0.5.h, thickness: 0.5.h, color: Color(0xff07070a)),
+
+                                                                  SizedBox(height: 24.h),
+
+                                                                  //level title
+                                                                  Padding(
+                                                                    padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
+                                                                    child: Align(
+                                                                      alignment: Alignment.centerLeft,
+                                                                      child: Text(
+                                                                        'Level',
+                                                                        style: regularStyle,
+                                                                      ),
                                                                     ),
-                                                                    style: TextStyle(
-                                                                      fontSize: 15.sp,
-                                                                      color: Color(0xff8FD974),
+                                                                  ),
+
+                                                                  SizedBox(height: 16.h),
+
+                                                                  //level dropdown
+                                                                  Padding(
+                                                                    padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                                                                    child: SizedBox(
+                                                                      child: Form(
+                                                                        key: experienceLevel,
+                                                                        child: Column(
+                                                                          children: [
+                                                                            //dropdown
+                                                                            DropdownButtonFormField(
+                                                                              elevation: 0,
+                                                                              iconSize: 23.r,
+                                                                              isDense: true,
+                                                                              isExpanded: true,
+                                                                              hint: Text(
+                                                                                'Select your experience level',
+                                                                                style: labelStyle,
+                                                                              ),
+                                                                              icon: Icon(
+                                                                                MdiIcons.chevronDown,
+                                                                                size: 24.r,
+                                                                                color: Color(0xffC5C6C7),
+                                                                              ),
+                                                                              style: TextStyle(
+                                                                                fontSize: 15.sp,
+                                                                                color: Color(0xff8FD974),
+                                                                              ),
+                                                                              items:
+                                                                                  //TODO: Implement choose level selection
+                                                                                  [
+                                                                                'Beginner',
+                                                                                'Intermediate',
+                                                                                'Proffesional',
+                                                                              ].map((val) {
+                                                                                return DropdownMenuItem<String>(
+                                                                                  value: val,
+                                                                                  child: SizedBox(
+                                                                                    width: 246.w,
+                                                                                    child: Text(
+                                                                                      val,
+                                                                                      maxLines: 1,
+                                                                                      softWrap: true,
+                                                                                      overflow: TextOverflow.ellipsis,
+                                                                                    ),
+                                                                                  ),
+                                                                                );
+                                                                              }).toList(),
+                                                                              decoration: InputDecoration(
+                                                                                enabled: true,
+                                                                                fillColor: Color(0xff31323B),
+                                                                                filled: true,
+                                                                                border: UnderlineInputBorder(
+                                                                                  borderSide: BorderSide.none,
+                                                                                  borderRadius: BorderRadius.circular(8.r),
+                                                                                ),
+                                                                                enabledBorder: UnderlineInputBorder(
+                                                                                  borderSide: BorderSide.none,
+                                                                                  borderRadius: BorderRadius.circular(8.r),
+                                                                                ),
+                                                                              ),
+                                                                              onChanged: (val) {
+                                                                                // newExperience = val;
+                                                                                // uploadExperience = val;
+                                                                              },
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
                                                                     ),
-                                                                    items:
-                                                                        //TODO: Implement choose level selection
-                                                                        [
-                                                                      'Beginner',
-                                                                      'Intermediate',
-                                                                      'Proffesional',
-                                                                    ].map((val) {
-                                                                      return DropdownMenuItem<String>(
-                                                                        value: val,
-                                                                        child: SizedBox(
-                                                                          width: 246.w,
-                                                                          child: Text(
-                                                                            val,
-                                                                            maxLines: 1,
-                                                                            softWrap: true,
-                                                                            overflow: TextOverflow.ellipsis,
+                                                                  ),
+
+                                                                  SizedBox(height: 20.h),
+
+                                                                  //difficulty title
+                                                                  Padding(
+                                                                    padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
+                                                                    child: Align(
+                                                                      alignment: Alignment.centerLeft,
+                                                                      child: Text(
+                                                                        'Difficulty',
+                                                                        style: regularStyle,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+
+                                                                  SizedBox(height: 16.h),
+
+                                                                  //difficulty btns
+                                                                  Row(
+                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                                    children: [
+                                                                      //competitive
+                                                                      MaterialButton(
+                                                                        height: 46.h,
+                                                                        minWidth: 147.w,
+                                                                        color: isCompetitive == 'Yes' ? Color(0xff8FD974) : Color(0xff31323B),
+                                                                        padding: EdgeInsets.all(0),
+                                                                        shape: StadiumBorder(),
+                                                                        elevation: 0.0,
+                                                                        hoverElevation: 0,
+                                                                        disabledElevation: 0,
+                                                                        highlightElevation: 0,
+                                                                        focusElevation: 0,
+                                                                        child: Text(
+                                                                          'Competitive',
+                                                                          style: TextStyle(
+                                                                            color: isCompetitive == 'Yes' ? Colors.black : Color(0xff707070),
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: 15.sp,
                                                                           ),
                                                                         ),
-                                                                      );
-                                                                    }).toList(),
-                                                                    decoration: InputDecoration(
-                                                                      enabled: true,
-                                                                      fillColor: Color(0xff31323B),
-                                                                      filled: true,
-                                                                      border: UnderlineInputBorder(
-                                                                        borderSide: BorderSide.none,
-                                                                        borderRadius: BorderRadius.circular(8.r),
+                                                                        onPressed: () {
+                                                                          setState(() {
+                                                                            isCompetitive = 'Yes';
+                                                                          });
+                                                                        },
                                                                       ),
-                                                                      enabledBorder: UnderlineInputBorder(
-                                                                        borderSide: BorderSide.none,
-                                                                        borderRadius: BorderRadius.circular(8.r),
+
+                                                                      SizedBox(width: 12.0.w),
+
+                                                                      //leisure
+                                                                      MaterialButton(
+                                                                        height: 46.h,
+                                                                        minWidth: 147.w,
+                                                                        color: isCompetitive == 'Yes' ? Color(0xff31323B) : Color(0xff8FD974),
+                                                                        shape: StadiumBorder(),
+                                                                        padding: EdgeInsets.all(0),
+                                                                        elevation: 0.0,
+                                                                        hoverElevation: 0,
+                                                                        disabledElevation: 0,
+                                                                        highlightElevation: 0,
+                                                                        focusElevation: 0,
+                                                                        child: Text(
+                                                                          'Leisure',
+                                                                          style: TextStyle(
+                                                                            color: isCompetitive == "Yes" ? Color(0xff707070) : Colors.black,
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: 15.sp,
+                                                                          ),
+                                                                        ),
+                                                                        onPressed: () {
+                                                                          setState(() {
+                                                                            isCompetitive = "No";
+                                                                          });
+                                                                        },
+                                                                      ),
+                                                                    ],
+                                                                  ),
+
+                                                                  SizedBox(height: 48.h),
+
+                                                                  //continue btn
+                                                                  MaterialButton(
+                                                                    height: 46.h,
+                                                                    minWidth: 147.w,
+                                                                    color: Color(0xff8FD974),
+                                                                    padding: EdgeInsets.all(0),
+                                                                    shape: StadiumBorder(),
+                                                                    elevation: 0.0,
+                                                                    hoverElevation: 0,
+                                                                    disabledElevation: 0,
+                                                                    highlightElevation: 0,
+                                                                    focusElevation: 0,
+                                                                    child: Text(
+                                                                      'Continue',
+                                                                      style: TextStyle(
+                                                                        color: Colors.black,
+                                                                        fontWeight: FontWeight.w400,
+                                                                        fontSize: 15.sp,
                                                                       ),
                                                                     ),
-                                                                    onChanged: (val) {
-                                                                      // newExperience = val;
-                                                                      // uploadExperience = val;
+                                                                    onPressed: () {
+                                                                      //TODO: Pop with data
+                                                                      Navigator.pop(context);
                                                                     },
                                                                   ),
                                                                 ],
                                                               ),
                                                             ),
-                                                          ),
-                                                        ),
-
-                                                        SizedBox(height: 20.h),
-
-                                                        //difficulty title
-                                                        Padding(
-                                                          padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
-                                                          child: Align(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: Text(
-                                                              'Difficulty',
-                                                              style: regularStyle,
-                                                            ),
-                                                          ),
-                                                        ),
-
-                                                        SizedBox(height: 16.h),
-
-                                                        //difficulty btns
-                                                        Row(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            //competitive
-                                                            MaterialButton(
-                                                              height: 46.h,
-                                                              minWidth: 147.w,
-                                                              color: isCompetitive ? Color(0xff8FD974) : Color(0xff31323B),
-                                                              padding: EdgeInsets.all(0),
-                                                              shape: StadiumBorder(),
-                                                              elevation: 0.0,
-                                                              hoverElevation: 0,
-                                                              disabledElevation: 0,
-                                                              highlightElevation: 0,
-                                                              focusElevation: 0,
-                                                              child: Text(
-                                                                'Competitive',
-                                                                style: TextStyle(
-                                                                  color: isCompetitive ? Colors.black : Color(0xff707070),
-                                                                  fontWeight: FontWeight.w400,
-                                                                  fontSize: 15.sp,
-                                                                ),
-                                                              ),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  isCompetitive = true;
-                                                                });
-                                                              },
-                                                            ),
-
-                                                            SizedBox(width: 12.0.w),
-
-                                                            //leisure
-                                                            MaterialButton(
-                                                              height: 46.h,
-                                                              minWidth: 147.w,
-                                                              color: isLeisure ? Color(0xff31323B) : Color(0xff8FD974),
-                                                              shape: StadiumBorder(),
-                                                              padding: EdgeInsets.all(0),
-                                                              elevation: 0.0,
-                                                              hoverElevation: 0,
-                                                              disabledElevation: 0,
-                                                              highlightElevation: 0,
-                                                              focusElevation: 0,
-                                                              child: Text(
-                                                                'Leisure',
-                                                                style: TextStyle(
-                                                                  color: isLeisure ? Color(0xff707070) : Colors.black,
-                                                                  fontWeight: FontWeight.w400,
-                                                                  fontSize: 15.sp,
-                                                                ),
-                                                              ),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  isLeisure = true;
-                                                                });
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-
-                                                        SizedBox(height: 48.h),
-
-                                                        //continue btn
-                                                        MaterialButton(
-                                                          height: 46.h,
-                                                          minWidth: 147.w,
-                                                          color: Color(0xff8FD974),
-                                                          padding: EdgeInsets.all(0),
-                                                          shape: StadiumBorder(),
-                                                          elevation: 0.0,
-                                                          hoverElevation: 0,
-                                                          disabledElevation: 0,
-                                                          highlightElevation: 0,
-                                                          focusElevation: 0,
-                                                          child: Text(
-                                                            'Continue',
-                                                            style: TextStyle(
-                                                              color: Colors.black,
-                                                              fontWeight: FontWeight.w400,
-                                                              fontSize: 15.sp,
-                                                            ),
-                                                          ),
-                                                          onPressed: () {
-                                                            //TODO: Pop with data
-                                                            Navigator.pop(context);
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
+                                                          );
+                                                        },
+                                                      ),
+                                                    );
+                                                  }
+                                                },
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: <Widget>[
@@ -1875,7 +1884,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   builder: (context, state) {
                     if (state is EditProfileLoadSuccess) {
                       firestoreCoach = state.userProfile.coach;
-
                       return Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
                         child: Column(
@@ -1971,6 +1979,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         onPressed: () {
                                           setState(() {
                                             newCoach = "No";
+                                            pasteUrlTextEdittingController == null ? null : pasteUrlTextEdittingController?.clear();
+                                            uploadCertLink = '';
                                             uploadCoach = "No";
                                           });
                                         },
@@ -1979,78 +1989,81 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   SizedBox(height: 10.0.h),
                                   //etc
-                                  RichText(
-                                    text: TextSpan(
-                                      text: 'Do you hold any certifications or credentials to be able to coach?',
-                                      style: TextStyle(
-                                        fontSize: 11.sp,
-                                        color: Color(0xff8FD974),
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: ' If you do, please share a link to your portfolio.',
-                                          style: hintStyle.copyWith(fontSize: 11.sp),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.0.h),
-
-                                  //certs
-                                  Container(
-                                    child: Padding(
-                                      padding: MediaQuery.of(context).viewInsets,
-                                      child: BlocBuilder<EditProfileCubit, EditProfileState>(
-                                        builder: (context, state) {
-                                          if (state is EditProfileLoadSuccess) {
-                                            final firestoreCertLink = state.userProfile.pasteUrl;
-                                            return TextFormField(
-                                              maxLines: 1,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15.sp,
-                                              ),
-                                              initialValue: firestoreCertLink ?? empty,
-                                              controller: pasteUrlTextEdittingController,
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  newCertLink = val;
-                                                  uploadCertLink = val;
-                                                });
-                                              },
-                                              decoration: formInputDecoration(
-                                                isDense: true,
-                                                hintText: newCertLink == null
-                                                    ? firestoreCertLink == null
-                                                        ? 'Paste URL'
-                                                        : firestoreCertLink
-                                                    : newCertLink,
-                                                prefixIcon: Icons.link,
-                                              ),
-                                            );
-                                          }
-
-                                          if (state is EditProfileLoadFailure) {
-                                            return Container();
-                                          }
-                                          return TextFormField(
-                                            maxLines: 1,
+                                  newCoach == 'Yes'
+                                      ? RichText(
+                                          text: TextSpan(
+                                            text: 'Do you hold any certifications or credentials to be able to coach?',
                                             style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.sp,
+                                              fontSize: 11.sp,
+                                              color: Color(0xff8FD974),
                                             ),
-                                            controller: pasteUrlTextEdittingController,
-                                            decoration: formInputDecoration(
-                                              isDense: true,
-                                              hintText: 'Paste URL',
-                                              prefixIcon: Icons.link,
+                                            children: [
+                                              TextSpan(
+                                                text: ' If you do, please share a link to your portfolio.',
+                                                style: hintStyle.copyWith(fontSize: 11.sp),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : Container(),
+                                  SizedBox(height: 10.0.h),
+                                  //certs
+                                  newCoach == 'Yes'
+                                      ? Container(
+                                          child: Padding(
+                                            padding: MediaQuery.of(context).viewInsets,
+                                            child: BlocBuilder<EditProfileCubit, EditProfileState>(
+                                              builder: (context, state) {
+                                                if (state is EditProfileLoadSuccess) {
+                                                  final firestoreCertLink = state.userProfile.pasteUrl;
+                                                  return TextFormField(
+                                                    maxLines: 1,
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15.sp,
+                                                    ),
+                                                    initialValue: firestoreCertLink ?? empty,
+                                                    controller: pasteUrlTextEdittingController,
+                                                    onChanged: (val) {
+                                                      setState(() {
+                                                        newCertLink = val;
+                                                        uploadCertLink = val;
+                                                      });
+                                                    },
+                                                    decoration: formInputDecoration(
+                                                      isDense: true,
+                                                      hintText: newCertLink == null
+                                                          ? firestoreCertLink == null
+                                                              ? 'Paste URL'
+                                                              : firestoreCertLink
+                                                          : newCertLink,
+                                                      prefixIcon: Icons.link,
+                                                    ),
+                                                  );
+                                                }
+
+                                                if (state is EditProfileLoadFailure) {
+                                                  return Container();
+                                                }
+                                                return TextFormField(
+                                                  maxLines: 1,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 15.sp,
+                                                  ),
+                                                  controller: pasteUrlTextEdittingController,
+                                                  decoration: formInputDecoration(
+                                                    isDense: true,
+                                                    hintText: 'Paste URL',
+                                                    prefixIcon: Icons.link,
+                                                  ),
+                                                );
+                                              },
                                             ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 20.0.h),
+                                          ),
+                                        )
+                                      : Container(),
+                                  newCoach == 'Yes' || firestoreCoach == 'Yes' ? SizedBox(height: 20.0.h) : SizedBox.shrink(),
                                 ],
                               ),
                             ),
@@ -2061,7 +2074,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       );
                     }
-
                     if (state is EditProfileLoadFailure) {
                       return Container();
                     }

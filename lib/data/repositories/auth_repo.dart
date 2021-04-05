@@ -57,9 +57,7 @@ class AuthRepo {
   Future<String> deleteAccountAndProfileData() async {
     try {
       final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
-      final userRef = FirebaseFirestore.instance.collection("users");
       await userProfileRef.doc(_auth.currentUser.uid).delete();
-      await userRef.doc(_auth.currentUser.uid).delete();
       await _auth.currentUser.delete();
 
       return "Deleted Successfully";

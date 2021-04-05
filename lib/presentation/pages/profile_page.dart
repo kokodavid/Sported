@@ -10,7 +10,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:sported_app/business_logic/blocs/auth/authentication_bloc.dart';
 import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
-import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/data/services/authentication_service.dart';
 import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/authenticate.dart';
@@ -201,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 220.h,
                     color: Color(0xff25262C),
                     child: Padding(
-                      padding: EdgeInsets.only(top: 96.h, left: 32.w, right: 32.w, bottom: 32.w),
+                      padding: EdgeInsets.only(top: 96.h, left: 20.w, right: 20.w, bottom: 32.h),
                       child: BlocBuilder<EditProfileCubit, EditProfileState>(
                         builder: (context, state) {
                           if (state is EditProfileLoadInProgress) {
@@ -210,7 +209,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                           if (state is EditProfileLoadSuccess) {
                             return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 //gender
@@ -235,7 +234,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   ? MdiIcons.genderNonBinary
                                                   : Icons.warning_amber_rounded,
                                       color: state.userProfile.gender == null ? Colors.amber : Color(0xff8FD974),
-                                      size: 32.r,
+                                      size: 24.r,
                                     ),
                                     SizedBox(height: 10.h),
                                     Text(
@@ -251,7 +250,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ],
                                 ),
 
-                                Container(height: 80.h, child: VerticalDivider(color: Color(0xff363740), thickness: 1.5.w, width: 40.w)),
+                                SizedBox(width: 5.w),
+
+                                Container(height: 80.h, child: VerticalDivider(color: Color(0xff363740), thickness: 1.w, width: 5.w)),
+                                SizedBox(width: 5.w),
 
                                 //age
                                 Column(
@@ -270,7 +272,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         ? Text(
                                             '40+',
                                             style: TextStyle(
-                                              fontSize: 28.sp,
+                                              fontSize: 22.sp,
                                               fontWeight: FontWeight.w800,
                                               color: Color(0xff8FD974),
                                             ),
@@ -279,7 +281,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             ? Text(
                                                 state.userProfile.age,
                                                 style: TextStyle(
-                                                  fontSize: 28.sp,
+                                                  fontSize: 22.sp,
                                                   fontWeight: FontWeight.w800,
                                                   color: Color(0xff8FD974),
                                                 ),
@@ -308,8 +310,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ],
                                 ),
+                                SizedBox(width: 5.w),
 
-                                Container(height: 80.h, child: VerticalDivider(color: Color(0xff363740), thickness: 1.5.w, width: 40.w)),
+                                Container(height: 80.h, child: VerticalDivider(color: Color(0xff363740), thickness: 1.5.w, width: 5.w)),
+                                SizedBox(width: 5.w),
 
                                 //sports
                                 Column(
@@ -335,16 +339,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                             if (state is EditProfileLoadSuccess) {
                                               if (state.userProfile.sportsPlayed.isNotEmpty) {
                                                 return Container(
-                                                  width: 130.w,
-                                                  height: 58.w,
+                                                  width: 200.w,
+                                                  height: 58.h,
                                                   child: ListView.builder(
-                                                    itemCount: state.userProfile.sportsPlayed.length,
+                                                    itemCount: state.userProfile.sportsPlayed.length > 4 ? 4 : state.userProfile.sportsPlayed.length,
                                                     shrinkWrap: true,
                                                     scrollDirection: Axis.horizontal,
                                                     itemBuilder: (BuildContext context, int index) {
                                                       final sport = state.userProfile.sportsPlayed[index];
                                                       return Padding(
-                                                        padding: EdgeInsets.only(right: 20.h),
+                                                        padding: EdgeInsets.only(right: 5.w),
                                                         child: Column(
                                                           mainAxisAlignment: MainAxisAlignment.start,
                                                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -355,10 +359,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                 sport,
                                                               ),
                                                               color: Color(0xff8FD974),
-                                                              size: 15.r,
+                                                              size: 19.r,
                                                             ),
 
-                                                            SizedBox(height: 10.h),
+                                                            SizedBox(height: 15.h),
 
                                                             //name
                                                             Text(
@@ -383,7 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                                   : sport == 'assets/icons/basketball_icon.png'
                                                                                                       ? 'Basketball'
                                                                                                       : '',
-                                                              style: hintStyle,
+                                                              style: hintStyle.copyWith(fontSize: 11.sp),
                                                             ),
                                                           ],
                                                         ),
@@ -592,34 +596,48 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     state.userProfile.clubA == null || state.userProfile.clubA == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
                                                     state.userProfile.clubA == null || state.userProfile.clubA == 'None'
                                                         ? Container()
-                                                        : Text(
-                                                            state.userProfile.clubA,
-                                                            style: TextStyle(
-                                                              color: Color(0xff8FD974),
-                                                              fontSize: 14.sp,
-                                                              fontWeight: FontWeight.w400,
+                                                        : Container(
+                                                            width: 124.w,
+                                                            child: Text(
+                                                              state.userProfile.clubA,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(
+                                                                color: Color(0xff8FD974),
+                                                                fontSize: 14.sp,
+                                                                fontWeight: FontWeight.w400,
+                                                              ),
                                                             ),
                                                           ),
                                                     state.userProfile.clubB == null || state.userProfile.clubB == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
                                                     state.userProfile.clubB == null || state.userProfile.clubB == 'None'
                                                         ? Container()
-                                                        : Text(
-                                                            state.userProfile.clubB,
-                                                            style: TextStyle(
-                                                              color: Color(0xff8FD974),
-                                                              fontSize: 14.sp,
-                                                              fontWeight: FontWeight.w400,
+                                                        : Container(
+                                                            width: 124.w,
+                                                            child: Text(
+                                                              state.userProfile.clubB,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 1,
+                                                              style: TextStyle(
+                                                                color: Color(0xff8FD974),
+                                                                fontSize: 14.sp,
+                                                                fontWeight: FontWeight.w400,
+                                                              ),
                                                             ),
                                                           ),
                                                     state.userProfile.clubC == null || state.userProfile.clubC == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
                                                     state.userProfile.clubC == null || state.userProfile.clubC == 'None'
                                                         ? Container()
-                                                        : Text(
-                                                            state.userProfile.clubC,
-                                                            style: TextStyle(
-                                                              color: Color(0xff8FD974),
-                                                              fontSize: 14.sp,
-                                                              fontWeight: FontWeight.w400,
+                                                        : Container(
+                                                            width: 124.w,
+                                                            child: Text(
+                                                              state.userProfile.clubC,
+                                                              maxLines: 1,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(
+                                                                color: Color(0xff8FD974),
+                                                                fontSize: 14.sp,
+                                                                fontWeight: FontWeight.w400,
+                                                              ),
                                                             ),
                                                           ),
                                                   ],
@@ -653,18 +671,28 @@ class _ProfilePageState extends State<ProfilePage> {
                             SizedBox(height: 20.h),
 
                             //certs title
-                            Padding(
-                              padding: EdgeInsets.only(left: 32.w),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Coaching Certifications',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15.sp,
-                                  ),
-                                ),
-                              ),
+                            BlocBuilder<EditProfileCubit, EditProfileState>(
+                              builder: (context, state) {
+                                if (state is EditProfileLoadSuccess) {
+                                  if (state.userProfile.coach == 'Yes') {
+                                    return Padding(
+                                      padding: EdgeInsets.only(left: 32.w),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          'Coaching Certifications',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15.sp,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  } else
+                                    Container();
+                                }
+                                return Container();
+                              },
                             ),
 
                             SizedBox(height: 10.h),
@@ -677,69 +705,71 @@ class _ProfilePageState extends State<ProfilePage> {
                                   BlocBuilder<EditProfileCubit, EditProfileState>(
                                     builder: (_, state) {
                                       if (state is EditProfileLoadSuccess) {
-                                        if (state.userProfile.pasteUrl.length >= 1) {
-                                          print("url | " + state.userProfile.pasteUrl);
-                                          return Row(
-                                            children: [
-                                              //indicator
-                                              Icon(
-                                                MdiIcons.circleOutline,
-                                                size: 10.r,
-                                                color: Color(0xff9BEB81),
-                                              ),
+                                        if (state.userProfile.coach == 'Yes') {
+                                          if (state.userProfile.pasteUrl.length >= 1) {
+                                            print("url | " + state.userProfile.pasteUrl);
+                                            return Row(
+                                              children: [
+                                                //indicator
+                                                Icon(
+                                                  MdiIcons.circleOutline,
+                                                  size: 10.r,
+                                                  color: Color(0xff9BEB81),
+                                                ),
 
-                                              SizedBox(width: 10.w),
+                                                SizedBox(width: 10.w),
 
-                                              //cert
-                                              SizedBox(
-                                                width: 300.w,
-                                                child: Text(
-                                                  state.userProfile.pasteUrl,
-                                                  softWrap: true,
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 15.sp,
-                                                    color: Color(0xBF707070),
+                                                //cert
+                                                SizedBox(
+                                                  width: 300.w,
+                                                  child: Text(
+                                                    state.userProfile.pasteUrl,
+                                                    softWrap: true,
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      color: Color(0xBF707070),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          );
-                                        } else if (state.userProfile.pasteUrl.length == 0) {
-                                          return Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.warning_amber_rounded,
-                                                color: Colors.amber,
-                                                size: 32.r,
-                                              ),
-                                              SizedBox(height: 5.h),
-                                              Text(
-                                                'Not Specified',
-                                                style: hintStyle,
-                                              ),
-                                            ],
-                                          );
-                                        } else {
-                                          return Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.warning_amber_rounded,
-                                                color: Colors.amber,
-                                                size: 32.r,
-                                              ),
-                                              SizedBox(height: 5.h),
-                                              Text(
-                                                'Not Specified',
-                                                style: hintStyle,
-                                              ),
-                                            ],
-                                          );
+                                              ],
+                                            );
+                                          } else if (state.userProfile.pasteUrl.length == 0) {
+                                            return Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.warning_amber_rounded,
+                                                  color: Colors.amber,
+                                                  size: 32.r,
+                                                ),
+                                                SizedBox(height: 5.h),
+                                                Text(
+                                                  'Not Specified',
+                                                  style: hintStyle,
+                                                ),
+                                              ],
+                                            );
+                                          } else {
+                                            return Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.warning_amber_rounded,
+                                                  color: Colors.amber,
+                                                  size: 32.r,
+                                                ),
+                                                SizedBox(height: 5.h),
+                                                Text(
+                                                  'Not Specified',
+                                                  style: hintStyle,
+                                                ),
+                                              ],
+                                            );
+                                          }
                                         }
                                       }
 
@@ -920,7 +950,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                       onPressed: () async {
-                        final logmessage = await context.read<AuthRepo>().deleteAccountAndProfileData();
+                        final logmessage = await context.read<AuthenticationService>().deleteAccount();
                         if (logmessage == "Deleted Successfully") {
                           BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationDeleteRequested());
                           this._showToast(context, "Deleting Account...");
