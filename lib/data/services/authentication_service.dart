@@ -36,6 +36,7 @@ class AuthenticationService {
   }
 
   //2
+  // ignore: missing_return
   Future<String> signUp({String email, String password, String fullName}) async {
     try {
       await _auth.createUserWithEmailAndPassword(email: email, password: password);

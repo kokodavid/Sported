@@ -38,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _showToast(BuildContext context, String message) {
     final scaffold = Scaffold.of(context);
+    // ignore: deprecated_member_use
     scaffold.showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,

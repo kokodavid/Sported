@@ -56,7 +56,7 @@ class _SignInPageState extends State<SignInPage> {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  String _message = 'Log in/out by pressing the buttons below.';
+  // String _message = 'Log in/out by pressing the buttons below.';
 
   // Future<Null> _login() async {
   //   final FacebookLoginResult result = await facebookSignIn.logIn(['email']);
@@ -420,6 +420,7 @@ class _SignInPageState extends State<SignInPage> {
       }
     }
 
+    // ignore: unnecessary_statements
     logMessage == "Logged In Successfully" ? null : _showErrorSnack(logMessage);
 
     //print("I am logMessage $logMessage");

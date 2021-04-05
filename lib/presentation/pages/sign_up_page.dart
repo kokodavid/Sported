@@ -419,6 +419,7 @@ class _SignUpPageState extends State<SignUpPage> {
     });
     final logMessage = await context.read<AuthenticationService>().signUp(email: emailTextEditingController.text, password: passWordTextEditingController.text, fullName: userNameTextEditingController.text);
 
+    // ignore: unnecessary_statements
     logMessage == "Registered Successfully" ? null : showCustomSnackbar(logMessage, _scaffoldKey);
 
     print("LogMessage:" + logMessage);

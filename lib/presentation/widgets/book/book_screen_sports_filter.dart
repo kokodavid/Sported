@@ -42,17 +42,14 @@ class BookScreenSportsFilter extends StatelessWidget {
                                       : sportName == 'Swimming'
                                           ? BlocProvider.of<FilterBloc>(context).add(LoadSwimming())
                                           : sportName == 'Volleyball'
-                                              ? BlocProvider.of<FilterBloc>(context)
-                                                  .add(LoadVolleyball())
+                                              ? BlocProvider.of<FilterBloc>(context).add(LoadVolleyball())
                                               : sportName == 'Rugby'
-                                                  ? BlocProvider.of<FilterBloc>(context)
-                                                      .add(LoadRugby())
+                                                  ? BlocProvider.of<FilterBloc>(context).add(LoadRugby())
                                                   : sportName == 'Table Tennis'
-                                                      ? BlocProvider.of<FilterBloc>(context)
-                                                          .add(LoadTableTennis())
+                                                      ? BlocProvider.of<FilterBloc>(context).add(LoadTableTennis())
                                                       : sportName == 'Handball'
-                                                          ? BlocProvider.of<FilterBloc>(context)
-                                                              .add(LoadHandball())
+                                                          ? BlocProvider.of<FilterBloc>(context).add(LoadHandball())
+                                                          // ignore: unnecessary_statements
                                                           : null;
                 },
                 child: Visibility(
