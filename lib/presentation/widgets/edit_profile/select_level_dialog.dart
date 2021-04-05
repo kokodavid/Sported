@@ -7,6 +7,10 @@ class SelectLevelDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final experienceLevel = GlobalKey<FormState>();
+    bool isCompetitive = false;
+    bool isCompetitiveTrue = true;
+    bool isLeisure = false;
+    bool isLeisureTrue = true;
     return Dialog(
       backgroundColor: Color(0xff18181A),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
@@ -158,7 +162,7 @@ class SelectLevelDialog extends StatelessWidget {
                 MaterialButton(
                   height: 46.h,
                   minWidth: 147.w,
-                  color: Color(0xff8FD974),
+                  color: Color(0xff707070),
                   padding: EdgeInsets.all(0),
                   shape: StadiumBorder(),
                   elevation: 0.0,
@@ -176,9 +180,7 @@ class SelectLevelDialog extends StatelessWidget {
                   ),
                   onPressed: () {},
                 ),
-
                 SizedBox(width: 12.0.w),
-
                 //leisure
                 MaterialButton(
                   height: 46.h,

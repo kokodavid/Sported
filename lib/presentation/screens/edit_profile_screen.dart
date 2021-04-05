@@ -592,59 +592,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       //male
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            newGender = 'Male';
-                                            uploadGender = 'Male';
-                                          });
-                                        },
-                                        padding: EdgeInsets.all(0),
-                                        icon: Icon(
-                                          MdiIcons.genderMale,
-                                          color: newGender == 'Male'
-                                              ? Color(0xff8FD974)
-                                              : firestoreGender == "Male"
-                                                  ? Color(0xff2F4826)
-                                                  : Color(0xff31323B),
-                                        ),
+                                      Column(
+                                        children: [
+                                          Text("Male",style: regularStyle),
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                newGender = 'Male';
+                                                uploadGender = 'Male';
+                                              });
+                                            },
+                                            padding: EdgeInsets.all(0),
+                                            icon: Icon(
+                                              MdiIcons.genderMale,
+                                              color: newGender == 'Male'
+                                                  ? Color(0xff8FD974)
+                                                  : firestoreGender == "Male"
+                                                      ? Color(0xff2F4826)
+                                                      : Color(0xff31323B),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       //female
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            newGender = 'Female';
-                                            uploadGender = 'Female';
-                                          });
-                                        },
-                                        padding: EdgeInsets.all(0),
-                                        icon: Icon(
-                                          MdiIcons.genderFemale,
-                                          color: newGender == 'Female'
-                                              ? Color(0xff8FD974)
-                                              : firestoreGender == "Female"
-                                                  ? Color(0xffD9F2D0)
-                                                  : Color(0xff31323B),
-                                        ),
+                                      Column(
+                                        children: [
+                                          Text("Female",style: regularStyle),
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                newGender = 'Female';
+                                                uploadGender = 'Female';
+                                              });
+                                            },
+                                            padding: EdgeInsets.all(0),
+                                            icon: Icon(
+                                              MdiIcons.genderFemale,
+                                              color: newGender == 'Female'
+                                                  ? Color(0xff8FD974)
+                                                  : firestoreGender == "Female"
+                                                      ? Color(0xffD9F2D0)
+                                                      : Color(0xff31323B),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-
                                       //non-binary
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            newGender = 'Non-binary';
-                                            uploadGender = 'Non-binary';
-                                          });
-                                        },
-                                        padding: EdgeInsets.all(0),
-                                        icon: Icon(
-                                          MdiIcons.genderNonBinary,
-                                          color: newGender == 'Non-binary'
-                                              ? Color(0xff8FD974)
-                                              : firestoreGender == "Non-binary"
-                                                  ? Color(0xffD9F2D0)
-                                                  : Color(0xff31323B),
-                                        ),
+                                      Column(
+                                        children: [
+                                          Text("Others",style: regularStyle),
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                newGender = 'Non-binary';
+                                                uploadGender = 'Non-binary';
+                                              });
+                                            },
+                                            padding: EdgeInsets.all(0),
+                                            icon: Icon(
+                                              MdiIcons.genderNonBinary,
+                                              color: newGender == 'Non-binary'
+                                                  ? Color(0xff8FD974)
+                                                  : firestoreGender == "Non-binary"
+                                                      ? Color(0xffD9F2D0)
+                                                      : Color(0xff31323B),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -868,8 +882,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                     items: [
                                       'None',
-                                      'AgaKhan',
-                                      'Jaffery Turf',
+                                      'Aga Khan Sports Club',
+                                      'Nairobi Jaffery Sports Club',
                                     ].map(
                                       (val) {
                                         return DropdownMenuItem<String>(
@@ -934,8 +948,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                     items: [
                                       'None',
-                                      'AgaKhan',
-                                      'Jaffery Turf',
+                                      'Aga Khan Sports Club',
+                                      'Nairobi Jaffery Sports Club',
                                     ].map(
                                       (val) {
                                         return DropdownMenuItem<String>(
@@ -1000,8 +1014,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                     items: [
                                       'None',
-                                      'AgaKhan',
-                                      'Jaffery Turf',
+                                      'Aga Khan Sports Club',
+                                      'Nairobi Jaffery Sports Club',
                                     ].map(
                                       (val) {
                                         return DropdownMenuItem<String>(
@@ -1066,8 +1080,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   items: [
                                     'None',
-                                    'AgaKhan',
-                                    'Jaffery Turf',
+                                    'Aga Khan Sports Club',
+                                    'Nairobi Jaffery Sports Club',
                                   ].map(
                                     (val) {
                                       return DropdownMenuItem<String>(
@@ -1116,8 +1130,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   items: [
                                     'None',
-                                    'AgaKhan',
-                                    'Jaffery Turf',
+                                    'Aga Khan Sports Club',
+                                    'Nairobi Jaffery Sports Club',
                                   ].map(
                                     (val) {
                                       return DropdownMenuItem<String>(
@@ -1167,8 +1181,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   items: [
                                     'None',
-                                    'AgaKhan',
-                                    'Jaffery Turf',
+                                    'Aga Khan Sports Club',
+                                    'Nairobi Jaffery Sports Club',
                                   ].map(
                                     (val) {
                                       return DropdownMenuItem<String>(

@@ -30,6 +30,15 @@ class _SignInPageState extends State<SignInPage> {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider<NavBloc>(
+          create: (context) => NavBloc()..add(LoadPageThree()),
+          child: PagesSwitcher(),
+        ),
+      ),
+    );
+
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
     print(googleUser.id);
