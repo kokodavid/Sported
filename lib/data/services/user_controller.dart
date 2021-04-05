@@ -6,7 +6,6 @@ import 'package:sported_app/data/models/UserProfile.dart';
 import 'package:sported_app/data/models/ourUser.dart';
 import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/data/repositories/storage_repo.dart';
-import 'package:sported_app/data/services/authentication_service.dart';
 import 'package:sported_app/locator.dart';
 
 class UserController {
@@ -18,7 +17,6 @@ class UserController {
   UserModel _currentUser;
 
   AuthRepo _authRepo = locator.get<AuthRepo>();
-  AuthenticationService _authenticationService = locator.get<AuthenticationService>();
   StorageRepo _storageRepo = locator.get<StorageRepo>();
 
   Future init;
@@ -79,6 +77,7 @@ class UserController {
   //   );
   // }
 
+  // ignore: missing_return
   Future<UserProfile> uploadProfile({
     String uid,
     String fullName,

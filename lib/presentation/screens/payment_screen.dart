@@ -177,7 +177,9 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
                     : navigateBack == 'navigate back'
                         ? Navigator.pop(context)
                         : navigateBack == 'do not navigate back'
+                            // ignore: unnecessary_statements
                             ? null
+                            // ignore: unnecessary_statements
                             : null;
 
                 // Navigator.pop(context);
