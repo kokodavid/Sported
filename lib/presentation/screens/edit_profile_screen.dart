@@ -606,10 +606,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             icon: Icon(
                                               MdiIcons.genderMale,
                                               color: newGender == 'Male'
-                                                  ? Color(0xff8FD974)
-                                                  : firestoreGender == "Male"
-                                                      ? Color(0xff2F4826)
-                                                      : Color(0xff31323B),
+                                                  ? Color(0xff8FD974) : Color(0xff31323B),
+                                                  // : firestoreGender == "Male"
+                                                  //     ? Color(0xff2F4826)
+                                                  //     : Color(0xff31323B),
                                             ),
                                           ),
                                         ],
@@ -628,11 +628,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             padding: EdgeInsets.all(0),
                                             icon: Icon(
                                               MdiIcons.genderFemale,
-                                              color: newGender == 'Female'
-                                                  ? Color(0xff8FD974)
-                                                  : firestoreGender == "Female"
-                                                      ? Color(0xffD9F2D0)
-                                                      : Color(0xff31323B),
+                                              color:newGender == 'Female'
+                                                  ? Color(0xff8FD974) : Color(0xff31323B),
+                                              // firestoreGender == "Female"
+                                              //         ? Color(0xffD9F2D0)
+                                              //         : Color(0xff31323B),
                                             ),
                                           ),
                                         ],
@@ -1234,9 +1234,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       //title
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          'What sports do you play?',
-                          style: regularStyle,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'What sports do you play?',
+                              style: regularStyle,
+                            ),
+                            GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  previousSelectionCleared = true;
+                                });
+                              },
+                              child: Text(
+                                'Clear Selection',
+                                style: TextStyle(
+                                  color: Color(0xff8FD974),
+                                  decoration: TextDecoration.underline
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
 
@@ -1552,35 +1571,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                 ),
                                 firestoreSports != null
-                                    ? Padding(
-                                        padding: EdgeInsets.only(top: 10.h),
-                                        child: MaterialButton(
-                                          height: 32.h,
-                                          color: Color(0xff8FD974),
-                                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8.r),
-                                          ),
-                                          elevation: 0.0,
-                                          hoverElevation: 0,
-                                          disabledElevation: 0,
-                                          highlightElevation: 0,
-                                          focusElevation: 0,
-                                          child: Text(
-                                            'Clear Previous Selection',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14.sp,
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              previousSelectionCleared = true;
-                                            });
-                                          },
-                                        ),
-                                      )
+                                    ? Container()
+                                      // Padding(
+                                      //   padding: EdgeInsets.only(top: 10.h),
+                                      //   child: MaterialButton(
+                                      //     height: 32.h,
+                                      //     color: Color(0xff8FD974),
+                                      //     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
+                                      //     shape: RoundedRectangleBorder(
+                                      //       borderRadius: BorderRadius.circular(8.r),
+                                      //     ),
+                                      //     elevation: 0.0,
+                                      //     hoverElevation: 0,
+                                      //     disabledElevation: 0,
+                                      //     highlightElevation: 0,
+                                      //     focusElevation: 0,
+                                      //     child: Text(
+                                      //       'Clear Previous Selection',
+                                      //       style: TextStyle(
+                                      //         color: Colors.black,
+                                      //         fontWeight: FontWeight.bold,
+                                      //         fontSize: 14.sp,
+                                      //       ),
+                                      //     ),
+                                      //     onPressed: () {
+                                      //       setState(() {
+                                      //         previousSelectionCleared = true;
+                                      //       });
+                                      //     },
+                                      //   ),
+                                      // )
                                     : Container(),
                               ],
                             );

@@ -375,7 +375,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                           : sport == 'assets/icons/volleyball_icon.png'
                                                                               ? 'Volleyball'
                                                                               : sport == 'assets/icons/handball_icon.png'
-                                                                                  ? 'Handball'
+                                                                                  ? 'Netball'
                                                                                   : sport == 'assets/icons/swimming_icon.png'
                                                                                       ? 'Swimming'
                                                                                       : sport == 'assets/icons/tennis_icon.png'
@@ -490,7 +490,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         //profile
                         Column(
                           children: [
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 15.h),
 
                             Divider(color: Color(0xff2C2D35), thickness: 2.h),
 
@@ -855,46 +855,62 @@ class _ProfilePageState extends State<ProfilePage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 32.w),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    MaterialButton(
-                      height: 30.h,
-                      color: Color(0x1AF44336),
-                      minWidth: 100.w,
-                      padding: EdgeInsets.all(0),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: Color(0x80F44336),
-                          width: 1.5.w,
-                        ),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      elevation: 0.0,
-                      hoverElevation: 0,
-                      disabledElevation: 0,
-                      highlightElevation: 0,
-                      focusElevation: 0,
-                      child: isLoggingOut == false
-                          ? Text(
-                              'Log Out',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15.sp,
-                              ),
-                            )
-                          : Container(
-                              width: 24.h,
-                              height: 24.h,
-                              child: SpinKitRipple(
-                                color: Colors.black,
-                              ),
-                            ),
-                      onPressed: () async {
+                    // MaterialButton(
+                    //   height: 30.h,
+                    //   color: Color(0x1AF44336),
+                    //   minWidth: 100.w,
+                    //   padding: EdgeInsets.all(0),
+                    //   shape: RoundedRectangleBorder(
+                    //     side: BorderSide(
+                    //       color: Color(0x80F44336),
+                    //       width: 1.5.w,
+                    //     ),
+                    //     borderRadius: BorderRadius.circular(8.r),
+                    //   ),
+                    //   elevation: 0.0,
+                    //   hoverElevation: 0,
+                    //   disabledElevation: 0,
+                    //   highlightElevation: 0,
+                    //   focusElevation: 0,
+                    //   child: isLoggingOut == false
+                    //       ? Text(
+                    //           'Log Out',
+                    //           style: TextStyle(
+                    //             color: Colors.red,
+                    //             fontWeight: FontWeight.bold,
+                    //             fontSize: 15.sp,
+                    //           ),
+                    //         )
+                    //       : Container(
+                    //           width: 24.h,
+                    //           height: 24.h,
+                    //           child: SpinKitRipple(
+                    //             color: Colors.black,
+                    //           ),
+                    //         ),
+                    //   onPressed: () async {
+                    //     final logmessage = await context.read<AuthenticationService>().signOut();
+                    //     if (logmessage == "Signed Out Successfully") {
+                    //       BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogoutRequested());
+                    //       this._showToast(context, "Signing Out...");
+                    //       Future.delayed(Duration(seconds: 2), () {
+                    //         // 5s over, navigate
+                    //         Navigator.of(context).pushReplacement(
+                    //           Authenticate.route(),
+                    //         );
+                    //       });
+                    //     } else {
+                    //       this._showToast(context, "Signing Out Failed.");
+                    //     }
+                    //   },
+                    // ),
+                    GestureDetector(
+                      onTap: ()async{
                         final logmessage = await context.read<AuthenticationService>().signOut();
                         if (logmessage == "Signed Out Successfully") {
                           BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogoutRequested());
@@ -909,64 +925,66 @@ class _ProfilePageState extends State<ProfilePage> {
                           this._showToast(context, "Signing Out Failed.");
                         }
                       },
-                    ),
+                        child: Text(
+                          "Log out",
+                          style: TextStyle(color: Color(0xFFEB5959)),))
                   ],
                 ),
-                Container(height: 40.h, child: VerticalDivider(color: Color(0xff2C2D35), thickness: 2.w)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    MaterialButton(
-                      height: 30.h,
-                      color: Color(0x1AF44336),
-                      minWidth: 100.w,
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: Color(0x80F44336),
-                          width: 1.5.w,
-                        ),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      elevation: 0.0,
-                      hoverElevation: 0,
-                      disabledElevation: 0,
-                      highlightElevation: 0,
-                      focusElevation: 0,
-                      child: isLoggingOut == false
-                          ? Text(
-                              'Delete Account',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15.sp,
-                              ),
-                            )
-                          : Container(
-                              width: 24.h,
-                              height: 24.h,
-                              child: SpinKitRipple(
-                                color: Colors.black,
-                              ),
-                            ),
-                      onPressed: () async {
-                        final logmessage = await context.read<AuthenticationService>().deleteAccount();
-                        if (logmessage == "Deleted Successfully") {
-                          BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationDeleteRequested());
-                          this._showToast(context, "Deleting Account...");
-                          Future.delayed(Duration(seconds: 2), () {
-                            // 5s over, navigate
-                            Navigator.of(context).pushReplacement(
-                              Authenticate.route(),
-                            );
-                          });
-                        } else {
-                          this._showToast(context, "Deleting account not successful! Please try again");
-                        }
-                      },
-                    ),
-                  ],
-                ),
+                // Container(height: 40.h, child: VerticalDivider(color: Color(0xff2C2D35), thickness: 2.w)),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     MaterialButton(
+                //       height: 30.h,
+                //       color: Color(0x1AF44336),
+                //       minWidth: 100.w,
+                //       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
+                //       shape: RoundedRectangleBorder(
+                //         side: BorderSide(
+                //           color: Color(0x80F44336),
+                //           width: 1.5.w,
+                //         ),
+                //         borderRadius: BorderRadius.circular(8.r),
+                //       ),
+                //       elevation: 0.0,
+                //       hoverElevation: 0,
+                //       disabledElevation: 0,
+                //       highlightElevation: 0,
+                //       focusElevation: 0,
+                //       child: isLoggingOut == false
+                //           ? Text(
+                //               'Delete Account',
+                //               style: TextStyle(
+                //                 color: Colors.red,
+                //                 fontWeight: FontWeight.bold,
+                //                 fontSize: 15.sp,
+                //               ),
+                //             )
+                //           : Container(
+                //               width: 24.h,
+                //               height: 24.h,
+                //               child: SpinKitRipple(
+                //                 color: Colors.black,
+                //               ),
+                //             ),
+                //       onPressed: () async {
+                //         final logmessage = await context.read<AuthenticationService>().deleteAccount();
+                //         if (logmessage == "Deleted Successfully") {
+                //           BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationDeleteRequested());
+                //           this._showToast(context, "Deleting Account...");
+                //           Future.delayed(Duration(seconds: 2), () {
+                //             // 5s over, navigate
+                //             Navigator.of(context).pushReplacement(
+                //               Authenticate.route(),
+                //             );
+                //           });
+                //         } else {
+                //           this._showToast(context, "Deleting account not successful! Please try again");
+                //         }
+                //       },
+                //     ),
+                //   ],
+                // ),
               ],
             ),
           ),
