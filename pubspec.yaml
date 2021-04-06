@@ -1,3 +1,4 @@
+
 name: sported_app
 description: A new Flutter application.
 
@@ -12,7 +13,7 @@ dependencies:
     sdk: flutter
 
   #to fix version solving
-# cupertino_icons: ^1.0.2
+  # cupertino_icons: ^1.0.2
 
   # firebase
   firebase_auth: ^0.20.0+1
@@ -28,11 +29,14 @@ dependencies:
   equatable: ^1.2.6
   location: ^3.2.4
   geolocator: ^6.2.1
-
-
+  intl:
+  mpesa_flutter_plugin: ^1.0.0
 
   # ui
   font_awesome_flutter: ^8.11.0
+  shared_preferences: ^0.5.12+4
+  palette_generator:
+  flutter_spinkit: ^5.0.0
   flutter_screenutil: ^4.0.3+2
   material_design_icons_flutter: ^4.0.5855
   keyboard_avoider: ^0.1.2
@@ -41,14 +45,22 @@ dependencies:
   flutter_swiper: ^1.1.6
   syncfusion_flutter_datepicker: ^18.4.44-beta
   chips_choice: ^2.0.1
+  cached_network_image: ^2.5.1
   dio:
-  shared_preferences: ^0.5.12+4
-
+  google_sign_in: ^4.5.1
+#  flutter_facebook_login: ^3.0.0
+  buttons_tabbar: ^1.2.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.8.0"
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/icons/sported_icon_black.png"
 
 flutter:
   uses-material-design: true
