@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart' as LocationManager;
+import 'package:sported_app/data/models/venue/venue_model.dart';
+import 'package:sported_app/presentation/screens/venue_details_screen.dart';
 
 class GMap extends StatefulWidget {
   @override
@@ -18,36 +20,43 @@ class _GMapState extends State<GMap> {
   Set<Marker> markers;
   void setCustomMapPin() async {
     locationIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(size: Size(24.h, 24.h)),
-      'assets/icons/location_icon.png',
+      ImageConfiguration(size: Size(50.h, 50.h)),
+      'assets/icons/group_6655.png',
     );
   }
-
-  //curr location
-  Future<LatLng> getUserLocation() async {
-    LocationManager.LocationData currentLocation;
-    final location = LocationManager.Location();
-    try {
-      currentLocation = await location.getLocation();
-      final lat = currentLocation.latitude;
-      final lng = currentLocation.longitude;
-      final center = LatLng(lat, lng);
-      return center;
-    } on Exception {
-      currentLocation = null;
-      return null;
-    }
-  }
+  //
+  // //curr location
+  // Future<LatLng> getUserLocation() async {
+  //   LocationManager.LocationData currentLocation;
+  //   final location = LocationManager.Location();
+  //   try {
+  //     currentLocation = await location.getLocation();
+  //     final lat = currentLocation.latitude;
+  //     final lng = currentLocation.longitude;
+  //     final center = LatLng(lat, lng);
+  //     return center;
+  //   } on Exception {
+  //     currentLocation = null;
+  //     return null;
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-    getUserLocation();
+    // getUserLocation();
     setCustomMapPin();
   }
 
   //on created
-  void _onMapCreated(GoogleMapController _controller) {
+  void _onMapCreated(GoogleMapController _controller) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    final allVenues = await firestore.collection('venues').get().then((value) => value.docs.map((e) => Venue.fromJson(e.data())).toList());
+
+    final jaffery = allVenues.where((element) => element.venueName == "Nairobi Jaffery Sports Club").toList()[0];
+    final agaKhan = allVenues.where((element) => element.venueName == "Aga Khan Sports Club").toList()[0];
+
     _controller.setMapStyle('''[
   {
     "elementType": "geometry",
@@ -242,7 +251,17 @@ class _GMapState extends State<GMap> {
             markerId: MarkerId('marker1'),
             position: LatLng(-1.2754225352272903, 36.76830631083326),
             icon: locationIcon,
-            infoWindow: InfoWindow(title: 'Nairobi Jeffary Sports Club'),
+
+            infoWindow: InfoWindow(
+              title: 'Nairobi Jeffary Sports Club',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => VenueDetailsScreen(venue: jaffery),
+                  ),
+                );
+              },
+            ),
           ),
         );
         _locationMarkers.add(
@@ -250,7 +269,17 @@ class _GMapState extends State<GMap> {
             markerId: MarkerId('marker2'),
             position: LatLng(-1.2593830167467919, 36.82361004197738),
             icon: locationIcon,
-            infoWindow: InfoWindow(title: 'Aga Khan Sports Club'),
+
+            infoWindow: InfoWindow(
+              title: 'AgaKhan Sports Club',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => VenueDetailsScreen(venue: agaKhan),
+                  ),
+                );
+              },
+            ),
           ),
         );
       },

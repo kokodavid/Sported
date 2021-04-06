@@ -119,28 +119,47 @@ class _BookScreenState extends State<BookScreen> {
     super.initState();
   }
 
+  List<int> compareTime = [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+  ];
   List<String> slots = [
-    '0600 hrs',
-    '0700 hrs',
-    '0800 hrs',
-    '0900 hrs',
-    '1000 hrs',
-    '1100 hrs',
-    '1200 hrs',
-    '1300 hrs',
-    '1400 hrs',
-    '1500 hrs',
-    '1600 hrs',
-    '1700 hrs',
-    '1800 hrs',
-    '1900 hrs',
-    '2000 hrs',
-    '2100 hrs',
+    '6 - 7 AM',
+    '7 - 8 AM',
+    '8 - 9 AM',
+    '9 - 10 AM',
+    '10 - 11 AM',
+    '11 - 12 PM',
+    '12 - 1 PM',
+    '1 - 2 PM',
+    '2 - 3 PM',
+    '3 - 4 PM',
+    '4 - 5 PM',
+    '5 - 6 PM',
+    '6 - 7 PM',
+    '7 - 8 PM',
+    '8 - 9 PM',
+    '9 - 10 PM',
   ];
 
   @override
   Widget build(BuildContext context) {
     FocusScopeNode currentFocus = FocusScope.of(context);
+    CollectionReference collectionRef = FirebaseFirestore.instance.collection('booking_history');
 
     return SafeArea(
       child: NotificationListener<OverscrollIndicatorNotification>(
@@ -183,9 +202,8 @@ class _BookScreenState extends State<BookScreen> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: 20.h),
-
                   //calendar
+                  SizedBox(height: 20.h),
                   Padding(
                     padding: EdgeInsets.only(left: 32.w, right: 32.w),
                     child: SfDateRangePicker(
@@ -277,7 +295,7 @@ class _BookScreenState extends State<BookScreen> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              'Pick Slot',
+                              'Available Slots',
                               style: TextStyle(
                                 fontSize: 15.sp,
                                 color: Colors.white,
@@ -287,75 +305,210 @@ class _BookScreenState extends State<BookScreen> {
 
                           SizedBox(height: 20.h),
                           //slots
-                          ChipsChoice<int>.single(
-                            wrapped: true,
-                            padding: EdgeInsets.all(0),
-                            value: selectedSlot,
-                            spacing: 8.0.w,
-                            runSpacing: 10.h,
-                            onChanged: (val) {
-                              setState(() => selectedSlot = val);
-                              setState(() {
-                                isCheckingAvailability = true;
-                              });
+                          StreamBuilder<QuerySnapshot>(
+                            stream: collectionRef.snapshots(),
+                            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                              //loaded
+                              if (snapshot.hasData && selectedDate != "null" && selectedDate != '') {
+                                final entireBookingHistory = snapshot.data.docs.map((e) => BookingHistory.fromJson(e.data())).toList();
+                                final filteredBookingHistory =
+                                    entireBookingHistory.where((element) => element.dateBooked == selectedDate && element.sportName == widget.sportBookingInfo.sportName && element.venueName == widget.venue.venueName).toList();
+                                final newBookingHistory = snapshot.data.docChanges.map((e) => BookingHistory.fromJson(e.doc.data())).toList();
+                                final changedNewBookingHistory =
+                                    newBookingHistory.where((element) => element.dateBooked == selectedDate && element.sportName == widget.sportBookingInfo.sportName && element.venueName == widget.venue.venueName).toList();
 
-                              //ensure a date is selected
-                              if (selectedDate == "null" || selectedDate == '') {
-                                showCustomSnackbar('Please select a date to book', _scaffoldKey);
-                                setState(() {
-                                  isCheckingAvailability = false;
-                                });
-                              } else {
-                                bookingValidation();
+                                print(changedNewBookingHistory.length);
+                                final slotOneBooked = filteredBookingHistory.where((element) => element.slotBooked == "0600 hrs").toList();
+                                final slotTwoBooked = filteredBookingHistory.where((element) => element.slotBooked == "0700 hrs").toList();
+                                final slotThreeBooked = filteredBookingHistory.where((element) => element.slotBooked == "0800 hrs").toList();
+                                final slotFourBooked = filteredBookingHistory.where((element) => element.slotBooked == "0900 hrs").toList();
+                                final slotFiveBooked = filteredBookingHistory.where((element) => element.slotBooked == "1000 hrs").toList();
+                                final slotSixBooked = filteredBookingHistory.where((element) => element.slotBooked == "1100 hrs").toList();
+                                final slotSevenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1200 hrs").toList();
+                                final slotEightBooked = filteredBookingHistory.where((element) => element.slotBooked == "1300 hrs").toList();
+                                final slotNineBooked = filteredBookingHistory.where((element) => element.slotBooked == "1400 hrs").toList();
+                                final slotTenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1500 hrs").toList();
+                                final slotElevenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1600 hrs").toList();
+                                final slotTwelveBooked = filteredBookingHistory.where((element) => element.slotBooked == "1700 hrs").toList();
+                                final slotThirteenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1800 hrs").toList();
+                                final slotFourteenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1900 hrs").toList();
+                                final slotFifteenBooked = filteredBookingHistory.where((element) => element.slotBooked == "2000 hrs").toList();
+                                final slotSixteenBooked = filteredBookingHistory.where((element) => element.slotBooked == "2100 hrs").toList();
+                                return ChipsChoice<int>.single(
+                                  wrapped: true,
+                                  padding: EdgeInsets.all(0),
+                                  value: selectedSlot,
+                                  spacing: 8.0.w,
+                                  runSpacing: 10.h,
+                                  onChanged: (val) {
+                                    setState(() => selectedSlot = val);
+
+                                    // final sd = TimeOfDay.fromDateTime(DateTime.parse(selectedDate));
+                                    // print(sd.hour);
+                                    //ensure a date is selected
+                                    if (selectedDate == "null" || selectedDate == '') {
+                                      showCustomSnackbar('Please select a date to book', _scaffoldKey);
+                                      setState(() {
+                                        isCheckingAvailability = false;
+                                      });
+                                    } else {
+                                      // bookingValidation();
+                                    }
+                                  },
+                                  choiceItems: C2Choice.listFrom<int, String>(
+                                    source: slots,
+                                    value: (index, label) => index,
+                                    label: (index, label) => label,
+                                    disabled: (index, label) {
+                                      final thisHour = DateTime.now().hour;
+                                      final timePassed = thisHour >= compareTime[index] && DateTime.parse(selectedDate).day == DateTime.now().day;
+
+                                      if (timePassed || (label == '6 - 7 AM' && slotOneBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '7 - 8 AM' && slotTwoBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '8 - 9 AM' && slotThreeBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '9 - 10 AM' && slotFourBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '10 - 11 AM' && slotFiveBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '11 - 12 PM' && slotSixBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '12 - 1 PM' && slotSevenBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '1 - 2 PM' && slotEightBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '2 - 3 PM' && slotNineBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '3 - 4 PM' && slotTenBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '4 - 5 PM' && slotElevenBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '5 - 6 PM' && slotTwelveBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '6 - 7 PM' && slotThirteenBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '7 - 8 PM' && slotFourteenBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '8 - 9 PM' && slotFifteenBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      if (timePassed || (label == '9 - 10 PM' && slotSixteenBooked.isNotEmpty)) {
+                                        return true;
+                                      }
+                                      return false;
+                                    },
+                                  ),
+                                  choiceBuilder: (item) {
+                                    return Column(
+                                      children: [
+                                        AnimatedContainer(
+                                          width: 69.h,
+                                          height: 42.h,
+                                          duration: Duration(milliseconds: 150),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.rectangle,
+                                            border: Border.all(color: Color(0xff3E3E3E), style: BorderStyle.solid, width: 0.5.w),
+                                            borderRadius: BorderRadius.circular(23.r),
+                                            color: item.disabled
+                                                ? Color(0xff3e3e4a)
+                                                : item.selected
+                                                    ? Color(0xff8FD974)
+                                                    : Color(0xff07070A),
+                                          ),
+                                          child: InkWell(
+                                            onTap: item.disabled
+                                                ? () {}
+                                                : () {
+                                                    item.select(!item.selected);
+                                                  },
+                                            child: Stack(
+                                              alignment: Alignment.center,
+                                              children: <Widget>[
+                                                Visibility(
+                                                  visible: item.selected,
+                                                  child: Text(
+                                                    item.label,
+                                                    style: TextStyle(
+                                                      color: item.disabled
+                                                          ? Color(0xff5f5f6e)
+                                                          : item.selected
+                                                              ? Colors.black
+                                                              : Color(0xff707070),
+                                                      fontSize: 13.sp,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  item.label,
+                                                  style: TextStyle(
+                                                    color: item.disabled
+                                                        ? Color(0xff5f5f6e)
+                                                        : item.selected
+                                                            ? Colors.black
+                                                            : Color(0xff707070),
+                                                    fontSize: 13.sp,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               }
-                            },
-                            choiceItems: C2Choice.listFrom<int, String>(
-                              source: slots,
-                              value: (int, string) => int,
-                              label: (int, string) => string,
-                            ),
-                            choiceBuilder: (item) {
-                              return Column(
-                                children: [
-                                  AnimatedContainer(
-                                    width: 69.h,
-                                    height: 42.h,
-                                    duration: Duration(milliseconds: 150),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      border: Border.all(color: Color(0xff3E3E3E), style: BorderStyle.solid, width: 0.5.w),
-                                      borderRadius: BorderRadius.circular(23.r),
-                                      color: item.selected ? Color(0xff8FD974) : Color(0xff07070A),
-                                    ),
-                                    child: InkWell(
-                                      onTap: () {
-                                        item.select(!item.selected);
-                                      },
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: <Widget>[
-                                          Visibility(
-                                            visible: item.selected,
-                                            child: Text(
-                                              item.label,
-                                              style: TextStyle(
-                                                color: item.selected ? Colors.black : Color(0xff707070),
-                                                fontSize: 13.sp,
-                                              ),
-                                            ),
-                                          ),
-                                          Text(
-                                            item.label,
-                                            style: TextStyle(
-                                              color: item.selected ? Colors.black : Color(0xff707070),
-                                              fontSize: 13.sp,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                              //error
+                              if (snapshot.hasError) {
+                                return Container(
+                                  height: 199.h,
+                                  padding: EdgeInsets.only(bottom: 20.h),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      'Error fetching available slots. Try again.',
+                                      style: labelStyle,
                                     ),
                                   ),
-                                ],
+                                );
+                              }
+                              //loading
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Container(
+                                  height: 199.h,
+                                  alignment: Alignment.center,
+                                  child: SpinKitRipple(
+                                    color: Color(0xff8FD974),
+                                  ),
+                                );
+                              }
+                              //default
+                              return Container(
+                                height: 199.h,
+                                padding: EdgeInsets.only(bottom: 20.h),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Pick a date to continue',
+                                    style: labelStyle,
+                                  ),
+                                ),
                               );
                             },
                           ),
@@ -363,10 +516,9 @@ class _BookScreenState extends State<BookScreen> {
                       ),
                     ),
                   ),
-
-                  //lipa na mpesa
                   SizedBox(height: 20.h),
 
+                  //lipa na mpesa
                   Padding(
                     padding: EdgeInsets.only(left: 32.w, right: 32.w),
                     child: Align(
@@ -374,7 +526,7 @@ class _BookScreenState extends State<BookScreen> {
                       child: SizedBox(
                         width: 374.w,
                         child: Text(
-                          'Enter  M-PESA Number',
+                          'Enter M-PESA Number',
                           softWrap: true,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -387,6 +539,7 @@ class _BookScreenState extends State<BookScreen> {
                     ),
                   ),
                   SizedBox(height: 20.h),
+
                   //txt box
                   Padding(
                     padding: EdgeInsets.only(left: 32.w, right: 32.w),
@@ -399,7 +552,7 @@ class _BookScreenState extends State<BookScreen> {
                           enabled: isBooked ? false : true,
                           controller: phoneNumber,
                           style: TextStyle(
-                            color: Color(0xff707070),
+                            color: Colors.white,
                             fontSize: 15.sp,
                           ),
                           decoration: InputDecoration(
@@ -459,7 +612,6 @@ class _BookScreenState extends State<BookScreen> {
                       ),
                     ),
                   ),
-
                   SizedBox(height: 64.h),
 
                   //pay btn
@@ -530,7 +682,6 @@ class _BookScreenState extends State<BookScreen> {
                       }
                     },
                   ),
-
                   SizedBox(height: 20.h),
                 ],
               ),
@@ -539,320 +690,5 @@ class _BookScreenState extends State<BookScreen> {
         ),
       ),
     );
-  }
-
-  bookingValidation() async {
-    print("selected date | $selectedDate");
-    print("selected slot | $selectedSlot");
-
-    //get entire booking history
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final entireBookingHistory = await firestore.collection('booking_history').get().then((value) => value.docs.map((e) => BookingHistory.fromJson(e.data())).toList());
-    print("entire | ${entireBookingHistory.length}");
-
-    //return list of all bookings of this venue, of this sport, at this selected date
-    final List<BookingHistory> filteredBookingHistory = entireBookingHistory
-        .where(
-          (element) => element.dateBooked == selectedDate && element.sportName == widget.sportBookingInfo.sportName && element.venueName == widget.venue.venueName,
-        )
-        .toList();
-
-    print("filtered | ${filteredBookingHistory.length}");
-
-    //list where slot has been booked
-    final slotOneBooked = filteredBookingHistory.where((element) => element.slotBooked == "0600 hrs").toList();
-    final slotTwoBooked = filteredBookingHistory.where((element) => element.slotBooked == "0700 hrs").toList();
-    final slotThreeBooked = filteredBookingHistory.where((element) => element.slotBooked == "0800 hrs").toList();
-    final slotFourBooked = filteredBookingHistory.where((element) => element.slotBooked == "0900 hrs").toList();
-    final slotFiveBooked = filteredBookingHistory.where((element) => element.slotBooked == "1000 hrs").toList();
-    final slotSixBooked = filteredBookingHistory.where((element) => element.slotBooked == "1100 hrs").toList();
-    final slotSevenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1200 hrs").toList();
-    final slotEightBooked = filteredBookingHistory.where((element) => element.slotBooked == "1300 hrs").toList();
-    final slotNineBooked = filteredBookingHistory.where((element) => element.slotBooked == "1400 hrs").toList();
-    final slotTenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1500 hrs").toList();
-    final slotElevenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1600 hrs").toList();
-    final slotTwelveBooked = filteredBookingHistory.where((element) => element.slotBooked == "1700 hrs").toList();
-    final slotThirteenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1800 hrs").toList();
-    final slotFourteenBooked = filteredBookingHistory.where((element) => element.slotBooked == "1900 hrs").toList();
-    final slotFifteenBooked = filteredBookingHistory.where((element) => element.slotBooked == "2000 hrs").toList();
-    final slotSixteenBooked = filteredBookingHistory.where((element) => element.slotBooked == "2100 hrs").toList();
-
-    //navigate or show snackbar
-    if (selectedSlot == 0) {
-      if (slotOneBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        setState(() {
-          isBooked = true;
-        });
-        //show snackbar
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 1) {
-      if (slotTwoBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        setState(() {
-          isBooked = true;
-        });
-        //show snackbar
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 2) {
-      if (slotThreeBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 3) {
-      if (slotFourBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 4) {
-      if (slotFiveBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 5) {
-      if (slotSixBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 6) {
-      if (slotSevenBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 7) {
-      if (slotEightBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 8) {
-      if (slotNineBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 9) {
-      if (slotTenBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 10) {
-      if (slotElevenBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 11) {
-      if (slotTwelveBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 12) {
-      if (slotThirteenBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 13) {
-      if (slotFourteenBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 14) {
-      if (slotFifteenBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    if (selectedSlot == 15) {
-      if (slotSixteenBooked.isEmpty) {
-        print("isEmpty | bookable");
-        //navigate
-        setState(() {
-          isBooked = false;
-        });
-      } else {
-        print("isNotEmpty | not bookable");
-        //show snackbar
-        setState(() {
-          isBooked = true;
-        });
-        showCustomSnackbar('Slot is booked', _scaffoldKey);
-      }
-    }
-
-    setState(() {
-      isCheckingAvailability = false;
-    });
   }
 }

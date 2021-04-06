@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/screenutil_init.dart';
 import 'package:mpesa_flutter_plugin/initializer.dart';
 import 'package:provider/provider.dart';
 import 'package:sported_app/business_logic/blocs/auth/authentication_bloc.dart';
+import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/business_logic/cubits/filter_chips_cubit/filter_chips_cubit.dart';
 import 'package:sported_app/data/repositories/booking_history_repository.dart';
 import 'package:sported_app/data/repositories/venue_data_provider.dart';
@@ -62,6 +63,9 @@ class MyApp extends StatelessWidget {
             BlocProvider<FilterChipsCubit>(
               create: (_) => FilterChipsCubit(),
             ),
+            BlocProvider<EditProfileCubit>(
+              create: (_) => EditProfileCubit(),
+            ),
             BlocProvider<BookingHistoryCubit>(
               create: (_) => BookingHistoryCubit(bookingHistoryRepository: bookingHistoryRepository)..loadBookingHistory(),
             ),
@@ -92,7 +96,6 @@ class MyApp extends StatelessWidget {
               child: AuthUnknownScreen(),
               listener: (context, state) {
                 print("state.status | " + "${state.status}");
-
                 switch (state.status) {
                   case AuthenticationStatus.authenticated:
                     Future.delayed(Duration(seconds: 5), () {

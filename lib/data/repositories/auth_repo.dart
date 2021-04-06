@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:sported_app/data/models/ourUser.dart';
@@ -50,6 +51,19 @@ class AuthRepo {
       return await _auth.signOut();
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  Future<String> deleteAccountAndProfileData() async {
+    try {
+      final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+      await userProfileRef.doc(_auth.currentUser.uid).delete();
+      await _auth.currentUser.delete();
+
+      return "Deleted Successfully";
+    } catch (_) {
+      print("delete account error | $_");
+      return _;
     }
   }
 }

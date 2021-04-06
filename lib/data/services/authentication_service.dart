@@ -36,10 +36,12 @@ class AuthenticationService {
   }
 
   //2
+  // ignore: missing_return
   Future<String> signUp({String email, String password, String fullName}) async {
     try {
       await _auth.createUserWithEmailAndPassword(email: email, password: password);
       await _auth.currentUser.updateProfile(displayName: fullName);
+      await _auth.currentUser.sendEmailVerification();
       return "Registered Successfully";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -55,13 +57,12 @@ class AuthenticationService {
   }
 
   //3
-  Future<void> addUserToDB({String uid, String username, String email}) async {
-    userModel = UserModel(uid: uid, username: username, email: email);
-
-    await userRef.doc(uid).set(userModel.toMap(userModel)).catchError((e) {
-      print(e);
-    });
-  }
+  // Future<void> addUserToDB({String uid, String username, String email}) async {
+  //   userProfile = UserProfile(uid: uid, fullName: username, email: email);
+  //   await userProfileRef.doc(uid).set(userProfile.toMap(userProfile)).catchError((e) {
+  //     print(e);
+  //   });
+  // }
 
   //4
   Future<UserModel> getUserFromDB({String uid}) async {
@@ -78,6 +79,19 @@ class AuthenticationService {
     );
   }
 
+  Future<String> deleteAccount() async {
+    try {
+      final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+      await userProfileRef.doc(_auth.currentUser.uid).delete();
+      await _auth.currentUser.delete();
+
+      return "Deleted Successfully";
+    } catch (_) {
+      print("delete account error | $_");
+      return _;
+    }
+  }
+
   Future<String> signOut() async {
     try {
       await _auth.signOut();
@@ -85,25 +99,5 @@ class AuthenticationService {
     } catch (_) {
       return _;
     }
-  }
-
-  Future<UserProfile> uploadProfile({
-    String uid,
-    String fullName,
-    String email,
-    String age,
-    String gender,
-    String clubA,
-    String clubB,
-    String clubC,
-    String pasteUrl,
-    String buddy,
-    String coach,
-  }) async {
-    userProfile = UserProfile(fullName: fullName, age: age, gender: gender, clubA: clubA, clubB: clubB, clubC: clubC, pasteUrl: pasteUrl, buddy: buddy, coach: coach);
-
-    await userProfileRef.doc(uid).set(userProfile.toMap(userProfile)).catchError((e) {
-      print(e);
-    });
   }
 }
