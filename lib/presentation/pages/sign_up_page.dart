@@ -431,6 +431,7 @@ class _SignUpPageState extends State<SignUpPage> {
         email: auth.currentUser.email,
         fullName: userNameTextEditingController.text,
         sportsPlayed: [],
+        verifiedClubs: [],
       );
       Navigator.pushReplacement(
         context,
@@ -489,6 +490,7 @@ class _SignUpPageState extends State<SignUpPage> {
         email: emailTextEditingController.text,
         uid: auth.currentUser.uid,
         sportsPlayed: [],
+        verifiedClubs: [],
       );
     } catch (e) {
       print("Error:" + e.toString());

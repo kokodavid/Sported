@@ -98,7 +98,8 @@ class MyApp extends StatelessWidget {
                 print("state.status | " + "${state.status}");
                 switch (state.status) {
                   case AuthenticationStatus.authenticated:
-                    Future.delayed(Duration(seconds: 5), () {
+                    Future.delayed(Duration(seconds: 3), () {
+                      BlocProvider.of<EditProfileCubit>(context)..getUserProfile();
                       // 5s over, navigate to a new page
                       _navigator.pushAndRemoveUntil<void>(
                         PagesSwitcher.route(),
@@ -107,7 +108,7 @@ class MyApp extends StatelessWidget {
                     });
                     break;
                   case AuthenticationStatus.unauthenticated:
-                    Future.delayed(Duration(seconds: 5), () {
+                    Future.delayed(Duration(seconds: 3), () {
                       // 5s over, navigate
                       _navigator.pushAndRemoveUntil<void>(
                         Authenticate.route(),

@@ -34,46 +34,50 @@ class Venue {
   final List<SportsOffered> sportsOffered;
 
   factory Venue.fromJson(Map<String, dynamic> json) => Venue(
-    venueName: json["venueName"],
-    timeOpen: json["timeOpen"],
-    timeClosed: json["timeClosed"],
-    totalDaysOpen: json["totalDaysOpen"],
-    description: json["description"],
-    rules: List<String>.from(json["rules"].map((x) => x)),
-    images: List<String>.from(json["images"].map((x) => x)),
-    sportsOfferedList: List<String>.from(json["sportsOfferedList"].map((x) => x)),
-    sportsOffered: List<SportsOffered>.from(json["sportsOffered"].map((x) => SportsOffered.fromJson(x))),
-  );
+        venueName: json["venueName"],
+        timeOpen: json["timeOpen"],
+        timeClosed: json["timeClosed"],
+        totalDaysOpen: json["totalDaysOpen"],
+        description: json["description"],
+        rules: List<String>.from(json["rules"].map((x) => x)),
+        images: List<String>.from(json["images"].map((x) => x)),
+        sportsOfferedList: List<String>.from(json["sportsOfferedList"].map((x) => x)),
+        sportsOffered: List<SportsOffered>.from(json["sportsOffered"].map((x) => SportsOffered.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "venueName": venueName,
-    "timeOpen": timeOpen,
-    "timeClosed": timeClosed,
-    "totalDaysOpen": totalDaysOpen,
-    "description": description,
-    "rules": List<dynamic>.from(rules.map((x) => x)),
-    "images": List<dynamic>.from(images.map((x) => x)),
-    "sportsOfferedList": List<dynamic>.from(sportsOfferedList.map((x) => x)),
-    "sportsOffered": List<dynamic>.from(sportsOffered.map((x) => x.toJson())),
-  };
+        "venueName": venueName,
+        "timeOpen": timeOpen,
+        "timeClosed": timeClosed,
+        "totalDaysOpen": totalDaysOpen,
+        "description": description,
+        "rules": List<dynamic>.from(rules.map((x) => x)),
+        "images": List<dynamic>.from(images.map((x) => x)),
+        "sportsOfferedList": List<dynamic>.from(sportsOfferedList.map((x) => x)),
+        "sportsOffered": List<dynamic>.from(sportsOffered.map((x) => x.toJson())),
+      };
 }
 
 class SportsOffered {
   SportsOffered({
     @required this.sportName,
     @required this.ratesPerHr,
+    @required this.memberRatesPerHr,
   });
 
   final String sportName;
   final int ratesPerHr;
+  final int memberRatesPerHr;
 
   factory SportsOffered.fromJson(Map<String, dynamic> json) => SportsOffered(
-    sportName: json["sportName"],
-    ratesPerHr: json["ratesPerHr"],
-  );
+        sportName: json["sportName"],
+        ratesPerHr: json["ratesPerHr"],
+        memberRatesPerHr: json["memberRatesPerHr"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "sportName": sportName,
-    "ratesPerHr": ratesPerHr,
-  };
+        "sportName": sportName,
+        "ratesPerHr": ratesPerHr,
+        "memberRatesPerHr": memberRatesPerHr,
+      };
 }

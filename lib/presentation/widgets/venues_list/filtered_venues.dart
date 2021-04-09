@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
+import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
 import 'package:sported_app/presentation/screens/book_screen.dart';
@@ -191,13 +192,27 @@ class FilteredVenues extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             //price
-                            Text(
-                              '${venue.sportsOffered.singleWhere((element) => element.sportName == sportToBook).ratesPerHr} KES/hr',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            BlocBuilder<EditProfileCubit, EditProfileState>(
+                              builder: (context, profileState) {
+                                if (profileState is EditProfileLoadSuccess) {
+                                  final bool isMember = profileState.userProfile.verifiedClubs.contains(venue.venueName);
+                                  final sportOffered = venue.sportsOffered.singleWhere((element) => element.sportName == sportToBook);
+
+                                  return Text(
+                                    isMember
+                                        ? sportOffered.memberRatesPerHr == 0
+                                            ? 'Free'
+                                            : '${sportOffered.memberRatesPerHr} KES/hr'
+                                        : '${sportOffered.ratesPerHr} KES/hr',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              },
                             ),
                             //time range & book
                             Row(

@@ -1,18 +1,24 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mpesa_flutter_plugin/initializer.dart';
 import 'package:mpesa_flutter_plugin/payment_enums.dart';
+import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
+import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
+import 'package:sported_app/data/models/UserProfile.dart';
 import 'package:sported_app/data/models/booking/booking_history_model.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
 import 'package:sported_app/data/repositories/booking_history_data_provider.dart';
 import 'package:sported_app/presentation/screens/payment_screen.dart';
 import 'package:sported_app/presentation/shared/custom_snackbar.dart';
+import 'package:sported_app/presentation/widgets/payment/successfully_booked_dialog.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class BookScreen extends StatefulWidget {
@@ -43,6 +49,7 @@ class _BookScreenState extends State<BookScreen> {
   DocumentReference paymentsRef;
   String mUserMail = "kokodavid78@gmail.com";
   String checkoutId;
+  UserProfile userProfile;
   bool _initialized = false;
   bool _error = false;
 
@@ -155,6 +162,101 @@ class _BookScreenState extends State<BookScreen> {
     '8 - 9 PM',
     '9 - 10 PM',
   ];
+
+  updateBookingHistory() {
+    final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
+    Map<String, dynamic> bookingHistory = {
+      "venueName": widget.venue.venueName,
+      "pricePaid": widget.sportBookingInfo.ratesPerHr.toString(),
+      "dateBooked": selectedDate,
+      "slotBooked": selectedSlot == 0
+          ? '0600 hrs'
+          : selectedSlot == 1
+              ? '0700 hrs'
+              : selectedSlot == 2
+                  ? '0800 hrs'
+                  : selectedSlot == 3
+                      ? '0900 hrs'
+                      : selectedSlot == 4
+                          ? '1000 hrs'
+                          : selectedSlot == 5
+                              ? '1100 hrs'
+                              : selectedSlot == 6
+                                  ? '1200 hrs'
+                                  : selectedSlot == 7
+                                      ? '1300 hrs'
+                                      : selectedSlot == 8
+                                          ? '1400 hrs'
+                                          : selectedSlot == 9
+                                              ? '1500 hrs'
+                                              : selectedSlot == 10
+                                                  ? '1600 hrs'
+                                                  : selectedSlot == 11
+                                                      ? '1700 hrs'
+                                                      : selectedSlot == 12
+                                                          ? '1800 hrs'
+                                                          : selectedSlot == 13
+                                                              ? '1900 hrs'
+                                                              : selectedSlot == 14
+                                                                  ? '2000 hrs'
+                                                                  : selectedSlot == 15
+                                                                      ? '2100 hrs'
+                                                                      : null,
+      "sportName": widget.sportBookingInfo.sportName,
+      "uid": uid,
+    };
+
+    FirebaseFirestore.instance.collection('booking_history').add(bookingHistory);
+    FocusScopeNode currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: SuccessfulBookDialog(
+          // dialogContext:context,
+          selectedDate: selectedDate,
+          selectedSlot: selectedSlot == 0
+              ? '0600 hrs'
+              : selectedSlot == 1
+                  ? '0700 hrs'
+                  : selectedSlot == 2
+                      ? '0800 hrs'
+                      : selectedSlot == 3
+                          ? '0900 hrs'
+                          : selectedSlot == 4
+                              ? '1000 hrs'
+                              : selectedSlot == 5
+                                  ? '1100 hrs'
+                                  : selectedSlot == 6
+                                      ? '1200 hrs'
+                                      : selectedSlot == 7
+                                          ? '1300 hrs'
+                                          : selectedSlot == 8
+                                              ? '1400 hrs'
+                                              : selectedSlot == 9
+                                                  ? '1500 hrs'
+                                                  : selectedSlot == 10
+                                                      ? '1600 hrs'
+                                                      : selectedSlot == 11
+                                                          ? '1700 hrs'
+                                                          : selectedSlot == 12
+                                                              ? '1800 hrs'
+                                                              : selectedSlot == 13
+                                                                  ? '1900 hrs'
+                                                                  : selectedSlot == 14
+                                                                      ? '2000 hrs'
+                                                                      : selectedSlot == 15
+                                                                          ? '2100 hrs'
+                                                                          : null,
+        ),
+      ),
+    );
+    print({"date | $selectedDate"});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -516,173 +618,274 @@ class _BookScreenState extends State<BookScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 40.h),
 
-                  //lipa na mpesa
-                  Padding(
-                    padding: EdgeInsets.only(left: 32.w, right: 32.w),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: SizedBox(
-                        width: 374.w,
-                        child: Text(
-                          'Enter M-PESA Number',
-                          softWrap: true,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
+                  //details
 
-                  //txt box
-                  Padding(
-                    padding: EdgeInsets.only(left: 32.w, right: 32.w),
-                    child: Container(
-                      child: Padding(
-                        padding: MediaQuery.of(context).viewInsets,
-                        child: TextFormField(
-                          maxLines: 1,
-                          keyboardType: TextInputType.number,
-                          enabled: isBooked ? false : true,
-                          controller: phoneNumber,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15.sp,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: '7XXXXXXXX',
-                            alignLabelWithHint: true,
-                            isDense: true,
-                            enabled: true,
-                            fillColor: Color(0xff31323B),
-                            filled: true,
-                            hintStyle: labelStyle,
-                            labelStyle: labelStyle,
-                            prefixIcon: Container(
-                              width: 24.w,
-                              decoration: BoxDecoration(
-                                color: Color(0xff31323B),
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(8.r),
-                                  topLeft: Radius.circular(8.r),
+                  BlocBuilder<FilterBloc, FilterState>(
+                    builder: (context, state) {
+                      final sportOffered = state is FootballLoaded
+                          ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Football')
+                          : state is CricketLoaded
+                              ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Cricket')
+                              : state is BasketballLoaded
+                                  ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Basketball')
+                                  : state is HandballLoaded
+                                      ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Handball')
+                                      : state is TennisLoaded
+                                          ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Tennis')
+                                          : state is TableTennisLoaded
+                                              ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Table Tennis')
+                                              : state is SwimmingLoaded
+                                                  ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Swimming')
+                                                  : state is RugbyLoaded
+                                                      ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Rugby')
+                                                      : state is BadmintonLoaded
+                                                          ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Badminton')
+                                                          : state is VolleyballLoaded
+                                                              ? widget.venue.sportsOffered.singleWhere((element) => element.sportName == 'Volleyball')
+                                                              : null;
+
+                      return BlocBuilder<EditProfileCubit, EditProfileState>(
+                        builder: (context, profileState) {
+                          if (profileState is EditProfileLoadSuccess) {
+                            final bool isMember = profileState.userProfile.verifiedClubs.contains(widget.venue.venueName);
+                            return Column(
+                              children: [
+                                //sports and price
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ImageIcon(
+                                      AssetImage(
+                                        sportOffered.sportName == "Football"
+                                            ? 'assets/icons/football_icon.png'
+                                            : sportOffered.sportName == 'Table Tennis'
+                                                ? 'assets/icons/table_tennis_icon.png'
+                                                : sportOffered.sportName == "Badminton"
+                                                    ? 'assets/icons/badminton_icon.png'
+                                                    : sportOffered.sportName == 'Volleyball'
+                                                        ? 'assets/icons/volleyball_icon.png'
+                                                        : sportOffered.sportName == "Handball"
+                                                            ? 'assets/icons/handball_icon.png'
+                                                            : sportOffered.sportName == 'Swimming'
+                                                                ? 'assets/icons/swimming_icon.png'
+                                                                : sportOffered.sportName == 'Tennis'
+                                                                    ? 'assets/icons/tennis_icon.png'
+                                                                    : sportOffered.sportName == 'Rugby'
+                                                                        ? 'assets/icons/rugby_icon.png'
+                                                                        : sportOffered.sportName == 'Cricket'
+                                                                            ? 'assets/icons/cricket_icon.png'
+                                                                            : sportOffered.sportName == "Basketball"
+                                                                                ? 'assets/icons/basketball_icon.png'
+                                                                                : '',
+                                      ),
+                                      color: Color(0xff8FD974),
+                                    ),
+                                    SizedBox(width: 20.w),
+                                    Text(
+                                      isMember
+                                          ? sportOffered.memberRatesPerHr > 0
+                                              ? sportOffered.memberRatesPerHr.toString() + ' KES/hr'
+                                              : "Free"
+                                          : sportOffered.ratesPerHr.toString() + ' KES/hr',
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              margin: EdgeInsets.only(bottom: 2.h),
-                              alignment: Alignment.center,
-                              child: Text(
-                                '+254',
-                                style: labelStyle.copyWith(
-                                  color: Color(0xff9BEB81),
-                                  fontWeight: FontWeight.w600,
+
+                                SizedBox(height: 20.h),
+
+                                //lipa na mpesa
+                                isMember && sportOffered.memberRatesPerHr == 0
+                                    ? Container()
+                                    : Column(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 32.w, right: 32.w),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                'Enter M-PESA Number',
+                                                softWrap: false,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 20.h),
+
+                                          //txtbox
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 32.w, right: 32.w),
+                                            child: Container(
+                                              child: Padding(
+                                                padding: MediaQuery.of(context).viewInsets,
+                                                child: TextFormField(
+                                                  maxLines: 1,
+                                                  keyboardType: TextInputType.number,
+                                                  enabled: isBooked ? false : true,
+                                                  controller: phoneNumber,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 15.sp,
+                                                  ),
+                                                  decoration: InputDecoration(
+                                                    hintText: '7XXXXXXXX',
+                                                    alignLabelWithHint: true,
+                                                    isDense: true,
+                                                    enabled: true,
+                                                    fillColor: Color(0xff31323B),
+                                                    filled: true,
+                                                    hintStyle: labelStyle,
+                                                    labelStyle: labelStyle,
+                                                    prefixIcon: Container(
+                                                      width: 24.w,
+                                                      decoration: BoxDecoration(
+                                                        color: Color(0xff31323B),
+                                                        borderRadius: BorderRadius.only(
+                                                          bottomLeft: Radius.circular(8.r),
+                                                          topLeft: Radius.circular(8.r),
+                                                        ),
+                                                      ),
+                                                      margin: EdgeInsets.only(bottom: 2.h),
+                                                      alignment: Alignment.center,
+                                                      child: Text(
+                                                        '+254',
+                                                        style: labelStyle.copyWith(
+                                                          color: Color(0xff9BEB81),
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    border: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        style: BorderStyle.none,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8.r),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        style: BorderStyle.none,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8.r),
+                                                    ),
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        style: BorderStyle.none,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8.r),
+                                                    ),
+                                                    disabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        style: BorderStyle.none,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8.r),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                //pay btn
+                                isMember && sportOffered.memberRatesPerHr == 0 ? SizedBox.shrink() : SizedBox(height: 48.h),
+
+                                MaterialButton(
+                                  height: 40.h,
+                                  minWidth: 88.w,
+                                  color: Color(0xff8FD974),
+                                  padding: EdgeInsets.all(0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                  elevation: 0.0,
+                                  hoverElevation: 0,
+                                  disabledElevation: 0,
+                                  highlightElevation: 0,
+                                  focusElevation: 0,
+                                  child: isCheckingAvailability == false
+                                      ? isMember == true && sportOffered.memberRatesPerHr == 0
+                                          ? Text(
+                                              'Book',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.sp,
+                                              ),
+                                            )
+                                          : Text(
+                                              'Pay',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.sp,
+                                              ),
+                                            )
+                                      : Container(
+                                          width: 24.h,
+                                          height: 24.h,
+                                          child: SpinKitRipple(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                  onPressed: () async {
+                                    //unfocus field
+                                    if (!currentFocus.hasPrimaryFocus) {
+                                      currentFocus.unfocus();
+                                    }
+
+                                    //set loading
+                                    setState(() {
+                                      isCheckingAvailability = true;
+                                    });
+
+                                    //push stk
+                                    await startTransaction(amount: 1, phone: "254" + phoneNumber.text);
+
+                                    if (selectedDate.isNotEmpty && selectedSlot != null && isMember == true && sportOffered.memberRatesPerHr == 0) {
+                                      updateBookingHistory();
+                                    } else if (selectedDate.isNotEmpty && selectedSlot != null && phoneNumber.text.length == 9 && phoneNumber.text.startsWith('7')) {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (BuildContext context) {
+                                          return PaymentScreen(
+                                            selectedDate: selectedDate,
+                                            venue: widget.venue,
+                                            selectedSlot: selectedSlot,
+                                            sportBookingInfo: widget.sportBookingInfo,
+                                            checkoutId: checkoutId,
+                                          );
+                                        }),
+                                      );
+                                      setState(() {
+                                        isCheckingAvailability = false;
+                                      });
+                                    } else {
+                                      showCustomSnackbar('Error booking slot. Please input all the fields correctly', _scaffoldKey);
+                                      setState(() {
+                                        isCheckingAvailability = false;
+                                      });
+                                    }
+                                  },
                                 ),
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                style: BorderStyle.none,
-                              ),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                style: BorderStyle.none,
-                              ),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                style: BorderStyle.none,
-                              ),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            disabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                style: BorderStyle.none,
-                              ),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 64.h),
-
-                  //pay btn
-                  MaterialButton(
-                    height: 40.h,
-                    minWidth: 88.w,
-                    color: Color(0xff8FD974),
-                    padding: EdgeInsets.all(0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    elevation: 0.0,
-                    hoverElevation: 0,
-                    disabledElevation: 0,
-                    highlightElevation: 0,
-                    focusElevation: 0,
-                    child: isCheckingAvailability == false
-                        ? Text(
-                            'Pay',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15.sp,
-                            ),
-                          )
-                        : Container(
-                            width: 24.h,
-                            height: 24.h,
-                            child: SpinKitRipple(
-                              color: Colors.black,
-                            ),
-                          ),
-                    onPressed: () async {
-                      //unfocus field
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-
-                      //set loading
-                      setState(() {
-                        isCheckingAvailability = true;
-                      });
-
-                      //push stk
-                      await startTransaction(amount: 1, phone: "254" + phoneNumber.text);
-
-                      if (selectedDate.isNotEmpty && selectedSlot != null && phoneNumber.text.length == 9 && phoneNumber.text.startsWith('7')) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (BuildContext context) {
-                            return PaymentScreen(
-                              selectedDate: selectedDate,
-                              venue: widget.venue,
-                              selectedSlot: selectedSlot,
-                              sportBookingInfo: widget.sportBookingInfo,
-                              checkoutId: checkoutId,
+                                SizedBox(height: 20.h),
+                              ],
                             );
-                          }),
-                        );
-
-                        setState(() {
-                          isCheckingAvailability = false;
-                        });
-                      } else {
-                        showCustomSnackbar('Error booking slot. Please input all the fields correctly', _scaffoldKey);
-                        setState(() {
-                          isCheckingAvailability = false;
-                        });
-                      }
+                          }
+                          return Container();
+                        },
+                      );
                     },
                   ),
-                  SizedBox(height: 20.h),
                 ],
               ),
             ),

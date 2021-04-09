@@ -234,7 +234,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   ? MdiIcons.genderNonBinary
                                                   : Icons.warning_amber_rounded,
                                       color: state.userProfile.gender == null ? Colors.amber : Color(0xff8FD974),
-                                      size: 24.r,
+                                      size: state.userProfile.gender == null ? 32.r : 24.r,
                                     ),
                                     SizedBox(height: 10.h),
                                     Text(
@@ -339,8 +339,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                             if (state is EditProfileLoadSuccess) {
                                               if (state.userProfile.sportsPlayed.isNotEmpty) {
                                                 return Container(
-                                                  width: 200.w,
+                                                  width: 191.w,
                                                   height: 58.h,
+                                                  clipBehavior: Clip.none,
                                                   child: ListView.builder(
                                                     itemCount: state.userProfile.sportsPlayed.length > 4 ? 4 : state.userProfile.sportsPlayed.length,
                                                     shrinkWrap: true,
@@ -359,7 +360,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                 sport,
                                                               ),
                                                               color: Color(0xff8FD974),
-                                                              size: 19.r,
+                                                              size: 18.r,
                                                             ),
 
                                                             SizedBox(height: 15.h),
@@ -375,7 +376,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                           : sport == 'assets/icons/volleyball_icon.png'
                                                                               ? 'Volleyball'
                                                                               : sport == 'assets/icons/handball_icon.png'
-                                                                                  ? 'Netball'
+                                                                                  ? 'Handball'
                                                                                   : sport == 'assets/icons/swimming_icon.png'
                                                                                       ? 'Swimming'
                                                                                       : sport == 'assets/icons/tennis_icon.png'
@@ -387,7 +388,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                                   : sport == 'assets/icons/basketball_icon.png'
                                                                                                       ? 'Basketball'
                                                                                                       : '',
-                                                              style: hintStyle.copyWith(fontSize: 11.sp),
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 1,
+                                                              style: hintStyle.copyWith(fontSize: 10.sp),
                                                             ),
                                                           ],
                                                         ),
@@ -593,8 +596,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         fontWeight: FontWeight.w300,
                                                       ),
                                                     ),
-                                                    state.userProfile.clubA == null || state.userProfile.clubA == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
-                                                    state.userProfile.clubA == null || state.userProfile.clubA == 'None'
+                                                    state.userProfile.clubA == null || state.userProfile.clubA == 'None' || state.userProfile.clubA == '' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubA == null || state.userProfile.clubA == 'None' || state.userProfile.clubA == ''
                                                         ? Container()
                                                         : Container(
                                                             width: 124.w,
@@ -608,8 +611,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                               ),
                                                             ),
                                                           ),
-                                                    state.userProfile.clubB == null || state.userProfile.clubB == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
-                                                    state.userProfile.clubB == null || state.userProfile.clubB == 'None'
+                                                    state.userProfile.clubB == null || state.userProfile.clubB == 'None' || state.userProfile.clubB == '' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubB == null || state.userProfile.clubB == 'None' || state.userProfile.clubB == ''
                                                         ? Container()
                                                         : Container(
                                                             width: 124.w,
@@ -624,8 +627,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                               ),
                                                             ),
                                                           ),
-                                                    state.userProfile.clubC == null || state.userProfile.clubC == 'None' ? SizedBox.shrink() : SizedBox(height: 10.h),
-                                                    state.userProfile.clubC == null || state.userProfile.clubC == 'None'
+                                                    state.userProfile.clubC == null || state.userProfile.clubC == 'None' || state.userProfile.clubC == '' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubC == null || state.userProfile.clubC == 'None' || state.userProfile.clubC == ''
                                                         ? Container()
                                                         : Container(
                                                             width: 124.w,
@@ -910,24 +913,25 @@ class _ProfilePageState extends State<ProfilePage> {
                     //   },
                     // ),
                     GestureDetector(
-                      onTap: ()async{
-                        final logmessage = await context.read<AuthenticationService>().signOut();
-                        if (logmessage == "Signed Out Successfully") {
-                          BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogoutRequested());
-                          this._showToast(context, "Signing Out...");
-                          Future.delayed(Duration(seconds: 2), () {
-                            // 5s over, navigate
-                            Navigator.of(context).pushReplacement(
-                              Authenticate.route(),
-                            );
-                          });
-                        } else {
-                          this._showToast(context, "Signing Out Failed.");
-                        }
-                      },
+                        onTap: () async {
+                          final logmessage = await context.read<AuthenticationService>().signOut();
+                          if (logmessage == "Signed Out Successfully") {
+                            BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogoutRequested());
+                            this._showToast(context, "Signing Out...");
+                            Future.delayed(Duration(seconds: 2), () {
+                              // 5s over, navigate
+                              Navigator.of(context).pushReplacement(
+                                Authenticate.route(),
+                              );
+                            });
+                          } else {
+                            this._showToast(context, "Signing Out Failed.");
+                          }
+                        },
                         child: Text(
                           "Log out",
-                          style: TextStyle(color: Color(0xFFEB5959)),))
+                          style: TextStyle(color: Color(0xFFEB5959)),
+                        ))
                   ],
                 ),
                 // Container(height: 40.h, child: VerticalDivider(color: Color(0xff2C2D35), thickness: 2.w)),

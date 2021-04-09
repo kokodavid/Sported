@@ -91,6 +91,7 @@ class UserController {
     String buddy,
     String coach,
     List<String> sportsPlayed,
+    List<String> verifiedClubs,
   }) async {
     userProfile = UserProfile(
       age: age,
@@ -98,6 +99,7 @@ class UserController {
       clubA: clubA,
       clubB: clubB,
       sportsPlayed: sportsPlayed,
+      verifiedClubs: verifiedClubs,
       clubC: clubC,
       pasteUrl: pasteUrl,
       buddy: buddy,
@@ -111,11 +113,17 @@ class UserController {
 
   Future<UserProfile> loadUserProfile() async {
     final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
-    final userProfile = await userProfileRef.doc(auth.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+    try {
+      final userProfile = await userProfileRef.doc(auth.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+      return userProfile;
+    } catch (_) {
+      print("load profile error | $_");
+      return _;
+    }
+    // final userProfile = await userProfileRef.doc(auth.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
     // final userProfileFromJson = userProfileRef.get().then((value) => value.docs.map((e) => UserProfile.fromJson(e.data())).toList());
     // final allUsers = await userProfileFromJson;
     // final filteredUsers = allUsers.where((element) => element.uid == auth.currentUser.uid).toList();
     // final userProfile = filteredUsers[0];
-    return userProfile;
   }
 }
