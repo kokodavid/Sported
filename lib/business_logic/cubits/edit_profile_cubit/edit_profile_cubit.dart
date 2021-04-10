@@ -39,6 +39,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
     String buddy,
     String coach,
     List<String> sportsPlayed,
+    List<String> verifiedClubs,
   }) async {
     try {
       emit(EditProfileLoadInProgress());
@@ -58,12 +59,13 @@ class EditProfileCubit extends Cubit<EditProfileState> {
         email: email,
         uid: uid,
         sportsPlayed: sportsPlayed,
+        verifiedClubs: verifiedClubs,
       );
       final profileMapData = uploadProfile.toJson();
       await userProfileRef.doc(uid).set(profileMapData).catchError((e) => print("error uploading Profile | $e"));
       final userProfile = await locator.get<UserController>().loadUserProfile();
-      print("updatedUser | ${userProfile.fullName} ");
       emit(EditProfileLoadSuccess(userProfile: userProfile));
+      print("updatedUser | ${userProfile.fullName} ");
     } catch (_) {
       emit(EditProfileLoadFailure());
       print("get updated profile error | $_");

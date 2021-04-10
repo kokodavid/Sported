@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
+import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/data/models/ourUser.dart';
 import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/data/services/user_controller.dart';
@@ -402,6 +403,7 @@ class _SignInPageState extends State<SignInPage> {
       });
     } else if (auth.currentUser.emailVerified == true) {
       if (logMessage == "Logged In Successfully") {
+        BlocProvider.of<EditProfileCubit>(context)..getUserProfile();
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => BlocProvider<NavBloc>(

@@ -1,25 +1,30 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:chips_choice/chips_choice.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:firebase_auth/firebase_auth.dart" as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
 import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
+import 'package:sported_app/data/models/UserProfile.dart';
 import 'package:sported_app/data/repositories/storage_repo.dart';
 import 'package:sported_app/data/services/user_controller.dart';
 import 'package:sported_app/presentation/shared/filter_chips/custom_chip_content.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
 
+import 'file:///D:/LEWY/Dev/Projects/ROUGH/Flutter/Sported/lib/data/models/venue/venue_members_model.dart';
+
 import '../../locator.dart';
+import '../shared/custom_snackbar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   static String route = "profile-view";
@@ -47,6 +52,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String newBuddy;
   String newCoach;
   String newCertLink;
+  String newMemberID;
   List<String> newSports = [];
 
   //upload Data
@@ -56,6 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String uploadClubC;
   String uploadCertLink;
   String uploadGender;
+  String uploadMemberID;
   String uploadBuddy;
   String uploadCoach;
   Iterable<String> uploadSports;
@@ -69,14 +76,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String firestoreClubC;
   String firestoreBuddy;
   String firestoreCoach;
-  List<String> firestoreSports = [];
 
-  bool previousSelectionCleared = false;
+  String firestoreMemberID;
+  List<String> firestoreSports = [];
+  List<String> uploadVerifiedClubs = [];
+  List<String> firestoreVerifiedClubs = [];
+
   String isCompetitive;
   String isLeisure;
   TextEditingController fullNameTextEditingController;
+  TextEditingController memberIDTextEditingController;
   TextEditingController emailTextEditingController;
-  TextEditingController pasteUrlTextEdittingController;
+  TextEditingController pasteUrlTextEditingController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final editProfileFormKey = GlobalKey<FormState>();
   final ageFormKey = GlobalKey<FormState>();
@@ -88,7 +99,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final sportsClubKey = GlobalKey<FormState>();
   final experienceLevel = GlobalKey<FormState>();
 
-  // row 1
+  // options
+
   List<String> options = [
     'assets/icons/football_icon.png',
     'assets/icons/cricket_icon.png',
@@ -100,6 +112,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'assets/icons/rugby_icon.png',
     'assets/icons/table_tennis_icon.png',
     'assets/icons/handball_icon.png',
+  ];
+
+  //clubs
+  List<String> clubs = [
+    'None',
+    'Aga Khan Sports Club',
+    'Nairobi Jaffery Sports Club',
   ];
 
   //functions
@@ -139,6 +158,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 firestoreCoach = state.userProfile.coach;
                 firestoreCertLink = state.userProfile.pasteUrl;
                 firestoreSports = state.userProfile.sportsPlayed;
+                final verifiedClubs = state.userProfile.verifiedClubs;
 
                 return IconButton(
                   onPressed: () async {
@@ -147,9 +167,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       displayName: updatedFullName,
                     );
 
-                    if (uploadSports != null && previousSelectionCleared == false) {
-                      final firestoreSportsList = firestoreSports.toList(growable: true);
-                      firestoreSportsList.insertAll(firestoreSportsList.length, uploadSports);
+                    final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+                    final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                    firestoreVerifiedClubs = userProfile.verifiedClubs;
+
+                    if (uploadSports != null) {
+                      final dlist = firestoreSports.toList(growable: true);
+                      dlist.insertAll(dlist.length, uploadSports);
+                      List<String> firestoreSportsList = LinkedHashSet<String>.from(dlist).toList();
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (_) => MultiBlocProvider(
@@ -172,6 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     email: currentUser.email,
                                     fullName: updatedFullName ??= currentUser.displayName,
                                     sportsPlayed: firestoreSportsList,
+                                    verifiedClubs: uploadVerifiedClubs.isNotEmpty ? uploadVerifiedClubs : firestoreVerifiedClubs,
                                   ),
                               ),
                             ],
@@ -179,7 +205,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                       );
-                    } else if (uploadSports == null && previousSelectionCleared == false) {
+                    } else if (uploadSports == null) {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (_) => MultiBlocProvider(
@@ -202,66 +228,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     email: currentUser.email,
                                     fullName: updatedFullName ??= currentUser.displayName,
                                     sportsPlayed: state.userProfile.sportsPlayed,
-                                  ),
-                              ),
-                            ],
-                            child: PagesSwitcher(),
-                          ),
-                        ),
-                      );
-                    } else if (uploadSports != null && previousSelectionCleared == true) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (_) => MultiBlocProvider(
-                            providers: [
-                              BlocProvider<NavBloc>(
-                                create: (_) => NavBloc()..add(LoadPageOne()),
-                              ),
-                              BlocProvider<EditProfileCubit>(
-                                create: (_) => EditProfileCubit()
-                                  ..updateUserProfile(
-                                    age: uploadAge ??= firestoreAge,
-                                    clubA: uploadClubA ??= firestoreClubA,
-                                    clubB: uploadClubB ??= firestoreClubB,
-                                    clubC: uploadClubC ??= firestoreClubC,
-                                    coach: uploadCoach ??= firestoreCoach,
-                                    buddy: uploadBuddy ??= firestoreBuddy,
-                                    gender: uploadGender ??= firestoreGender,
-                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
-                                    uid: currentUser.uid,
-                                    email: currentUser.email,
-                                    fullName: updatedFullName ??= currentUser.displayName,
-                                    sportsPlayed: uploadSports.toList(),
-                                  ),
-                              ),
-                            ],
-                            child: PagesSwitcher(),
-                          ),
-                        ),
-                      );
-                    } else if (uploadSports == null && previousSelectionCleared == true) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (_) => MultiBlocProvider(
-                            providers: [
-                              BlocProvider<NavBloc>(
-                                create: (_) => NavBloc()..add(LoadPageOne()),
-                              ),
-                              BlocProvider<EditProfileCubit>(
-                                create: (_) => EditProfileCubit()
-                                  ..updateUserProfile(
-                                    age: uploadAge ??= firestoreAge,
-                                    clubA: uploadClubA ??= firestoreClubA,
-                                    clubB: uploadClubB ??= firestoreClubB,
-                                    clubC: uploadClubC ??= firestoreClubC,
-                                    coach: uploadCoach ??= firestoreCoach,
-                                    buddy: uploadBuddy ??= firestoreBuddy,
-                                    gender: uploadGender ??= firestoreGender,
-                                    pasteUrl: uploadCertLink ??= firestoreCertLink,
-                                    uid: currentUser.uid,
-                                    email: currentUser.email,
-                                    fullName: updatedFullName ??= currentUser.displayName,
-                                    sportsPlayed: [],
+                                    verifiedClubs: uploadVerifiedClubs.isNotEmpty ? uploadVerifiedClubs : firestoreVerifiedClubs,
                                   ),
                               ),
                             ],
@@ -605,11 +572,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             padding: EdgeInsets.all(0),
                                             icon: Icon(
                                               MdiIcons.genderMale,
-                                              color: newGender == 'Male'
-                                                  ? Color(0xff8FD974) : Color(0xff31323B),
-                                                  // : firestoreGender == "Male"
-                                                  //     ? Color(0xff2F4826)
-                                                  //     : Color(0xff31323B),
+                                              color: newGender == 'Male' ? Color(0xff8FD974) : Color(0xff31323B),
+                                              // : firestoreGender == "Male"
+                                              //     ? Color(0xff2F4826)
+                                              //     : Color(0xff31323B),
                                             ),
                                           ),
                                         ],
@@ -628,8 +594,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             padding: EdgeInsets.all(0),
                                             icon: Icon(
                                               MdiIcons.genderFemale,
-                                              color:newGender == 'Female'
-                                                  ? Color(0xff8FD974) : Color(0xff31323B),
+                                              color: newGender == 'Female' ? Color(0xff8FD974) : Color(0xff31323B),
                                               // firestoreGender == "Female"
                                               //         ? Color(0xffD9F2D0)
                                               //         : Color(0xff31323B),
@@ -858,13 +823,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 'Please select a sports club',
                                                 style: labelStyle,
                                               )
-                                            : Text(
-                                                firestoreClubA,
-                                                style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  color: Color(0xff8FD974),
-                                                ),
-                                              )
+                                            : firestoreClubA == ''
+                                                ? Text(
+                                                    'Please select a sports club',
+                                                    style: labelStyle,
+                                                  )
+                                                : Text(
+                                                    firestoreClubA,
+                                                    style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      color: Color(0xff8FD974),
+                                                    ),
+                                                  )
                                         : Text(
                                             newClubA,
                                             style: TextStyle(
@@ -884,14 +854,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       'None',
                                       'Aga Khan Sports Club',
                                       'Nairobi Jaffery Sports Club',
-                                    ].map(
-                                      (val) {
-                                        return DropdownMenuItem<String>(
-                                          value: val,
-                                          child: Text(val),
-                                        );
-                                      },
-                                    ).toList(),
+                                    ].map((val) {
+                                      return DropdownMenuItem<String>(
+                                        value: val,
+                                        child: Text(val),
+                                      );
+                                    }).toList(),
                                     decoration: InputDecoration(
                                       enabled: true,
                                       fillColor: Color(0xff31323B),
@@ -905,14 +873,161 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         borderRadius: BorderRadius.circular(8.r),
                                       ),
                                     ),
-                                    onChanged: (val) {
+                                    onChanged: (clubText) {
+                                      //change club
                                       setState(() {
-                                        newClubA = val;
-                                        uploadClubA = val;
+                                        newClubA = clubText == 'None' ? "" : clubText;
+                                        uploadClubA = clubText == 'None' ? "" : clubText;
                                       });
+                                      //show dialog
+                                      if (clubText != null && clubText != 'None') {
+                                        return showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) {
+                                            return StatefulBuilder(
+                                              builder: (context, setDialogState) {
+                                                return Dialog(
+                                                  backgroundColor: Color(0xff18181A),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
+                                                  child: Container(
+                                                    height: 314.h,
+                                                    width: 360.w,
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [
+                                                        //title
+                                                        Container(
+                                                          padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
+                                                          child: Text(
+                                                            'Verify Membership',
+                                                            style: TextStyle(
+                                                              color: Color(0xffFEFEFE),
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        //divider
+                                                        Divider(height: 0.5.h, thickness: 0.5.h, color: Color(0xff07070a)),
+
+                                                        SizedBox(height: 16.h),
+                                                        Container(
+                                                          padding: EdgeInsets.only(top: 24.h, bottom: 24.h, left: 20.w, right: 20.w),
+                                                          child: Text(
+                                                            'Verify Membership for $clubText',
+                                                            maxLines: 2,
+                                                            textAlign: TextAlign.center,
+                                                            softWrap: true,
+                                                            style: TextStyle(
+                                                              color: Color(0xffFEFEFE),
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 16.h),
+
+                                                        Padding(
+                                                          padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                                                          child: TextFormField(
+                                                            maxLines: 1,
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                            controller: memberIDTextEditingController,
+                                                            onChanged: (memberIDText) {
+                                                              setDialogState(() {
+                                                                newMemberID = memberIDText;
+                                                                uploadMemberID = memberIDText;
+                                                              });
+                                                            },
+                                                            decoration: formInputDecoration(
+                                                              isDense: true,
+                                                              hintText: newMemberID == null
+                                                                  ? firestoreMemberID == null
+                                                                      ? 'Enter Membership ID'
+                                                                      : firestoreMemberID
+                                                                  : newMemberID,
+                                                              prefixIcon: MdiIcons.idCard,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 28.h),
+
+                                                        //continue btn
+                                                        MaterialButton(
+                                                          height: 46.h,
+                                                          minWidth: 147.w,
+                                                          color: Color(0xff8FD974),
+                                                          padding: EdgeInsets.all(0),
+                                                          shape: StadiumBorder(),
+                                                          elevation: 0.0,
+                                                          hoverElevation: 0,
+                                                          disabledElevation: 0,
+                                                          highlightElevation: 0,
+                                                          focusElevation: 0,
+                                                          child: Text(
+                                                            'Continue',
+                                                            style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontWeight: FontWeight.w400,
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                          onPressed: () async {
+                                                            try {
+                                                              CollectionReference membersIDsRef = FirebaseFirestore.instance.collection('MembershipIds');
+                                                              final venueMembersModel = await membersIDsRef.where('venueName', isEqualTo: clubText).get().then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
+                                                              if (venueMembersModel.memberIDs.contains(newMemberID)) {
+                                                                Navigator.pop(context);
+                                                                final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+                                                                final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                                                                firestoreVerifiedClubs = userProfile.verifiedClubs;
+                                                                if (firestoreVerifiedClubs.contains(clubText)) {
+                                                                  print('contains');
+                                                                  uploadVerifiedClubs = firestoreVerifiedClubs;
+                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  showCustomSnackbar('You are already verified as club member at $clubText', _scaffoldKey);
+                                                                } else {
+                                                                  print('doesnt contain');
+                                                                  uploadVerifiedClubs.add(clubText);
+                                                                  final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
+                                                                  final docRef = FirebaseFirestore.instance.collection("userProfile").doc(uid);
+                                                                  docRef.update({
+                                                                    'verifiedClubs': uploadVerifiedClubs,
+                                                                  });
+                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  showCustomSnackbar('Member ID verified', _scaffoldKey);
+                                                                }
+                                                                return true;
+                                                              } else {
+                                                                Navigator.pop(context);
+                                                                await Future.delayed(Duration(milliseconds: 1000));
+                                                                showCustomSnackbar('Member ID not verified. Try again', _scaffoldKey);
+                                                                return false;
+                                                              }
+                                                            } catch (_) {
+                                                              print("venue members error | $_");
+                                                            }
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      }
                                     },
                                   ),
                                   SizedBox(height: 10),
+                                  //club B
                                   DropdownButtonFormField(
                                     elevation: 0,
                                     iconSize: 23.r,
@@ -924,13 +1039,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 'Please select a sports club',
                                                 style: labelStyle,
                                               )
-                                            : Text(
-                                                firestoreClubB,
-                                                style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  color: Color(0xff8FD974),
-                                                ),
-                                              )
+                                            : firestoreClubB == ''
+                                                ? Text(
+                                                    'Please select a sports club',
+                                                    style: labelStyle,
+                                                  )
+                                                : Text(
+                                                    firestoreClubB,
+                                                    style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      color: Color(0xff8FD974),
+                                                    ),
+                                                  )
                                         : Text(
                                             newClubB,
                                             style: TextStyle(
@@ -971,14 +1091,159 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         borderRadius: BorderRadius.circular(8.r),
                                       ),
                                     ),
-                                    onChanged: (val) {
+                                    onChanged: (clubText) {
                                       setState(() {
-                                        newClubB = val;
-                                        uploadClubB = val;
+                                        newClubB = clubText == 'None' ? "" : clubText;
+                                        uploadClubB = clubText == 'None' ? "" : clubText;
                                       });
+                                      if (clubText != null && clubText != 'None') {
+                                        return showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) {
+                                            return StatefulBuilder(
+                                              builder: (context, setDialogState) {
+                                                return Dialog(
+                                                  backgroundColor: Color(0xff18181A),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
+                                                  child: Container(
+                                                    height: 314.h,
+                                                    width: 360.w,
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [
+                                                        //title
+                                                        Container(
+                                                          padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
+                                                          child: Text(
+                                                            'Verify Membership',
+                                                            style: TextStyle(
+                                                              color: Color(0xffFEFEFE),
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        //divider
+                                                        Divider(height: 0.5.h, thickness: 0.5.h, color: Color(0xff07070a)),
+
+                                                        SizedBox(height: 16.h),
+                                                        Container(
+                                                          padding: EdgeInsets.only(top: 24.h, bottom: 24.h, left: 20.w, right: 20.w),
+                                                          child: Text(
+                                                            'Verify Membership for $clubText',
+                                                            maxLines: 2,
+                                                            textAlign: TextAlign.center,
+                                                            softWrap: true,
+                                                            style: TextStyle(
+                                                              color: Color(0xffFEFEFE),
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 16.h),
+
+                                                        Padding(
+                                                          padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                                                          child: TextFormField(
+                                                            maxLines: 1,
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                            controller: memberIDTextEditingController,
+                                                            onChanged: (memberIDText) {
+                                                              setDialogState(() {
+                                                                newMemberID = memberIDText;
+                                                                uploadMemberID = memberIDText;
+                                                              });
+                                                            },
+                                                            decoration: formInputDecoration(
+                                                              isDense: true,
+                                                              hintText: newMemberID == null
+                                                                  ? firestoreMemberID == null
+                                                                      ? 'Enter Membership ID'
+                                                                      : firestoreMemberID
+                                                                  : newMemberID,
+                                                              prefixIcon: MdiIcons.idCard,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 28.h),
+
+                                                        //continue btn
+                                                        MaterialButton(
+                                                          height: 46.h,
+                                                          minWidth: 147.w,
+                                                          color: Color(0xff8FD974),
+                                                          padding: EdgeInsets.all(0),
+                                                          shape: StadiumBorder(),
+                                                          elevation: 0.0,
+                                                          hoverElevation: 0,
+                                                          disabledElevation: 0,
+                                                          highlightElevation: 0,
+                                                          focusElevation: 0,
+                                                          child: Text(
+                                                            'Continue',
+                                                            style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontWeight: FontWeight.w400,
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                          onPressed: () async {
+                                                            try {
+                                                              CollectionReference membersIDsRef = FirebaseFirestore.instance.collection('MembershipIds');
+                                                              final venueMembersModel = await membersIDsRef.where('venueName', isEqualTo: clubText).get().then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
+                                                              if (venueMembersModel.memberIDs.contains(newMemberID)) {
+                                                                Navigator.pop(context);
+                                                                final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+                                                                final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                                                                firestoreVerifiedClubs = userProfile.verifiedClubs;
+                                                                if (firestoreVerifiedClubs.contains(clubText)) {
+                                                                  print('contains');
+                                                                  uploadVerifiedClubs = firestoreVerifiedClubs;
+                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  showCustomSnackbar('You are already verified as club member at $clubText', _scaffoldKey);
+                                                                } else {
+                                                                  print('doesnt contain');
+                                                                  uploadVerifiedClubs.add(clubText);
+                                                                  final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
+                                                                  final docRef = FirebaseFirestore.instance.collection("userProfile").doc(uid);
+                                                                  docRef.update({
+                                                                    'verifiedClubs': uploadVerifiedClubs,
+                                                                  });
+                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  showCustomSnackbar('Member ID verified', _scaffoldKey);
+                                                                }
+                                                                return true;
+                                                              } else {
+                                                                Navigator.pop(context);
+                                                                await Future.delayed(Duration(milliseconds: 1000));
+                                                                showCustomSnackbar('Member ID not verified. Try again', _scaffoldKey);
+                                                                return false;
+                                                              }
+                                                            } catch (_) {
+                                                              print("venue members error | $_");
+                                                            }
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      }
                                     },
                                   ),
                                   SizedBox(height: 10),
+                                  //club C
                                   DropdownButtonFormField(
                                     elevation: 0,
                                     iconSize: 23.r,
@@ -990,13 +1255,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 'Please select a sports club',
                                                 style: labelStyle,
                                               )
-                                            : Text(
-                                                firestoreClubC,
-                                                style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  color: Color(0xff8FD974),
-                                                ),
-                                              )
+                                            : firestoreClubC == ''
+                                                ? Text(
+                                                    'Please select a sports club',
+                                                    style: labelStyle,
+                                                  )
+                                                : Text(
+                                                    firestoreClubC,
+                                                    style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      color: Color(0xff8FD974),
+                                                    ),
+                                                  )
                                         : Text(
                                             newClubC,
                                             style: TextStyle(
@@ -1037,11 +1307,156 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         borderRadius: BorderRadius.circular(8.r),
                                       ),
                                     ),
-                                    onChanged: (val) {
+                                    onChanged: (clubText) {
                                       setState(() {
-                                        newClubC = val;
-                                        uploadClubC = val;
+                                        newClubC = clubText == 'None' ? '' : clubText;
+                                        uploadClubC = clubText == 'None' ? '' : clubText;
                                       });
+                                      if (clubText != null && clubText != 'None') {
+                                        return showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) {
+                                            return StatefulBuilder(
+                                              builder: (context, setDialogState) {
+                                                return Dialog(
+                                                  backgroundColor: Color(0xff18181A),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
+                                                  child: Container(
+                                                    height: 314.h,
+                                                    width: 360.w,
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [
+                                                        //title
+                                                        Container(
+                                                          padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
+                                                          child: Text(
+                                                            'Verify Membership',
+                                                            style: TextStyle(
+                                                              color: Color(0xffFEFEFE),
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        //divider
+                                                        Divider(height: 0.5.h, thickness: 0.5.h, color: Color(0xff07070a)),
+
+                                                        SizedBox(height: 16.h),
+                                                        Container(
+                                                          padding: EdgeInsets.only(top: 24.h, bottom: 24.h, left: 20.w, right: 20.w),
+                                                          child: Text(
+                                                            'Verify Membership for $clubText',
+                                                            maxLines: 2,
+                                                            textAlign: TextAlign.center,
+                                                            softWrap: true,
+                                                            style: TextStyle(
+                                                              color: Color(0xffFEFEFE),
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 16.h),
+
+                                                        Padding(
+                                                          padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                                                          child: TextFormField(
+                                                            maxLines: 1,
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                            controller: memberIDTextEditingController,
+                                                            onChanged: (memberIDText) {
+                                                              setDialogState(() {
+                                                                newMemberID = memberIDText;
+                                                                uploadMemberID = memberIDText;
+                                                              });
+                                                            },
+                                                            decoration: formInputDecoration(
+                                                              isDense: true,
+                                                              hintText: newMemberID == null
+                                                                  ? firestoreMemberID == null
+                                                                      ? 'Enter Membership ID'
+                                                                      : firestoreMemberID
+                                                                  : newMemberID,
+                                                              prefixIcon: MdiIcons.idCard,
+                                                            ),
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 28.h),
+
+                                                        //continue btn
+                                                        MaterialButton(
+                                                          height: 46.h,
+                                                          minWidth: 147.w,
+                                                          color: Color(0xff8FD974),
+                                                          padding: EdgeInsets.all(0),
+                                                          shape: StadiumBorder(),
+                                                          elevation: 0.0,
+                                                          hoverElevation: 0,
+                                                          disabledElevation: 0,
+                                                          highlightElevation: 0,
+                                                          focusElevation: 0,
+                                                          child: Text(
+                                                            'Continue',
+                                                            style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontWeight: FontWeight.w400,
+                                                              fontSize: 15.sp,
+                                                            ),
+                                                          ),
+                                                          onPressed: () async {
+                                                            try {
+                                                              CollectionReference membersIDsRef = FirebaseFirestore.instance.collection('MembershipIds');
+                                                              final venueMembersModel = await membersIDsRef.where('venueName', isEqualTo: clubText).get().then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
+                                                              if (venueMembersModel.memberIDs.contains(newMemberID)) {
+                                                                Navigator.pop(context);
+                                                                final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+                                                                final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                                                                firestoreVerifiedClubs = userProfile.verifiedClubs;
+                                                                if (firestoreVerifiedClubs.contains(clubText)) {
+                                                                  print('contains');
+                                                                  uploadVerifiedClubs = firestoreVerifiedClubs;
+                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  showCustomSnackbar('You are already verified as club member at $clubText', _scaffoldKey);
+                                                                } else {
+                                                                  print('doesnt contain');
+
+                                                                  uploadVerifiedClubs.add(clubText);
+                                                                  final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
+                                                                  final docRef = FirebaseFirestore.instance.collection("userProfile").doc(uid);
+                                                                  docRef.update({
+                                                                    'verifiedClubs': uploadVerifiedClubs,
+                                                                  });
+                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  showCustomSnackbar('Member ID verified', _scaffoldKey);
+                                                                }
+                                                                return true;
+                                                              } else {
+                                                                Navigator.pop(context);
+                                                                await Future.delayed(Duration(milliseconds: 1000));
+                                                                showCustomSnackbar('Member ID not verified. Try again', _scaffoldKey);
+                                                                return false;
+                                                              }
+                                                            } catch (_) {
+                                                              print("venue members error | $_");
+                                                            }
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      }
                                     },
                                   ),
                                   SizedBox(height: 20),
@@ -1103,12 +1518,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       borderRadius: BorderRadius.circular(8.r),
                                     ),
                                   ),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      newClubA = val;
-                                      uploadClubA = val;
-                                    });
-                                  },
+                                  onChanged: (val) {},
                                 ),
                                 SizedBox(height: 10),
                                 DropdownButtonFormField(
@@ -1153,12 +1563,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       borderRadius: BorderRadius.circular(8.r),
                                     ),
                                   ),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      newClubA = val;
-                                      uploadClubA = val;
-                                    });
-                                  },
+                                  onChanged: (val) {},
                                 ),
 
                                 SizedBox(height: 10),
@@ -1204,12 +1609,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       borderRadius: BorderRadius.circular(8.r),
                                     ),
                                   ),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      newClubA = val;
-                                      uploadClubA = val;
-                                    });
-                                  },
+                                  onChanged: (val) {},
                                 ),
 
                                 SizedBox(height: 20),
@@ -1234,32 +1634,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       //title
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'What sports do you play?',
-                              style: regularStyle,
-                            ),
-                            GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  previousSelectionCleared = true;
-                                });
-                              },
-                              child: Text(
-                                'Clear Selection',
-                                style: TextStyle(
-                                  color: Color(0xff8FD974),
-                                  decoration: TextDecoration.underline
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          'What sports do you play?',
+                          style: regularStyle,
                         ),
                       ),
 
                       SizedBox(height: 20.h),
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.0.w),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Hint: Long press a previously saved sport to remove it from sports you play!',
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              color: Color(0xff8FD974),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 10.h),
 
                       BlocBuilder<EditProfileCubit, EditProfileState>(
                         builder: (_, state) {
@@ -1275,9 +1672,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     value: newSports == null
                                         ? firestoreSports == null
                                             ? newSports
-                                            : previousSelectionCleared == true
-                                                ? newSports
-                                                : firestoreSports
+                                            : firestoreSports
                                         : newSports,
                                     onChanged: (val) {
                                       setState(() {
@@ -1301,252 +1696,256 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           color: item.selected
                                               ? Color(0xff8FD974)
                                               : firestoreSports != null
-                                                  ? previousSelectionCleared == true
-                                                      ? Color(0xff31323B)
-                                                      : firestoreSports.contains(item.value)
-                                                          ? Color(0xff2F4826)
-                                                          : Color(0xff31323B)
+                                                  ? firestoreSports.contains(item.value)
+                                                      ? Color(0xff8FD974)
+                                                      : Color(0xff31323B)
                                                   : Color(0xff31323B),
                                         ),
                                         child: InkWell(
-                                          onTap: firestoreSports.contains(item.value)
-                                              ? () {}
-                                              : () {
-                                                  item.select(!item.selected);
-                                                  if (!item.selected) {
-                                                    return showDialog(
-                                                      context: context,
-                                                      useRootNavigator: false,
-                                                      barrierDismissible: false,
-                                                      builder: (context) => StatefulBuilder(
-                                                        builder: (context, setState) {
-                                                          return Dialog(
-                                                            backgroundColor: Color(0xff18181A),
-                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
-                                                            child: Container(
-                                                              height: 400.h,
-                                                              width: 360.w,
-                                                              child: Column(
-                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                children: [
-                                                                  //title
-                                                                  Container(
-                                                                    padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
-                                                                    child: Text(
-                                                                      'Select Level',
-                                                                      style: TextStyle(
-                                                                        color: Color(0xffFEFEFE),
-                                                                        fontSize: 15.sp,
-                                                                      ),
-                                                                    ),
-                                                                  ),
+                                          onLongPress: firestoreSports.contains(item.value)
+                                              ? () {
+                                                  final index = firestoreSports.indexWhere((element) => element == item.value);
+                                                  firestoreSports.removeAt(index);
+                                                  print('removed');
+                                                  setState(() {});
+                                                }
+                                              : () {},
+                                          onTap: () {
+                                            item.select(!item.selected);
+                                            if (!item.selected) {
+                                              return showDialog(
+                                                context: context,
+                                                useRootNavigator: false,
+                                                barrierDismissible: false,
+                                                builder: (context) => StatefulBuilder(
+                                                  builder: (context, setState) {
+                                                    return Dialog(
+                                                      backgroundColor: Color(0xff18181A),
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0.r)),
+                                                      child: Container(
+                                                        height: 400.h,
+                                                        width: 360.w,
+                                                        child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            //title
+                                                            Container(
+                                                              padding: EdgeInsets.only(top: 24.h, bottom: 24.h),
+                                                              child: Text(
+                                                                'Select Level',
+                                                                style: TextStyle(
+                                                                  color: Color(0xffFEFEFE),
+                                                                  fontSize: 15.sp,
+                                                                ),
+                                                              ),
+                                                            ),
 
-                                                                  //divider
-                                                                  Divider(height: 0.5.h, thickness: 0.5.h, color: Color(0xff07070a)),
+                                                            //divider
+                                                            Divider(height: 0.5.h, thickness: 0.5.h, color: Color(0xff07070a)),
 
-                                                                  SizedBox(height: 24.h),
+                                                            SizedBox(height: 24.h),
 
-                                                                  //level title
-                                                                  Padding(
-                                                                    padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
-                                                                    child: Align(
-                                                                      alignment: Alignment.centerLeft,
-                                                                      child: Text(
-                                                                        'Level',
-                                                                        style: regularStyle,
-                                                                      ),
-                                                                    ),
-                                                                  ),
+                                                            //level title
+                                                            Padding(
+                                                              padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
+                                                              child: Align(
+                                                                alignment: Alignment.centerLeft,
+                                                                child: Text(
+                                                                  'Level',
+                                                                  style: regularStyle,
+                                                                ),
+                                                              ),
+                                                            ),
 
-                                                                  SizedBox(height: 16.h),
+                                                            SizedBox(height: 16.h),
 
-                                                                  //level dropdown
-                                                                  Padding(
-                                                                    padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                                                                    child: SizedBox(
-                                                                      child: Form(
-                                                                        key: experienceLevel,
-                                                                        child: Column(
-                                                                          children: [
-                                                                            //dropdown
-                                                                            DropdownButtonFormField(
-                                                                              elevation: 0,
-                                                                              iconSize: 23.r,
-                                                                              isDense: true,
-                                                                              isExpanded: true,
-                                                                              hint: Text(
-                                                                                'Select your experience level',
-                                                                                style: labelStyle,
-                                                                              ),
-                                                                              icon: Icon(
-                                                                                MdiIcons.chevronDown,
-                                                                                size: 24.r,
-                                                                                color: Color(0xffC5C6C7),
-                                                                              ),
-                                                                              style: TextStyle(
-                                                                                fontSize: 15.sp,
-                                                                                color: Color(0xff8FD974),
-                                                                              ),
-                                                                              items:
-                                                                                  //TODO: Implement choose level selection
-                                                                                  [
-                                                                                'Beginner',
-                                                                                'Intermediate',
-                                                                                'Proffesional',
-                                                                              ].map((val) {
-                                                                                return DropdownMenuItem<String>(
-                                                                                  value: val,
-                                                                                  child: SizedBox(
-                                                                                    width: 246.w,
-                                                                                    child: Text(
-                                                                                      val,
-                                                                                      maxLines: 1,
-                                                                                      softWrap: true,
-                                                                                      overflow: TextOverflow.ellipsis,
-                                                                                    ),
-                                                                                  ),
-                                                                                );
-                                                                              }).toList(),
-                                                                              decoration: InputDecoration(
-                                                                                enabled: true,
-                                                                                fillColor: Color(0xff31323B),
-                                                                                filled: true,
-                                                                                border: UnderlineInputBorder(
-                                                                                  borderSide: BorderSide.none,
-                                                                                  borderRadius: BorderRadius.circular(8.r),
-                                                                                ),
-                                                                                enabledBorder: UnderlineInputBorder(
-                                                                                  borderSide: BorderSide.none,
-                                                                                  borderRadius: BorderRadius.circular(8.r),
-                                                                                ),
-                                                                              ),
-                                                                              onChanged: (val) {
-                                                                                // newExperience = val;
-                                                                                // uploadExperience = val;
-                                                                              },
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-
-                                                                  SizedBox(height: 20.h),
-
-                                                                  //difficulty title
-                                                                  Padding(
-                                                                    padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
-                                                                    child: Align(
-                                                                      alignment: Alignment.centerLeft,
-                                                                      child: Text(
-                                                                        'Difficulty',
-                                                                        style: regularStyle,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-
-                                                                  SizedBox(height: 16.h),
-
-                                                                  //difficulty btns
-                                                                  Row(
-                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                            //level dropdown
+                                                            Padding(
+                                                              padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                                                              child: SizedBox(
+                                                                child: Form(
+                                                                  key: experienceLevel,
+                                                                  child: Column(
                                                                     children: [
-                                                                      //competitive
-                                                                      MaterialButton(
-                                                                        height: 46.h,
-                                                                        minWidth: 147.w,
-                                                                        color: isCompetitive == 'Yes' ? Color(0xff8FD974) : Color(0xff31323B),
-                                                                        padding: EdgeInsets.all(0),
-                                                                        shape: StadiumBorder(),
-                                                                        elevation: 0.0,
-                                                                        hoverElevation: 0,
-                                                                        disabledElevation: 0,
-                                                                        highlightElevation: 0,
-                                                                        focusElevation: 0,
-                                                                        child: Text(
-                                                                          'Competitive',
-                                                                          style: TextStyle(
-                                                                            color: isCompetitive == 'Yes' ? Colors.black : Color(0xff707070),
-                                                                            fontWeight: FontWeight.w400,
-                                                                            fontSize: 15.sp,
+                                                                      //dropdown
+                                                                      DropdownButtonFormField(
+                                                                        elevation: 0,
+                                                                        iconSize: 23.r,
+                                                                        isDense: true,
+                                                                        isExpanded: true,
+                                                                        hint: Text(
+                                                                          'Select your experience level',
+                                                                          style: labelStyle,
+                                                                        ),
+                                                                        icon: Icon(
+                                                                          MdiIcons.chevronDown,
+                                                                          size: 24.r,
+                                                                          color: Color(0xffC5C6C7),
+                                                                        ),
+                                                                        style: TextStyle(
+                                                                          fontSize: 15.sp,
+                                                                          color: Color(0xff8FD974),
+                                                                        ),
+                                                                        items:
+                                                                            //TODO: Implement choose level selection
+                                                                            [
+                                                                          'Beginner',
+                                                                          'Intermediate',
+                                                                          'Proffesional',
+                                                                        ].map((val) {
+                                                                          return DropdownMenuItem<String>(
+                                                                            value: val,
+                                                                            child: SizedBox(
+                                                                              width: 246.w,
+                                                                              child: Text(
+                                                                                val,
+                                                                                maxLines: 1,
+                                                                                softWrap: true,
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                              ),
+                                                                            ),
+                                                                          );
+                                                                        }).toList(),
+                                                                        decoration: InputDecoration(
+                                                                          enabled: true,
+                                                                          fillColor: Color(0xff31323B),
+                                                                          filled: true,
+                                                                          border: UnderlineInputBorder(
+                                                                            borderSide: BorderSide.none,
+                                                                            borderRadius: BorderRadius.circular(8.r),
+                                                                          ),
+                                                                          enabledBorder: UnderlineInputBorder(
+                                                                            borderSide: BorderSide.none,
+                                                                            borderRadius: BorderRadius.circular(8.r),
                                                                           ),
                                                                         ),
-                                                                        onPressed: () {
-                                                                          setState(() {
-                                                                            isCompetitive = 'Yes';
-                                                                          });
-                                                                        },
-                                                                      ),
-
-                                                                      SizedBox(width: 12.0.w),
-
-                                                                      //leisure
-                                                                      MaterialButton(
-                                                                        height: 46.h,
-                                                                        minWidth: 147.w,
-                                                                        color: isCompetitive == 'Yes' ? Color(0xff31323B) : Color(0xff8FD974),
-                                                                        shape: StadiumBorder(),
-                                                                        padding: EdgeInsets.all(0),
-                                                                        elevation: 0.0,
-                                                                        hoverElevation: 0,
-                                                                        disabledElevation: 0,
-                                                                        highlightElevation: 0,
-                                                                        focusElevation: 0,
-                                                                        child: Text(
-                                                                          'Leisure',
-                                                                          style: TextStyle(
-                                                                            color: isCompetitive == "Yes" ? Color(0xff707070) : Colors.black,
-                                                                            fontWeight: FontWeight.w400,
-                                                                            fontSize: 15.sp,
-                                                                          ),
-                                                                        ),
-                                                                        onPressed: () {
-                                                                          setState(() {
-                                                                            isCompetitive = "No";
-                                                                          });
+                                                                        onChanged: (val) {
+                                                                          // newExperience = val;
+                                                                          // uploadExperience = val;
                                                                         },
                                                                       ),
                                                                     ],
                                                                   ),
-
-                                                                  SizedBox(height: 48.h),
-
-                                                                  //continue btn
-                                                                  MaterialButton(
-                                                                    height: 46.h,
-                                                                    minWidth: 147.w,
-                                                                    color: Color(0xff8FD974),
-                                                                    padding: EdgeInsets.all(0),
-                                                                    shape: StadiumBorder(),
-                                                                    elevation: 0.0,
-                                                                    hoverElevation: 0,
-                                                                    disabledElevation: 0,
-                                                                    highlightElevation: 0,
-                                                                    focusElevation: 0,
-                                                                    child: Text(
-                                                                      'Continue',
-                                                                      style: TextStyle(
-                                                                        color: Colors.black,
-                                                                        fontWeight: FontWeight.w400,
-                                                                        fontSize: 15.sp,
-                                                                      ),
-                                                                    ),
-                                                                    onPressed: () {
-                                                                      //TODO: Pop with data
-                                                                      Navigator.pop(context);
-                                                                    },
-                                                                  ),
-                                                                ],
+                                                                ),
                                                               ),
                                                             ),
-                                                          );
-                                                        },
+
+                                                            SizedBox(height: 20.h),
+
+                                                            //difficulty title
+                                                            Padding(
+                                                              padding: EdgeInsets.only(left: 20.0.w, right: 20.w),
+                                                              child: Align(
+                                                                alignment: Alignment.centerLeft,
+                                                                child: Text(
+                                                                  'Difficulty',
+                                                                  style: regularStyle,
+                                                                ),
+                                                              ),
+                                                            ),
+
+                                                            SizedBox(height: 16.h),
+
+                                                            //difficulty btns
+                                                            Row(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                                              children: [
+                                                                //competitive
+                                                                MaterialButton(
+                                                                  height: 46.h,
+                                                                  minWidth: 147.w,
+                                                                  color: isCompetitive == 'Yes' ? Color(0xff8FD974) : Color(0xff31323B),
+                                                                  padding: EdgeInsets.all(0),
+                                                                  shape: StadiumBorder(),
+                                                                  elevation: 0.0,
+                                                                  hoverElevation: 0,
+                                                                  disabledElevation: 0,
+                                                                  highlightElevation: 0,
+                                                                  focusElevation: 0,
+                                                                  child: Text(
+                                                                    'Competitive',
+                                                                    style: TextStyle(
+                                                                      color: isCompetitive == 'Yes' ? Colors.black : Color(0xff707070),
+                                                                      fontWeight: FontWeight.w400,
+                                                                      fontSize: 15.sp,
+                                                                    ),
+                                                                  ),
+                                                                  onPressed: () {
+                                                                    setState(() {
+                                                                      isCompetitive = 'Yes';
+                                                                    });
+                                                                  },
+                                                                ),
+
+                                                                SizedBox(width: 12.0.w),
+
+                                                                //leisure
+                                                                MaterialButton(
+                                                                  height: 46.h,
+                                                                  minWidth: 147.w,
+                                                                  color: isCompetitive == 'Yes' ? Color(0xff31323B) : Color(0xff8FD974),
+                                                                  shape: StadiumBorder(),
+                                                                  padding: EdgeInsets.all(0),
+                                                                  elevation: 0.0,
+                                                                  hoverElevation: 0,
+                                                                  disabledElevation: 0,
+                                                                  highlightElevation: 0,
+                                                                  focusElevation: 0,
+                                                                  child: Text(
+                                                                    'Leisure',
+                                                                    style: TextStyle(
+                                                                      color: isCompetitive == "Yes" ? Color(0xff707070) : Colors.black,
+                                                                      fontWeight: FontWeight.w400,
+                                                                      fontSize: 15.sp,
+                                                                    ),
+                                                                  ),
+                                                                  onPressed: () {
+                                                                    setState(() {
+                                                                      isCompetitive = "No";
+                                                                    });
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            ),
+
+                                                            SizedBox(height: 48.h),
+
+                                                            //continue btn
+                                                            MaterialButton(
+                                                              height: 46.h,
+                                                              minWidth: 147.w,
+                                                              color: Color(0xff8FD974),
+                                                              padding: EdgeInsets.all(0),
+                                                              shape: StadiumBorder(),
+                                                              elevation: 0.0,
+                                                              hoverElevation: 0,
+                                                              disabledElevation: 0,
+                                                              highlightElevation: 0,
+                                                              focusElevation: 0,
+                                                              child: Text(
+                                                                'Continue',
+                                                                style: TextStyle(
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w400,
+                                                                  fontSize: 15.sp,
+                                                                ),
+                                                              ),
+                                                              onPressed: () {
+                                                                //TODO: Pop with data
+                                                                Navigator.pop(context);
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                     );
-                                                  }
-                                                },
+                                                  },
+                                                ),
+                                              );
+                                            }
+                                          },
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: <Widget>[
@@ -1555,13 +1954,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 child: ImageIcon(
                                                   AssetImage(item.label),
                                                   size: 24.r,
-                                                  color: item.selected ? Color(0xff28282B) : Colors.white,
+                                                  color: item.selected
+                                                      ? Color(0xff28282B)
+                                                      : firestoreSports.contains(item.value)
+                                                          ? Color(0xff28282B)
+                                                          : Colors.white,
                                                 ),
                                               ),
                                               ImageIcon(
                                                 AssetImage(item.label),
                                                 size: 24.r,
-                                                color: item.selected ? Color(0xff28282B) : Colors.white,
+                                                color: item.selected
+                                                    ? Color(0xff28282B)
+                                                    : firestoreSports.contains(item.value)
+                                                        ? Color(0xff28282B)
+                                                        : Colors.white,
                                               ),
                                             ],
                                           ),
@@ -1570,38 +1977,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     },
                                   ),
                                 ),
-                                firestoreSports != null
-                                    ? Container()
-                                      // Padding(
-                                      //   padding: EdgeInsets.only(top: 10.h),
-                                      //   child: MaterialButton(
-                                      //     height: 32.h,
-                                      //     color: Color(0xff8FD974),
-                                      //     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
-                                      //     shape: RoundedRectangleBorder(
-                                      //       borderRadius: BorderRadius.circular(8.r),
-                                      //     ),
-                                      //     elevation: 0.0,
-                                      //     hoverElevation: 0,
-                                      //     disabledElevation: 0,
-                                      //     highlightElevation: 0,
-                                      //     focusElevation: 0,
-                                      //     child: Text(
-                                      //       'Clear Previous Selection',
-                                      //       style: TextStyle(
-                                      //         color: Colors.black,
-                                      //         fontWeight: FontWeight.bold,
-                                      //         fontSize: 14.sp,
-                                      //       ),
-                                      //     ),
-                                      //     onPressed: () {
-                                      //       setState(() {
-                                      //         previousSelectionCleared = true;
-                                      //       });
-                                      //     },
-                                      //   ),
-                                      // )
-                                    : Container(),
                               ],
                             );
                           }
@@ -1711,7 +2086,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         color: newBuddy == "Yes"
                                             ? Color(0xff8FD974)
                                             : firestoreBuddy == "Yes"
-                                                ? Color(0xff2F4826)
+                                                ? Color(0xff8FD974)
                                                 : Color(0xff31323B),
                                         minWidth: 56.w,
                                         padding: EdgeInsets.all(0),
@@ -1747,7 +2122,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         color: newBuddy == "No"
                                             ? Color(0xff8FD974)
                                             : firestoreBuddy == "No"
-                                                ? Color(0xff2F4826)
+                                                ? Color(0xff8FD974)
                                                 : Color(0xff31323B),
                                         minWidth: 56.w,
                                         shape: StadiumBorder(),
@@ -1937,7 +2312,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         color: newCoach == "Yes"
                                             ? Color(0xff8FD974)
                                             : firestoreCoach == "Yes"
-                                                ? Color(0xff2F4826)
+                                                ? Color(0xff8FD974)
                                                 : Color(0xff31323B),
                                         minWidth: 56.w,
                                         padding: EdgeInsets.all(0),
@@ -1974,7 +2349,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         color: newCoach == "No"
                                             ? Color(0xff8FD974)
                                             : firestoreCoach == "No"
-                                                ? Color(0xff2F4826)
+                                                ? Color(0xff8FD974)
                                                 : Color(0xff31323B),
                                         minWidth: 56.w,
                                         shape: StadiumBorder(),
@@ -1999,7 +2374,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         onPressed: () {
                                           setState(() {
                                             newCoach = "No";
-                                            pasteUrlTextEdittingController == null ? null : pasteUrlTextEdittingController?.clear();
+                                            pasteUrlTextEditingController == null ? null : pasteUrlTextEditingController?.clear();
                                             uploadCertLink = '';
                                             uploadCoach = "No";
                                           });
@@ -2043,7 +2418,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                       fontSize: 15.sp,
                                                     ),
                                                     initialValue: firestoreCertLink ?? empty,
-                                                    controller: pasteUrlTextEdittingController,
+                                                    controller: pasteUrlTextEditingController,
                                                     onChanged: (val) {
                                                       setState(() {
                                                         newCertLink = val;
@@ -2071,7 +2446,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                     color: Colors.white,
                                                     fontSize: 15.sp,
                                                   ),
-                                                  controller: pasteUrlTextEdittingController,
+                                                  controller: pasteUrlTextEditingController,
                                                   decoration: formInputDecoration(
                                                     isDense: true,
                                                     hintText: 'Paste URL',
@@ -2204,7 +2579,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               color: Colors.white,
                                               fontSize: 15.sp,
                                             ),
-                                            controller: pasteUrlTextEdittingController,
+                                            controller: pasteUrlTextEditingController,
                                             onChanged: (val) {
                                               setState(() {
                                                 newCertLink = val;
@@ -2232,7 +2607,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             color: Colors.white,
                                             fontSize: 15.sp,
                                           ),
-                                          controller: pasteUrlTextEdittingController,
+                                          controller: pasteUrlTextEditingController,
                                           decoration: formInputDecoration(
                                             isDense: true,
                                             hintText: 'Loading...',
@@ -2295,15 +2670,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                             ),
                             onPressed: () async {
-                              //TODO: Implement save profile
                               await currentUser.updateProfile(
                                 photoURL: updatedAvatarUrl,
                                 displayName: updatedFullName,
                               );
 
-                              if (uploadSports != null && previousSelectionCleared == false) {
-                                final firestoreSportsList = firestoreSports.toList(growable: true);
-                                firestoreSportsList.insertAll(firestoreSportsList.length, uploadSports);
+                              final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
+                              final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                              firestoreVerifiedClubs = userProfile.verifiedClubs;
+
+                              if (uploadSports != null) {
+                                final dlist = firestoreSports.toList(growable: true);
+                                dlist.insertAll(dlist.length, uploadSports);
+                                List<String> firestoreSportsList = LinkedHashSet<String>.from(dlist).toList();
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                     builder: (_) => MultiBlocProvider(
@@ -2326,6 +2705,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               email: currentUser.email,
                                               fullName: updatedFullName ??= currentUser.displayName,
                                               sportsPlayed: firestoreSportsList,
+                                              verifiedClubs: uploadVerifiedClubs.isNotEmpty ? uploadVerifiedClubs : firestoreVerifiedClubs,
                                             ),
                                         ),
                                       ],
@@ -2333,7 +2713,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                   ),
                                 );
-                              } else if (uploadSports == null && previousSelectionCleared == false) {
+                              } else if (uploadSports == null) {
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                     builder: (_) => MultiBlocProvider(
@@ -2356,66 +2736,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               email: currentUser.email,
                                               fullName: updatedFullName ??= currentUser.displayName,
                                               sportsPlayed: state.userProfile.sportsPlayed,
-                                            ),
-                                        ),
-                                      ],
-                                      child: PagesSwitcher(),
-                                    ),
-                                  ),
-                                );
-                              } else if (uploadSports != null && previousSelectionCleared == true) {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => MultiBlocProvider(
-                                      providers: [
-                                        BlocProvider<NavBloc>(
-                                          create: (_) => NavBloc()..add(LoadPageThree()),
-                                        ),
-                                        BlocProvider<EditProfileCubit>(
-                                          create: (_) => EditProfileCubit()
-                                            ..updateUserProfile(
-                                              age: uploadAge ??= firestoreAge,
-                                              clubA: uploadClubA ??= firestoreClubA,
-                                              clubB: uploadClubB ??= firestoreClubB,
-                                              clubC: uploadClubC ??= firestoreClubC,
-                                              coach: uploadCoach ??= firestoreCoach,
-                                              buddy: uploadBuddy ??= firestoreBuddy,
-                                              gender: uploadGender ??= firestoreGender,
-                                              pasteUrl: uploadCertLink ??= firestoreCertLink,
-                                              uid: currentUser.uid,
-                                              email: currentUser.email,
-                                              fullName: updatedFullName ??= currentUser.displayName,
-                                              sportsPlayed: uploadSports.toList(),
-                                            ),
-                                        ),
-                                      ],
-                                      child: PagesSwitcher(),
-                                    ),
-                                  ),
-                                );
-                              } else if (uploadSports == null && previousSelectionCleared == true) {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => MultiBlocProvider(
-                                      providers: [
-                                        BlocProvider<NavBloc>(
-                                          create: (_) => NavBloc()..add(LoadPageThree()),
-                                        ),
-                                        BlocProvider<EditProfileCubit>(
-                                          create: (_) => EditProfileCubit()
-                                            ..updateUserProfile(
-                                              age: uploadAge ??= firestoreAge,
-                                              clubA: uploadClubA ??= firestoreClubA,
-                                              clubB: uploadClubB ??= firestoreClubB,
-                                              clubC: uploadClubC ??= firestoreClubC,
-                                              coach: uploadCoach ??= firestoreCoach,
-                                              buddy: uploadBuddy ??= firestoreBuddy,
-                                              gender: uploadGender ??= firestoreGender,
-                                              pasteUrl: uploadCertLink ??= firestoreCertLink,
-                                              uid: currentUser.uid,
-                                              email: currentUser.email,
-                                              fullName: updatedFullName ??= currentUser.displayName,
-                                              sportsPlayed: [],
+                                              verifiedClubs: uploadVerifiedClubs.isNotEmpty ? uploadVerifiedClubs : firestoreVerifiedClubs,
                                             ),
                                         ),
                                       ],
@@ -2430,38 +2751,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         if (state is EditProfileLoadFailure) {
                           return Container();
                         }
-                        return MaterialButton(
-                          height: 40.h,
-                          color: Color(0xff8FD974),
-                          minWidth: 240.w,
-                          padding: EdgeInsets.all(0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          elevation: 0.0,
-                          hoverElevation: 0,
-                          disabledElevation: 0,
-                          highlightElevation: 0,
-                          focusElevation: 0,
-                          child: Row(
-                            children: [
-                              Text(
-                                'Updating Profile...',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15.sp,
-                                ),
-                              ),
-                              SizedBox(width: 32.w),
-                              SpinKitRipple(
-                                size: 36.r,
-                                color: Colors.black,
-                              )
-                            ],
-                          ),
-                          onPressed: () async {},
-                        );
+                        return Container();
                       },
                     ),
                   ],

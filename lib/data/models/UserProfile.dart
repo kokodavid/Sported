@@ -22,6 +22,7 @@ class UserProfile {
     this.coach,
     this.uid,
     this.sportsPlayed,
+    this.verifiedClubs,
   });
 
   final String fullName;
@@ -36,6 +37,7 @@ class UserProfile {
   final String coach;
   final String uid;
   final List<String> sportsPlayed;
+  final List<String> verifiedClubs;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
         fullName: json["fullName"],
@@ -49,7 +51,8 @@ class UserProfile {
         buddy: json["buddy"],
         coach: json["coach"],
         uid: json["uid"],
-        sportsPlayed: List<String>.from(json["sportsPlayed"].map((x) => x)),
+        sportsPlayed: List<String>.from(json["sportsPlayed"]?.map((x) => x)),
+        verifiedClubs: List<String>.from(json["verifiedClubs"]?.map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
@@ -64,6 +67,7 @@ class UserProfile {
         "buddy": buddy,
         "coach": coach,
         "uid": uid,
-        "sportsPlayed": List<dynamic>.from(sportsPlayed.map((x) => x)),
+        "sportsPlayed": List<dynamic>.from(sportsPlayed?.map((x) => x)),
+        "verifiedClubs": List<dynamic>.from(verifiedClubs?.map((x) => x)),
       };
 }
