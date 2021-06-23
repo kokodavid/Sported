@@ -6,11 +6,9 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
-List<BookingHistory> bookingHistoryFromJson(String str) =>
-    List<BookingHistory>.from(json.decode(str).map((x) => BookingHistory.fromJson(x)));
+List<BookingHistory> bookingHistoryFromJson(String str) => List<BookingHistory>.from(json.decode(str).map((x) => BookingHistory.fromJson(x)));
 
-String bookingHistoryToJson(List<BookingHistory> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String bookingHistoryToJson(List<BookingHistory> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class BookingHistory {
   BookingHistory({

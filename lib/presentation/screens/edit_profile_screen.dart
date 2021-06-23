@@ -15,13 +15,12 @@ import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
 import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/UserProfile.dart';
+import 'package:sported_app/data/models/venue/venue_members_model.dart';
 import 'package:sported_app/data/repositories/storage_repo.dart';
 import 'package:sported_app/data/services/user_controller.dart';
 import 'package:sported_app/presentation/shared/filter_chips/custom_chip_content.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
-
-import 'file:///D:/LEWY/Dev/Projects/ROUGH/Flutter/Sported/lib/data/models/venue/venue_members_model.dart';
 
 import '../../locator.dart';
 import '../shared/custom_snackbar.dart';
@@ -100,7 +99,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final experienceLevel = GlobalKey<FormState>();
 
   // options
-
   List<String> options = [
     'assets/icons/football_icon.png',
     'assets/icons/cricket_icon.png',
@@ -572,10 +570,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             padding: EdgeInsets.all(0),
                                             icon: Icon(
                                               MdiIcons.genderMale,
-                                              color: newGender == 'Male' ? Color(0xff8FD974) : Color(0xff31323B),
-                                              // : firestoreGender == "Male"
-                                              //     ? Color(0xff2F4826)
-                                              //     : Color(0xff31323B),
+                                              color: newGender == 'Male'
+                                                  ? Color(0xffD9F2D0)
+                                                  : firestoreGender == "Male"
+                                                      ? Color(0xff8FD974)
+                                                      : Color(0xff31323B),
                                             ),
                                           ),
                                         ],
@@ -594,10 +593,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             padding: EdgeInsets.all(0),
                                             icon: Icon(
                                               MdiIcons.genderFemale,
-                                              color: newGender == 'Female' ? Color(0xff8FD974) : Color(0xff31323B),
-                                              // firestoreGender == "Female"
-                                              //         ? Color(0xffD9F2D0)
-                                              //         : Color(0xff31323B),
+                                              color: newGender == 'Female'
+                                                  ? Color(0xffD9F2D0)
+                                                  : firestoreGender == "Female"
+                                                      ? Color(0xff8FD974)
+                                                      : Color(0xff31323B),
                                             ),
                                           ),
                                         ],
@@ -617,9 +617,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             icon: Icon(
                                               MdiIcons.genderNonBinary,
                                               color: newGender == 'Non-binary'
-                                                  ? Color(0xff8FD974)
+                                                  ? Color(0xffD9F2D0)
                                                   : firestoreGender == "Non-binary"
-                                                      ? Color(0xffD9F2D0)
+                                                      ? Color(0xff8FD974)
                                                       : Color(0xff31323B),
                                             ),
                                           ),

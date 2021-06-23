@@ -67,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
               currentUser.photoURL != null
                   ? Container(
                       width: 1.sw,
-                      height: 464.h,
+                      height: 676.h,
                       child: Image.network(
                         currentUser.photoURL,
                         fit: BoxFit.cover,
@@ -76,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     )
                   : Container(
                       width: 1.sw,
-                      height: 464.h,
+                      height: 676.h,
                       padding: EdgeInsets.only(bottom: 140.h),
                       child: Icon(
                         Icons.person_rounded,
@@ -436,6 +436,18 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
+                ),
+              ),
+
+              //up icon
+              Positioned(
+                bottom: 8.0,
+                right: 0.0,
+                left: 0.0,
+                child: Icon(
+                  Icons.keyboard_arrow_up,
+                  color: Colors.white,
+                  size: 24.r,
                 ),
               ),
             ],

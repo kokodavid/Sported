@@ -19,7 +19,7 @@ dependencies:
   firebase_auth: ^0.20.0+1
   cloud_firestore: ^0.16.0
   firebase_core : ^0.7.0
-  firebase_storage : ^7.0.0
+  firebase_storage: ^7.0.0
 
   # logic
   image_picker: ^0.6.7+22
@@ -29,8 +29,12 @@ dependencies:
   equatable: ^1.2.6
   location: ^3.2.4
   geolocator: ^6.2.1
+  hive:
+  hive_flutter:
+  path_provider:
   intl:
   mpesa_flutter_plugin: ^1.0.0
+  connectivity_plus:
 
   # ui
   font_awesome_flutter: ^8.11.0
@@ -56,6 +60,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.8.0"
+  hive_generator:
+  build_runner:
 
 flutter_icons:
   android: "launcher_icon"
