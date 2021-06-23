@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:provider/provider.dart';
-import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
 import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/repositories/auth_repo.dart';
@@ -14,10 +13,10 @@ import 'package:sported_app/data/services/authentication_service.dart';
 import 'package:sported_app/data/services/database.dart';
 import 'package:sported_app/data/services/user_controller.dart';
 import 'package:sported_app/locator.dart';
+import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/authenticate.dart';
 import 'package:sported_app/presentation/shared/custom_snackbar.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
-import 'package:sported_app/presentation/shared/pages_switcher.dart';
 
 class SignUpPage extends StatefulWidget {
   final Function toggle;
@@ -34,15 +33,6 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider<NavBloc>(
-          create: (context) => NavBloc()..add(LoadPageThree()),
-          child: PagesSwitcher(),
-        ),
-      ),
-    );
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -350,8 +340,23 @@ class _SignUpPageState extends State<SignUpPage> {
 
                               //google
                               MaterialButton(
-                                onPressed: () {
-                                  signInWithGoogle();
+                                onPressed: () async {
+                                  await signInWithGoogle();
+                                  await BlocProvider.of<EditProfileCubit>(context).updateUserProfile(
+                                    uid: auth.currentUser.uid,
+                                    email: auth.currentUser.email,
+                                    fullName: userNameTextEditingController.text,
+                                    sportsPlayed: [],
+                                    verifiedClubs: [],
+                                  );
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => BlocProvider<EditProfileCubit>(
+                                        create: (context) => EditProfileCubit()..getUserProfile(),
+                                        child: EditProfileScreen(),
+                                      ),
+                                    ),
+                                  );
                                 },
                                 padding: EdgeInsets.symmetric(horizontal: 8.r),
                                 child: Row(

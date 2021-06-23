@@ -15,7 +15,14 @@ class PaymentScreen extends StatefulWidget {
   final int selectedSlot;
   final Venue venue;
   final String checkoutId;
-  PaymentScreen({@required this.selectedDate, @required this.selectedSlot, @required this.venue, @required this.sportBookingInfo, @required this.checkoutId});
+
+  PaymentScreen({
+    @required this.selectedDate,
+    @required this.selectedSlot,
+    @required this.venue,
+    @required this.sportBookingInfo,
+    @required this.checkoutId,
+  });
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();

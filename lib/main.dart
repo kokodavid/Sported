@@ -2,7 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/screenutil_init.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mpesa_flutter_plugin/initializer.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sported_app/business_logic/blocs/auth/authentication_bloc.dart';
 import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
@@ -17,6 +20,7 @@ import 'package:sported_app/simple_bloc_observer.dart';
 import 'business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'business_logic/cubits/booking_history_cubit/booking_history_cubit.dart';
 import 'constants/constants.dart';
+import 'data/models/venue/venue_model.dart';
 import 'data/repositories/auth_repo.dart';
 import 'data/repositories/booking_history_data_provider.dart';
 import 'data/repositories/venue_repository.dart';
@@ -31,6 +35,16 @@ void main() async {
   MpesaFlutterPlugin.setConsumerKey(kConsumerKey);
   MpesaFlutterPlugin.setConsumerSecret(kConsumerSecret);
   setupServices();
+
+  //hive
+
+  final appDocDir = await getApplicationDocumentsDirectory();
+  await Hive.initFlutter(appDocDir.path);
+  Hive
+    ..registerAdapter(VenueAdapter())
+    ..registerAdapter(SportsOfferedAdapter())
+    ..openBox<Venue>("venues");
+
   runApp(MyApp());
 }
 

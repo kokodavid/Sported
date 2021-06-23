@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:sported_app/business_logic/blocs/nav_bloc/nav_bloc.dart';
+import 'package:sported_app/business_logic/cubits/booking_history_cubit/booking_history_cubit.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
 
 class SuccessfulBookDialog extends StatelessWidget {
@@ -122,6 +123,7 @@ class SuccessfulBookDialog extends StatelessWidget {
                 ),
               ),
               onPressed: () {
+                BlocProvider.of<BookingHistoryCubit>(context).loadBookingHistory();
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (_) => BlocProvider<NavBloc>(

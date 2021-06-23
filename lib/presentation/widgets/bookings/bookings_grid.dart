@@ -1,3 +1,5 @@
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -6,16 +8,20 @@ import 'package:sported_app/data/models/booking/booking_history_model.dart';
 
 class BookingsGrid extends StatelessWidget {
   final List<BookingHistory> userBookingHistory;
+
   BookingsGrid({Key key, @required this.userBookingHistory}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 1.sh,
-      width: 1.sw,
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: 0.0,
+      ),
       child: GridView.builder(
+        shrinkWrap: true,
         scrollDirection: Axis.vertical,
         itemCount: userBookingHistory.length,
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 20.w,
@@ -25,7 +31,7 @@ class BookingsGrid extends StatelessWidget {
         itemBuilder: (context, index) {
           final sportName = userBookingHistory[index].sportName;
           final dateBooked = userBookingHistory[index].dateBooked;
-          final formattedDate = DateFormat.MEd().format(DateTime.parse(dateBooked));
+          final formattedDate = DateFormat.MEd().format(DateTime.parse(dateBooked.toString()));
 
           return Container(
             width: 176.w,
@@ -45,24 +51,24 @@ class BookingsGrid extends StatelessWidget {
                     sportName == "Football"
                         ? 'assets/icons/football_icon.png'
                         : sportName == 'Table Tennis'
-                            ? 'assets/icons/table_tennis_icon.png'
-                            : sportName == "Badminton"
-                                ? 'assets/icons/badminton_icon.png'
-                                : sportName == 'Volleyball'
-                                    ? 'assets/icons/volleyball_icon.png'
-                                    : sportName == "Handball"
-                                        ? 'assets/icons/handball_icon.png'
-                                        : sportName == 'Swimming'
-                                            ? 'assets/icons/swimming_icon.png'
-                                            : sportName == 'Tennis'
-                                                ? 'assets/icons/tennis_icon.png'
-                                                : sportName == 'Rugby'
-                                                    ? 'assets/icons/rugby_icon.png'
-                                                    : sportName == 'Cricket'
-                                                        ? 'assets/icons/cricket_icon.png'
-                                                        : sportName == "Basketball"
-                                                            ? 'assets/icons/basketball_icon.png'
-                                                            : '',
+                        ? 'assets/icons/table_tennis_icon.png'
+                        : sportName == "Badminton"
+                        ? 'assets/icons/badminton_icon.png'
+                        : sportName == 'Volleyball'
+                        ? 'assets/icons/volleyball_icon.png'
+                        : sportName == "Handball"
+                        ? 'assets/icons/handball_icon.png'
+                        : sportName == 'Swimming'
+                        ? 'assets/icons/swimming_icon.png'
+                        : sportName == 'Tennis'
+                        ? 'assets/icons/tennis_icon.png'
+                        : sportName == 'Rugby'
+                        ? 'assets/icons/rugby_icon.png'
+                        : sportName == 'Cricket'
+                        ? 'assets/icons/cricket_icon.png'
+                        : sportName == "Basketball"
+                        ? 'assets/icons/basketball_icon.png'
+                        : '',
                   ),
                   color: Colors.white,
                   size: 72.r,
@@ -130,9 +136,9 @@ class BookingsGrid extends StatelessWidget {
 
                     SizedBox(width: 16.w),
 
-                    // date
+                    // time
                     Text(
-                      userBookingHistory[index].slotBooked,
+                      DateFormat.jm().format(DateTime.parse(userBookingHistory[index].slotBooked.toString())),
                       style: TextStyle(
                         color: Color(0xff707070),
                         fontSize: 13.sp,

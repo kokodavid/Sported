@@ -10,6 +10,7 @@ import 'package:sported_app/data/models/ourUser.dart';
 import 'package:sported_app/data/repositories/auth_repo.dart';
 import 'package:sported_app/data/services/user_controller.dart';
 import 'package:sported_app/locator.dart';
+import 'package:sported_app/presentation/screens/edit_profile_screen.dart';
 import 'package:sported_app/presentation/shared/form_input_decoration.dart';
 import 'package:sported_app/presentation/shared/pages_switcher.dart';
 
@@ -30,15 +31,6 @@ class _SignInPageState extends State<SignInPage> {
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider<NavBloc>(
-          create: (context) => NavBloc()..add(LoadPageThree()),
-          child: PagesSwitcher(),
-        ),
-      ),
-    );
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -325,10 +317,25 @@ class _SignInPageState extends State<SignInPage> {
 
                     //google
                     MaterialButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // Navigator.pushReplacement(
                         //     context, MaterialPageRoute(builder: (context) => HomePage()));
-                        signInWithGoogle();
+                        await signInWithGoogle();
+                        await BlocProvider.of<EditProfileCubit>(context).updateUserProfile(
+                          uid: auth.currentUser.uid,
+                          email: auth.currentUser.email,
+                          fullName: auth.currentUser.displayName,
+                          sportsPlayed: [],
+                          verifiedClubs: [],
+                        );
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider<EditProfileCubit>(
+                              create: (context) => EditProfileCubit()..getUserProfile(),
+                              child: EditProfileScreen(),
+                            ),
+                          ),
+                        );
                       },
                       padding: EdgeInsets.symmetric(horizontal: 8.r),
                       child: Row(
