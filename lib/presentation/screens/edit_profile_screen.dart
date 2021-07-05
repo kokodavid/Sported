@@ -156,7 +156,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 firestoreCoach = state.userProfile.coach;
                 firestoreCertLink = state.userProfile.pasteUrl;
                 firestoreSports = state.userProfile.sportsPlayed;
-                final verifiedClubs = state.userProfile.verifiedClubs;
 
                 return IconButton(
                   onPressed: () async {

@@ -6,7 +6,7 @@ import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'package:sported_app/business_logic/cubits/edit_profile_cubit/edit_profile_cubit.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
-import 'package:sported_app/presentation/screens/book_date_screen.dart';
+import 'package:sported_app/presentation/screens/book_slot_screen.dart';
 import 'package:sported_app/presentation/screens/venue_details_screen.dart';
 
 class FilteredVenues extends StatelessWidget {
@@ -267,7 +267,7 @@ class FilteredVenues extends StatelessWidget {
                                     final sportBookingInfo = venue.sportsOffered.singleWhere((element) => element.sportName == sportToBook);
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (_) => BookDateScreen(sportBookingInfo: sportBookingInfo, venue: venue),
+                                        builder: (_) => BookSlotScreen(sportBookingInfo: sportBookingInfo, venue: venue),
                                       ),
                                     );
                                   },

@@ -12,13 +12,13 @@ import 'package:sported_app/presentation/widgets/payment/successfully_booked_dia
 class PaymentScreen extends StatefulWidget {
   final String selectedDate;
   final SportsOffered sportBookingInfo;
-  final int selectedSlot;
+  final String selectedBeginTime;
   final Venue venue;
   final String checkoutId;
 
   PaymentScreen({
     @required this.selectedDate,
-    @required this.selectedSlot,
+    @required this.selectedBeginTime,
     @required this.venue,
     @required this.sportBookingInfo,
     @required this.checkoutId,
@@ -41,39 +41,7 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
       "venueName": widget.venue.venueName,
       "pricePaid": widget.sportBookingInfo.ratesPerHr.toString(),
       "dateBooked": widget.selectedDate,
-      "slotBooked": widget.selectedSlot == 0
-          ? '0600 hrs'
-          : widget.selectedSlot == 1
-              ? '0700 hrs'
-              : widget.selectedSlot == 2
-                  ? '0800 hrs'
-                  : widget.selectedSlot == 3
-                      ? '0900 hrs'
-                      : widget.selectedSlot == 4
-                          ? '1000 hrs'
-                          : widget.selectedSlot == 5
-                              ? '1100 hrs'
-                              : widget.selectedSlot == 6
-                                  ? '1200 hrs'
-                                  : widget.selectedSlot == 7
-                                      ? '1300 hrs'
-                                      : widget.selectedSlot == 8
-                                          ? '1400 hrs'
-                                          : widget.selectedSlot == 9
-                                              ? '1500 hrs'
-                                              : widget.selectedSlot == 10
-                                                  ? '1600 hrs'
-                                                  : widget.selectedSlot == 11
-                                                      ? '1700 hrs'
-                                                      : widget.selectedSlot == 12
-                                                          ? '1800 hrs'
-                                                          : widget.selectedSlot == 13
-                                                              ? '1900 hrs'
-                                                              : widget.selectedSlot == 14
-                                                                  ? '2000 hrs'
-                                                                  : widget.selectedSlot == 15
-                                                                      ? '2100 hrs'
-                                                                      : null,
+      "slotBooked": widget.selectedBeginTime,
       "sportName": widget.sportBookingInfo.sportName,
       "uid": uid,
     };
@@ -91,39 +59,7 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
         child: SuccessfulBookDialog(
           // dialogContext:context,
           selectedDate: widget.selectedDate,
-          selectedSlot: widget.selectedSlot == 0
-              ? '0600 hrs'
-              : widget.selectedSlot == 1
-                  ? '0700 hrs'
-                  : widget.selectedSlot == 2
-                      ? '0800 hrs'
-                      : widget.selectedSlot == 3
-                          ? '0900 hrs'
-                          : widget.selectedSlot == 4
-                              ? '1000 hrs'
-                              : widget.selectedSlot == 5
-                                  ? '1100 hrs'
-                                  : widget.selectedSlot == 6
-                                      ? '1200 hrs'
-                                      : widget.selectedSlot == 7
-                                          ? '1300 hrs'
-                                          : widget.selectedSlot == 8
-                                              ? '1400 hrs'
-                                              : widget.selectedSlot == 9
-                                                  ? '1500 hrs'
-                                                  : widget.selectedSlot == 10
-                                                      ? '1600 hrs'
-                                                      : widget.selectedSlot == 11
-                                                          ? '1700 hrs'
-                                                          : widget.selectedSlot == 12
-                                                              ? '1800 hrs'
-                                                              : widget.selectedSlot == 13
-                                                                  ? '1900 hrs'
-                                                                  : widget.selectedSlot == 14
-                                                                      ? '2000 hrs'
-                                                                      : widget.selectedSlot == 15
-                                                                          ? '2100 hrs'
-                                                                          : null,
+          selectedSlot: widget.selectedBeginTime,
         ),
       ),
     );

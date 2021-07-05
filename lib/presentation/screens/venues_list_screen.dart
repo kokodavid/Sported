@@ -5,7 +5,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sported_app/business_logic/blocs/filter_bloc/filter_bloc.dart';
 import 'package:sported_app/constants/constants.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
-import 'package:sported_app/data/repositories/venue_data_provider.dart';
 import 'package:sported_app/presentation/widgets/venues_list/filtered_venues.dart';
 import 'package:sported_app/presentation/widgets/venues_list/venues_list_sports_filter.dart';
 
@@ -48,7 +47,6 @@ class _VenuesListScreenState extends State<VenuesListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final VenueDataProvider venueDataProvider = VenueDataProvider();
 
     return SafeArea(
       child: NotificationListener<OverscrollIndicatorNotification>(
