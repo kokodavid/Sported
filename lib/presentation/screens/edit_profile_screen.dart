@@ -980,32 +980,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                           onPressed: () async {
                                                             try {
                                                               CollectionReference membersIDsRef = FirebaseFirestore.instance.collection('MembershipIds');
-                                                              final venueMembersModel = await membersIDsRef.where('venueName', isEqualTo: clubText).get().then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
+                                                              final venueMembersModel = await membersIDsRef
+                                                                  .where('venueName', isEqualTo: clubText)
+                                                                  .get()
+                                                                  .then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
                                                               if (venueMembersModel.memberIDs.contains(newMemberID)) {
                                                                 Navigator.pop(context);
                                                                 final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
-                                                                final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                                                                final userProfile = await userProfileRef
+                                                                    .doc(firebase_auth.FirebaseAuth.instance.currentUser.uid)
+                                                                    .get()
+                                                                    .then((value) => UserProfile.fromJson(value.data()));
                                                                 firestoreVerifiedClubs = userProfile.verifiedClubs;
                                                                 if (firestoreVerifiedClubs.contains(clubText)) {
                                                                   print('contains');
                                                                   uploadVerifiedClubs = firestoreVerifiedClubs;
-                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  await Future.delayed(Duration(milliseconds: 500));
                                                                   showCustomSnackbar('You are already verified as club member at $clubText', _scaffoldKey);
                                                                 } else {
                                                                   print('doesnt contain');
                                                                   uploadVerifiedClubs.add(clubText);
-                                                                  final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
-                                                                  final docRef = FirebaseFirestore.instance.collection("userProfile").doc(uid);
-                                                                  docRef.update({
-                                                                    'verifiedClubs': uploadVerifiedClubs,
-                                                                  });
-                                                                  await Future.delayed(Duration(milliseconds: 1000));
+
+                                                                  await Future.delayed(Duration(milliseconds: 500));
                                                                   showCustomSnackbar('Member ID verified', _scaffoldKey);
                                                                 }
                                                                 return true;
                                                               } else {
                                                                 Navigator.pop(context);
-                                                                await Future.delayed(Duration(milliseconds: 1000));
+                                                                await Future.delayed(Duration(milliseconds: 500));
                                                                 showCustomSnackbar('Member ID not verified. Try again', _scaffoldKey);
                                                                 return false;
                                                               }
@@ -1196,32 +1198,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                           onPressed: () async {
                                                             try {
                                                               CollectionReference membersIDsRef = FirebaseFirestore.instance.collection('MembershipIds');
-                                                              final venueMembersModel = await membersIDsRef.where('venueName', isEqualTo: clubText).get().then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
+                                                              final venueMembersModel = await membersIDsRef
+                                                                  .where('venueName', isEqualTo: clubText)
+                                                                  .get()
+                                                                  .then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
                                                               if (venueMembersModel.memberIDs.contains(newMemberID)) {
                                                                 Navigator.pop(context);
                                                                 final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
-                                                                final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                                                                final userProfile = await userProfileRef
+                                                                    .doc(firebase_auth.FirebaseAuth.instance.currentUser.uid)
+                                                                    .get()
+                                                                    .then((value) => UserProfile.fromJson(value.data()));
                                                                 firestoreVerifiedClubs = userProfile.verifiedClubs;
                                                                 if (firestoreVerifiedClubs.contains(clubText)) {
                                                                   print('contains');
                                                                   uploadVerifiedClubs = firestoreVerifiedClubs;
-                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  await Future.delayed(Duration(milliseconds: 500));
                                                                   showCustomSnackbar('You are already verified as club member at $clubText', _scaffoldKey);
                                                                 } else {
                                                                   print('doesnt contain');
                                                                   uploadVerifiedClubs.add(clubText);
-                                                                  final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
-                                                                  final docRef = FirebaseFirestore.instance.collection("userProfile").doc(uid);
-                                                                  docRef.update({
-                                                                    'verifiedClubs': uploadVerifiedClubs,
-                                                                  });
-                                                                  await Future.delayed(Duration(milliseconds: 1000));
+
+                                                                  await Future.delayed(Duration(milliseconds: 500));
                                                                   showCustomSnackbar('Member ID verified', _scaffoldKey);
                                                                 }
                                                                 return true;
                                                               } else {
                                                                 Navigator.pop(context);
-                                                                await Future.delayed(Duration(milliseconds: 1000));
+                                                                await Future.delayed(Duration(milliseconds: 500));
                                                                 showCustomSnackbar('Member ID not verified. Try again', _scaffoldKey);
                                                                 return false;
                                                               }
@@ -1412,33 +1416,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                           onPressed: () async {
                                                             try {
                                                               CollectionReference membersIDsRef = FirebaseFirestore.instance.collection('MembershipIds');
-                                                              final venueMembersModel = await membersIDsRef.where('venueName', isEqualTo: clubText).get().then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
+                                                              final venueMembersModel = await membersIDsRef
+                                                                  .where('venueName', isEqualTo: clubText)
+                                                                  .get()
+                                                                  .then((value) => value.docs.map((e) => VenueMembersModel.fromJson(e.data())).toList()[0]);
                                                               if (venueMembersModel.memberIDs.contains(newMemberID)) {
                                                                 Navigator.pop(context);
                                                                 final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
-                                                                final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                                                                final userProfile = await userProfileRef
+                                                                    .doc(firebase_auth.FirebaseAuth.instance.currentUser.uid)
+                                                                    .get()
+                                                                    .then((value) => UserProfile.fromJson(value.data()));
                                                                 firestoreVerifiedClubs = userProfile.verifiedClubs;
                                                                 if (firestoreVerifiedClubs.contains(clubText)) {
                                                                   print('contains');
                                                                   uploadVerifiedClubs = firestoreVerifiedClubs;
-                                                                  await Future.delayed(Duration(milliseconds: 1000));
+                                                                  await Future.delayed(Duration(milliseconds: 500));
                                                                   showCustomSnackbar('You are already verified as club member at $clubText', _scaffoldKey);
                                                                 } else {
                                                                   print('doesnt contain');
 
                                                                   uploadVerifiedClubs.add(clubText);
-                                                                  final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
-                                                                  final docRef = FirebaseFirestore.instance.collection("userProfile").doc(uid);
-                                                                  docRef.update({
-                                                                    'verifiedClubs': uploadVerifiedClubs,
-                                                                  });
-                                                                  await Future.delayed(Duration(milliseconds: 1000));
+
+                                                                  await Future.delayed(Duration(milliseconds: 500));
                                                                   showCustomSnackbar('Member ID verified', _scaffoldKey);
                                                                 }
                                                                 return true;
                                                               } else {
                                                                 Navigator.pop(context);
-                                                                await Future.delayed(Duration(milliseconds: 1000));
+                                                                await Future.delayed(Duration(milliseconds: 500));
                                                                 showCustomSnackbar('Member ID not verified. Try again', _scaffoldKey);
                                                                 return false;
                                                               }
@@ -2675,7 +2681,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               );
 
                               final userProfileRef = FirebaseFirestore.instance.collection("userProfile");
-                              final userProfile = await userProfileRef.doc(firebase_auth.FirebaseAuth.instance.currentUser.uid).get().then((value) => UserProfile.fromJson(value.data()));
+                              final userProfile = await userProfileRef
+                                  .doc(firebase_auth.FirebaseAuth.instance.currentUser.uid)
+                                  .get()
+                                  .then((value) => UserProfile.fromJson(value.data()));
                               firestoreVerifiedClubs = userProfile.verifiedClubs;
 
                               if (uploadSports != null) {
@@ -2704,7 +2713,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               email: currentUser.email,
                                               fullName: updatedFullName ??= currentUser.displayName,
                                               sportsPlayed: firestoreSportsList,
-                                              verifiedClubs: uploadVerifiedClubs.isNotEmpty ? uploadVerifiedClubs : firestoreVerifiedClubs,
+                                              verifiedClubs: [
+                                                uploadClubA ??= firestoreClubA,
+                                                uploadClubB ??= firestoreClubB,
+                                                uploadClubC ??= firestoreClubC,
+                                              ],
                                             ),
                                         ),
                                       ],
@@ -2735,7 +2748,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               email: currentUser.email,
                                               fullName: updatedFullName ??= currentUser.displayName,
                                               sportsPlayed: state.userProfile.sportsPlayed,
-                                              verifiedClubs: uploadVerifiedClubs.isNotEmpty ? uploadVerifiedClubs : firestoreVerifiedClubs,
+                                              verifiedClubs: [
+                                                uploadClubA ??= firestoreClubA,
+                                                uploadClubB ??= firestoreClubB,
+                                                uploadClubC ??= firestoreClubC,
+                                              ],
                                             ),
                                         ),
                                       ],
