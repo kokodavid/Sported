@@ -17,7 +17,9 @@ class VenueAdapter extends TypeAdapter<Venue> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Venue(
+      id: fields[10] as int,
       venueName: fields[0] as String,
+      location: fields[9] as GeoPoint,
       timeOpen: fields[1] as String,
       timeClosed: fields[2] as String,
       totalDaysOpen: fields[3] as int,
@@ -32,7 +34,7 @@ class VenueAdapter extends TypeAdapter<Venue> {
   @override
   void write(BinaryWriter writer, Venue obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.venueName)
       ..writeByte(1)
@@ -50,14 +52,22 @@ class VenueAdapter extends TypeAdapter<Venue> {
       ..writeByte(7)
       ..write(obj.sportsOfferedList)
       ..writeByte(8)
-      ..write(obj.sportsOffered);
+      ..write(obj.sportsOffered)
+      ..writeByte(9)
+      ..write(obj.location)
+      ..writeByte(10)
+      ..write(obj.id);
   }
 
   @override
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is VenueAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VenueAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class SportsOfferedAdapter extends TypeAdapter<SportsOffered> {
@@ -93,5 +103,9 @@ class SportsOfferedAdapter extends TypeAdapter<SportsOffered> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is SportsOfferedAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SportsOfferedAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

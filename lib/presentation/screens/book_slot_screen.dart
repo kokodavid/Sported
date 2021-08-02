@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -1196,81 +1197,81 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                                 softWrap: false,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 16.sp,
+                                                style: TextStyle(
+                                                  fontSize: 16.sp,
                                                   color: Colors.white,
                                                 ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 20.h),
-
-                                    //txtbox
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 32.w, right: 32.w),
-                                      child: Container(
-                                        child: Padding(
-                                          padding: MediaQuery.of(context).viewInsets,
-                                          child: TextFormField(
-                                            maxLines: 1,
-                                            keyboardType: TextInputType.number,
-                                            enabled: isBooked ? false : true,
-                                            controller: phoneNumber,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.sp,
+                                              ),
                                             ),
-                                            decoration: InputDecoration(
-                                              hintText: '7XXXXXXXX',
-                                              alignLabelWithHint: true,
-                                              isDense: true,
-                                              enabled: true,
-                                              fillColor: Color(0xff31323B),
-                                              filled: true,
-                                              hintStyle: labelStyle,
-                                              labelStyle: labelStyle,
-                                              prefixIcon: Container(
-                                                width: 24.w,
-                                                decoration: BoxDecoration(
-                                                  color: Color(0xff31323B),
-                                                  borderRadius: BorderRadius.only(
-                                                    bottomLeft: Radius.circular(8.r),
-                                                    topLeft: Radius.circular(8.r),
+                                          ),
+                                          SizedBox(height: 20.h),
+
+                                          //txtbox
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 32.w, right: 32.w),
+                                            child: Container(
+                                              child: Padding(
+                                                padding: MediaQuery.of(context).viewInsets,
+                                                child: TextFormField(
+                                                  maxLines: 1,
+                                                  keyboardType: TextInputType.number,
+                                                  enabled: isBooked ? false : true,
+                                                  controller: phoneNumber,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 15.sp,
                                                   ),
-                                                ),
-                                                margin: EdgeInsets.only(bottom: 2.h),
-                                                alignment: Alignment.center,
-                                                child: Text(
-                                                  '+254',
-                                                  style: labelStyle.copyWith(
-                                                    color: Color(0xff9BEB81),
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  style: BorderStyle.none,
-                                                ),
-                                                borderRadius: BorderRadius.circular(8.r),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  style: BorderStyle.none,
-                                                ),
-                                                borderRadius: BorderRadius.circular(8.r),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  style: BorderStyle.none,
-                                                ),
-                                                borderRadius: BorderRadius.circular(8.r),
-                                              ),
-                                              disabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  style: BorderStyle.none,
-                                                ),
-                                                borderRadius: BorderRadius.circular(8.r),
+                                                  decoration: InputDecoration(
+                                                    hintText: '7XXXXXXXX',
+                                                    alignLabelWithHint: true,
+                                                    isDense: true,
+                                                    enabled: true,
+                                                    fillColor: Color(0xff31323B),
+                                                    filled: true,
+                                                    hintStyle: labelStyle,
+                                                    labelStyle: labelStyle,
+                                                    prefixIcon: Container(
+                                                      width: 24.w,
+                                                      decoration: BoxDecoration(
+                                                        color: Color(0xff31323B),
+                                                        borderRadius: BorderRadius.only(
+                                                          bottomLeft: Radius.circular(8.r),
+                                                          topLeft: Radius.circular(8.r),
+                                                        ),
+                                                      ),
+                                                      margin: EdgeInsets.only(bottom: 2.h),
+                                                      alignment: Alignment.center,
+                                                      child: Text(
+                                                        '+254',
+                                                        style: labelStyle.copyWith(
+                                                          color: Color(0xff9BEB81),
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    border: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        style: BorderStyle.none,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8.r),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        style: BorderStyle.none,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8.r),
+                                                    ),
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        style: BorderStyle.none,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8.r),
+                                                    ),
+                                                    disabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        style: BorderStyle.none,
+                                                      ),
+                                                      borderRadius: BorderRadius.circular(8.r),
                                                     ),
                                                   ),
                                                 ),
@@ -1298,30 +1299,32 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                   focusElevation: 0,
                                   child: isCheckingAvailability == false
                                       ? isMember == true && sportOffered.memberRatesPerHr == 0
-                                      ? Text(
-                                    'Book',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 15.sp,
-                                    ),
-                                  )
-                                      : Text(
-                                    'Pay',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 15.sp,
-                                    ),
-                                  )
+                                          ? Text(
+                                              'Book',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.sp,
+                                              ),
+                                            )
+                                          : Text(
+                                              'Pay',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.sp,
+                                              ),
+                                            )
                                       : Container(
-                                    width: 24.h,
-                                    height: 24.h,
-                                    child: SpinKitRipple(
-                                      color: Colors.black,
-                                    ),
-                                  ),
+                                          width: 24.h,
+                                          height: 24.h,
+                                          child: SpinKitRipple(
+                                            color: Colors.black,
+                                          ),
+                                        ),
                                   onPressed: () async {
+                                    var connectivityResult = await (Connectivity().checkConnectivity());
+
                                     //unfocus field
                                     if (!currentFocus.hasPrimaryFocus) {
                                       currentFocus.unfocus();
@@ -1332,42 +1335,49 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                       isCheckingAvailability = true;
                                     });
 
-                                    if (selectedDate.isNotEmpty &&
-                                        selectedDate != "null" &&
-                                        selectedDate != '' &&
-                                        selectedBeginTime != null &&
-                                        selectedEndTime != null &&
-                                        isMember == true &&
-                                        sportOffered.memberRatesPerHr == 0) {
-                                      updateBookingHistory();
-                                    } else if (selectedDate.isNotEmpty &&
-                                        selectedDate != "null" &&
-                                        selectedDate != '' &&
-                                        selectedBeginTime != null &&
-                                        selectedEndTime != null &&
-                                        phoneNumber.text.length == 9 &&
-                                        phoneNumber.text.startsWith('7')) {
-                                      //push stk
-                                      await startTransaction(amount: 1, phone: "254" + phoneNumber.text);
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (BuildContext context) {
-                                          return PaymentScreen(
-                                            selectedDate: selectedDate,
-                                            pricePaid: priceToDisplay,
-                                            venue: widget.venue,
-                                            slotDuration: slotDuration,
-                                            selectedBeginTime: selectedBeginTime,
-                                            selectedEndTime: selectedEndTime,
-                                            sportBookingInfo: widget.sportBookingInfo,
-                                            checkoutId: checkoutId,
-                                          );
-                                        }),
-                                      );
-                                      setState(() {
-                                        isCheckingAvailability = false;
-                                      });
+                                    if (connectivityResult != ConnectivityResult.none) {
+                                      if (selectedDate.isNotEmpty &&
+                                          selectedDate != "null" &&
+                                          selectedDate != '' &&
+                                          selectedBeginTime != null &&
+                                          selectedEndTime != null &&
+                                          isMember == true &&
+                                          sportOffered.memberRatesPerHr == 0) {
+                                        updateBookingHistory();
+                                      } else if (selectedDate.isNotEmpty &&
+                                          selectedDate != "null" &&
+                                          selectedDate != '' &&
+                                          selectedBeginTime != null &&
+                                          selectedEndTime != null &&
+                                          phoneNumber.text.length == 9 &&
+                                          phoneNumber.text.startsWith('7')) {
+                                        //push stk
+                                        await startTransaction(amount: 1, phone: "254" + phoneNumber.text);
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (BuildContext context) {
+                                            return PaymentScreen(
+                                              selectedDate: selectedDate,
+                                              pricePaid: priceToDisplay,
+                                              venue: widget.venue,
+                                              slotDuration: slotDuration,
+                                              selectedBeginTime: selectedBeginTime,
+                                              selectedEndTime: selectedEndTime,
+                                              sportBookingInfo: widget.sportBookingInfo,
+                                              checkoutId: checkoutId,
+                                            );
+                                          }),
+                                        );
+                                        setState(() {
+                                          isCheckingAvailability = false;
+                                        });
+                                      } else {
+                                        showCustomSnackbar('Error booking slot. Please input all the fields correctly', _scaffoldKey);
+                                        setState(() {
+                                          isCheckingAvailability = false;
+                                        });
+                                      }
                                     } else {
-                                      showCustomSnackbar('Error booking slot. Please input all the fields correctly', _scaffoldKey);
+                                      showCustomSnackbar('Please connect to the internet to continue with your booking.', _scaffoldKey);
                                       setState(() {
                                         isCheckingAvailability = false;
                                       });
