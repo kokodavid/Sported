@@ -55,6 +55,7 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
   UserProfile userProfile;
   bool _initialized = false;
   bool _error = false;
+  double slotDuration;
 
   //slots
   String selectedDate;
@@ -122,7 +123,12 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
 
     paymentsRef.set({"info": "$mUserMail receipts data goes here."});
 
-    return paymentsRef.collection("deposit").doc(mCheckoutRequestID).set(initData).then((value) => print("Transaction Initialized.")).catchError((error) => print("Failed to init transaction: $error"));
+    return paymentsRef
+        .collection("deposit")
+        .doc(mCheckoutRequestID)
+        .set(initData)
+        .then((value) => print("Transaction Initialized."))
+        .catchError((error) => print("Failed to init transaction: $error"));
   }
 
   Future<dynamic> startTransaction({double amount, String phone}) async {
@@ -165,77 +171,97 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
 
   updateBookingHistory() {
     final selectedDateTime = DateTime.parse(selectedDate);
-    final String bookedDateTime = selectedBeginTime == '6:00 AM'
-        ? selectedDateTime.add(Duration(hours: 6)).toString()
+
+    final DateTime bookedBeginDateTime = selectedBeginTime == '6:00 AM'
+        ? selectedDateTime.add(Duration(hours: 6))
         : selectedBeginTime == '6:30 AM'
-            ? selectedDateTime.add(Duration(hours: 6, minutes: 30)).toString()
+            ? selectedDateTime.add(Duration(hours: 6, minutes: 30))
             : selectedBeginTime == '7:00 AM'
-                ? selectedDateTime.add(Duration(hours: 7)).toString()
+                ? selectedDateTime.add(Duration(hours: 7))
                 : selectedBeginTime == '7:30 AM'
-                    ? selectedDateTime.add(Duration(hours: 7, minutes: 30)).toString()
+                    ? selectedDateTime.add(Duration(hours: 7, minutes: 30))
                     : selectedBeginTime == '8:00 AM'
-                        ? selectedDateTime.add(Duration(hours: 8)).toString()
+                        ? selectedDateTime.add(Duration(hours: 8))
                         : selectedBeginTime == '8:30 AM'
-                            ? selectedDateTime.add(Duration(hours: 8, minutes: 30)).toString()
+                            ? selectedDateTime.add(Duration(hours: 8, minutes: 30))
                             : selectedBeginTime == '9:00 AM'
-                                ? selectedDateTime.add(Duration(hours: 9)).toString()
+                                ? selectedDateTime.add(Duration(hours: 9))
                                 : selectedBeginTime == '9:30 AM'
-                                    ? selectedDateTime.add(Duration(hours: 9, minutes: 30)).toString()
+                                    ? selectedDateTime.add(Duration(hours: 9, minutes: 30))
                                     : selectedBeginTime == '10:00 AM'
-                                        ? selectedDateTime.add(Duration(hours: 10)).toString()
+                                        ? selectedDateTime.add(Duration(hours: 10))
                                         : selectedBeginTime == '10:30 AM'
-                                            ? selectedDateTime.add(Duration(hours: 10, minutes: 30)).toString()
+                                            ? selectedDateTime.add(Duration(hours: 10, minutes: 30))
                                             : selectedBeginTime == '11:00 AM'
-                                                ? selectedDateTime.add(Duration(hours: 11)).toString()
+                                                ? selectedDateTime.add(Duration(hours: 11))
                                                 : selectedBeginTime == '11:30 AM'
-                                                    ? selectedDateTime.add(Duration(hours: 11, minutes: 30)).toString()
+                                                    ? selectedDateTime.add(Duration(hours: 11, minutes: 30))
                                                     : selectedBeginTime == '12:00 PM'
-                                                        ? selectedDateTime.add(Duration(hours: 12)).toString()
+                                                        ? selectedDateTime.add(Duration(hours: 12))
                                                         : selectedBeginTime == '12:30 PM'
-                                                            ? selectedDateTime.add(Duration(hours: 12, minutes: 30)).toString()
+                                                            ? selectedDateTime.add(Duration(hours: 12, minutes: 30))
                                                             : selectedBeginTime == '1:00 PM'
-                                                                ? selectedDateTime.add(Duration(hours: 13)).toString()
+                                                                ? selectedDateTime.add(Duration(hours: 13))
                                                                 : selectedBeginTime == '1:30 PM'
-                                                                    ? selectedDateTime.add(Duration(hours: 13, minutes: 30)).toString()
+                                                                    ? selectedDateTime.add(Duration(hours: 13, minutes: 30))
                                                                     : selectedBeginTime == '2:00 PM'
-                                                                        ? selectedDateTime.add(Duration(hours: 14)).toString()
+                                                                        ? selectedDateTime.add(Duration(hours: 14))
                                                                         : selectedBeginTime == '2:30 PM'
-                                                                            ? selectedDateTime.add(Duration(hours: 14, minutes: 30)).toString()
+                                                                            ? selectedDateTime.add(Duration(hours: 14, minutes: 30))
                                                                             : selectedBeginTime == '3:00 PM'
-                                                                                ? selectedDateTime.add(Duration(hours: 15)).toString()
+                                                                                ? selectedDateTime.add(Duration(hours: 15))
                                                                                 : selectedBeginTime == '3:30 PM'
-                                                                                    ? selectedDateTime.add(Duration(hours: 15, minutes: 30)).toString()
+                                                                                    ? selectedDateTime.add(Duration(hours: 15, minutes: 30))
                                                                                     : selectedBeginTime == '4:00 PM'
-                                                                                        ? selectedDateTime.add(Duration(hours: 16)).toString()
+                                                                                        ? selectedDateTime.add(Duration(hours: 16))
                                                                                         : selectedBeginTime == '4:30 PM'
-                                                                                            ? selectedDateTime.add(Duration(hours: 16, minutes: 30)).toString()
+                                                                                            ? selectedDateTime.add(Duration(hours: 16, minutes: 30))
                                                                                             : selectedBeginTime == '5:00 PM'
-                                                                                                ? selectedDateTime.add(Duration(hours: 17)).toString()
+                                                                                                ? selectedDateTime.add(Duration(hours: 17))
                                                                                                 : selectedBeginTime == '5:30 PM'
-                                                                                                    ? selectedDateTime.add(Duration(hours: 17, minutes: 30)).toString()
+                                                                                                    ? selectedDateTime.add(Duration(hours: 17, minutes: 30))
                                                                                                     : selectedBeginTime == '6:00 PM'
-                                                                                                        ? selectedDateTime.add(Duration(hours: 18)).toString()
+                                                                                                        ? selectedDateTime.add(Duration(hours: 18))
                                                                                                         : selectedBeginTime == '6:30 PM'
-                                                                                                            ? selectedDateTime.add(Duration(hours: 18, minutes: 30)).toString()
+                                                                                                            ? selectedDateTime
+                                                                                                                .add(Duration(hours: 18, minutes: 30))
                                                                                                             : selectedBeginTime == '7:00 PM'
-                                                                                                                ? selectedDateTime.add(Duration(hours: 19)).toString()
+                                                                                                                ? selectedDateTime.add(Duration(hours: 19))
                                                                                                                 : selectedBeginTime == '7:30 PM'
-                                                                                                                    ? selectedDateTime.add(Duration(hours: 19, minutes: 30)).toString()
+                                                                                                                    ? selectedDateTime
+                                                                                                                        .add(Duration(hours: 19, minutes: 30))
                                                                                                                     : selectedBeginTime == '8:00 PM'
-                                                                                                                        ? selectedDateTime.add(Duration(hours: 20)).toString()
+                                                                                                                        ? selectedDateTime
+                                                                                                                            .add(Duration(hours: 20))
                                                                                                                         : selectedBeginTime == '8:30 PM'
-                                                                                                                            ? selectedDateTime.add(Duration(hours: 20, minutes: 30)).toString()
+                                                                                                                            ? selectedDateTime.add(Duration(
+                                                                                                                                hours: 20, minutes: 30))
                                                                                                                             : selectedBeginTime == '9:00 PM'
-                                                                                                                                ? selectedDateTime.add(Duration(hours: 21)).toString()
+                                                                                                                                ? selectedDateTime
+                                                                                                                                    .add(Duration(hours: 21))
                                                                                                                                 : selectedBeginTime == '9:30 PM'
-                                                                                                                                    ? selectedDateTime.add(Duration(hours: 21, minutes: 30)).toString()
+                                                                                                                                    ? selectedDateTime.add(
+                                                                                                                                        Duration(
+                                                                                                                                            hours: 21,
+                                                                                                                                            minutes: 30))
                                                                                                                                     : "";
+
+    final DateTime bookedEndDateTime = slotDuration.toString().endsWith('.5')
+        ? bookedBeginDateTime.add(Duration(hours: int.parse(slotDuration.toString().split('.').first), minutes: 30))
+        : bookedBeginDateTime.add(Duration(hours: slotDuration.toInt()));
+
+    print('bookedEndDateTime ------------------------------ | $bookedEndDateTime');
+
     final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
     Map<String, dynamic> bookingHistory = {
       "venueName": widget.venue.venueName,
-      "pricePaid": widget.sportBookingInfo.ratesPerHr.toString(),
-      "dateBooked": selectedDate,
-      "slotBooked": bookedDateTime,
+      "pricePaid": "0",
+      "ratesPerHr": widget.sportBookingInfo.ratesPerHr.toString(),
+      "memberRatesPerHr": widget.sportBookingInfo.memberRatesPerHr.toString(),
+      "dateBooked": selectedDateTime.toString(),
+      "slotBeginTime": bookedBeginDateTime.toString(),
+      "slotEndTime": bookedEndDateTime.toString(),
+      "duration": slotDuration,
       "sportName": widget.sportBookingInfo.sportName,
       "uid": uid,
     };
@@ -322,7 +348,8 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                                                                                                               ? 20.5
                                                                                                                               : selectedBeginTime == '9:00 PM'
                                                                                                                                   ? 21
-                                                                                                                                  : selectedBeginTime == '9:30 PM'
+                                                                                                                                  : selectedBeginTime ==
+                                                                                                                                          '9:30 PM'
                                                                                                                                       ? 21.5
                                                                                                                                       : null;
       endSlotsList.removeWhere((element) => element.slotIndex <= (selectedBeginTimeIndex + 0.5));
@@ -392,7 +419,7 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 40.h),
 
                   //date picker
                   Padding(
@@ -480,39 +507,108 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.hasData && selectedDate != "null" && selectedDate != null && selectedDate != '') {
                         final entireBookingHistory = snapshot.data.docs.map((e) => BookingHistory.fromJson(e.data())).toList();
-                        final filteredBookingHistory = entireBookingHistory.where((element) => element.dateBooked == selectedDate && element.sportName == widget.sportBookingInfo.sportName && element.venueName == widget.venue.venueName).toList();
-                        final slotOneBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 6)).toString()).toList();
-                        final slotTwoBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 6, minutes: 30)).toString()).toList();
-                        final slotThreeBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 7)).toString()).toList();
-                        final slotFourBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 7, minutes: 30)).toString()).toList();
-                        final slotFiveBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 8)).toString()).toList();
-                        final slotSixBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 8, minutes: 30)).toString()).toList();
-                        final slotSevenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 9)).toString()).toList();
-                        final slotEightBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 9, minutes: 30)).toString()).toList();
-                        final slotNineBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 10)).toString()).toList();
-                        final slotTenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 10, minutes: 30)).toString()).toList();
-                        final slotElevenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 11)).toString()).toList();
-                        final slotTwelveBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 11, minutes: 30)).toString()).toList();
-                        final slotThirteenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 12)).toString()).toList();
-                        final slotFourteenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 12, minutes: 30)).toString()).toList();
-                        final slotFifteenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 13)).toString()).toList();
-                        final slotSixteenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 13, minutes: 30)).toString()).toList();
-                        final slotSeventeenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 14)).toString()).toList();
-                        final slotEighteenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 14, minutes: 30)).toString()).toList();
-                        final slotNineteenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 15)).toString()).toList();
-                        final slotTwentyBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 15, minutes: 30)).toString()).toList();
-                        final slotTwentyOneBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 16)).toString()).toList();
-                        final slotTwentyTwoBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 16, minutes: 30)).toString()).toList();
-                        final slotTwentyThreeBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 17)).toString()).toList();
-                        final slotTwentyFourBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 17, minutes: 30)).toString()).toList();
-                        final slotTwentyFiveBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 18)).toString()).toList();
-                        final slotTwentySixBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 18, minutes: 30)).toString()).toList();
-                        final slotTwentySevenBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 19)).toString()).toList();
-                        final slotTwentyEightBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 19, minutes: 30)).toString()).toList();
-                        final slotTwentyNineBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 20)).toString()).toList();
-                        final slotThirtyBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 20, minutes: 30)).toString()).toList();
-                        final slotThirtyOneBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 21)).toString()).toList();
-                        final slotThirtyTwoBooked = filteredBookingHistory.where((element) => element.slotBooked == DateTime.parse(selectedDate).add(Duration(hours: 21, minutes: 30)).toString()).toList();
+                        final filteredBookingHistory = entireBookingHistory
+                            .where((element) =>
+                                element.dateBooked == selectedDate &&
+                                element.sportName == widget.sportBookingInfo.sportName &&
+                                element.venueName == widget.venue.venueName)
+                            .toList();
+                        final slotOneBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 6)).toString())
+                            .toList();
+                        final slotTwoBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 6, minutes: 30)).toString())
+                            .toList();
+                        final slotThreeBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 7)).toString())
+                            .toList();
+                        final slotFourBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 7, minutes: 30)).toString())
+                            .toList();
+                        final slotFiveBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 8)).toString())
+                            .toList();
+                        final slotSixBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 8, minutes: 30)).toString())
+                            .toList();
+                        final slotSevenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 9)).toString())
+                            .toList();
+                        final slotEightBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 9, minutes: 30)).toString())
+                            .toList();
+                        final slotNineBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 10)).toString())
+                            .toList();
+                        final slotTenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 10, minutes: 30)).toString())
+                            .toList();
+                        final slotElevenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 11)).toString())
+                            .toList();
+                        final slotTwelveBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 11, minutes: 30)).toString())
+                            .toList();
+                        final slotThirteenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 12)).toString())
+                            .toList();
+                        final slotFourteenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 12, minutes: 30)).toString())
+                            .toList();
+                        final slotFifteenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 13)).toString())
+                            .toList();
+                        final slotSixteenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 13, minutes: 30)).toString())
+                            .toList();
+                        final slotSeventeenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 14)).toString())
+                            .toList();
+                        final slotEighteenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 14, minutes: 30)).toString())
+                            .toList();
+                        final slotNineteenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 15)).toString())
+                            .toList();
+                        final slotTwentyBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 15, minutes: 30)).toString())
+                            .toList();
+                        final slotTwentyOneBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 16)).toString())
+                            .toList();
+                        final slotTwentyTwoBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 16, minutes: 30)).toString())
+                            .toList();
+                        final slotTwentyThreeBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 17)).toString())
+                            .toList();
+                        final slotTwentyFourBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 17, minutes: 30)).toString())
+                            .toList();
+                        final slotTwentyFiveBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 18)).toString())
+                            .toList();
+                        final slotTwentySixBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 18, minutes: 30)).toString())
+                            .toList();
+                        final slotTwentySevenBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 19)).toString())
+                            .toList();
+                        final slotTwentyEightBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 19, minutes: 30)).toString())
+                            .toList();
+                        final slotTwentyNineBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 20)).toString())
+                            .toList();
+                        final slotThirtyBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 20, minutes: 30)).toString())
+                            .toList();
+                        final slotThirtyOneBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 21)).toString())
+                            .toList();
+                        final slotThirtyTwoBooked = filteredBookingHistory
+                            .where((element) => element.slotBeginTime == DateTime.parse(selectedDate).add(Duration(hours: 21, minutes: 30)).toString())
+                            .toList();
 
                         bool isSlotDisabled(int index, String slot) {
                           final thisHour = DateTime.now().hour;
@@ -806,78 +902,85 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                     fontSize: 15.sp,
                                     color: Color(0xffBBBBBC),
                                   ),
-                                  onChanged: selectedBeginTime == null && selectedEndTime == null && selectedBeginTimeIndex == null && selectedEndTimeIndex == null
-                                      ? null
-                                      : (val) {
-                                          setState(() {
-                                            selectedEndTime = val;
-                                            selectedEndTimeIndex = selectedEndTime == '7:00 AM'
-                                                ? 7
-                                                : selectedEndTime == '7:30 AM'
-                                                    ? 7.5
-                                                    : selectedEndTime == '8:00 AM'
-                                                        ? 8
-                                                        : selectedEndTime == '8:30 AM'
-                                                            ? 8.5
-                                                            : selectedEndTime == '9:00 AM'
-                                                                ? 9
-                                                                : selectedEndTime == '9:30 AM'
-                                                                    ? 9.5
-                                                                    : selectedEndTime == '10:00 AM'
-                                                                        ? 10
-                                                                        : selectedEndTime == '10:30 AM'
-                                                                            ? 10.5
-                                                                            : selectedEndTime == '11:00 AM'
-                                                                                ? 11
-                                                                                : selectedEndTime == '11:30 AM'
-                                                                                    ? 11.5
-                                                                                    : selectedEndTime == '12:00 PM'
-                                                                                        ? 12
-                                                                                        : selectedEndTime == '12:30 PM'
-                                                                                            ? 12.5
-                                                                                            : selectedEndTime == '1:00 PM'
-                                                                                                ? 13
-                                                                                                : selectedEndTime == '1:30 PM'
-                                                                                                    ? 13.5
-                                                                                                    : selectedEndTime == '2:00 PM'
-                                                                                                        ? 14
-                                                                                                        : selectedEndTime == '2:30 PM'
-                                                                                                            ? 14.5
-                                                                                                            : selectedEndTime == '3:00 PM'
-                                                                                                                ? 15
-                                                                                                                : selectedEndTime == '3:30 PM'
-                                                                                                                    ? 15.5
-                                                                                                                    : selectedEndTime == '4:00 PM'
-                                                                                                                        ? 16
-                                                                                                                        : selectedEndTime == '4:30 PM'
-                                                                                                                            ? 16.5
-                                                                                                                            : selectedEndTime == '5:00 PM'
-                                                                                                                                ? 17
-                                                                                                                                : selectedEndTime == '5:30 PM'
-                                                                                                                                    ? 17.5
-                                                                                                                                    : selectedEndTime == '6:00 PM'
-                                                                                                                                        ? 18
-                                                                                                                                        : selectedEndTime == '6:30 PM'
-                                                                                                                                            ? 18.5
-                                                                                                                                            : selectedEndTime == '7:00 PM'
-                                                                                                                                                ? 19
-                                                                                                                                                : selectedEndTime == '7:30 PM'
-                                                                                                                                                    ? 19.5
-                                                                                                                                                    : selectedEndTime == '8:00 PM'
-                                                                                                                                                        ? 20
-                                                                                                                                                        : selectedEndTime == '8:30 PM'
-                                                                                                                                                            ? 20.5
-                                                                                                                                                            : selectedEndTime == '9:00 PM'
-                                                                                                                                                                ? 21
-                                                                                                                                                                : selectedEndTime == '9:30 PM'
-                                                                                                                                                                    ? 21.5
-                                                                                                                                                                    : selectedEndTime == '10:00 PM'
-                                                                                                                                                                        ? 22
-                                                                                                                                                                        : selectedEndTime == '10:30 PM'
-                                                                                                                                                                            ? 22.5
-                                                                                                                                                                            : null;
-                                          });
-                                        },
+                                  onChanged:
+                                      selectedBeginTime == null && selectedEndTime == null && selectedBeginTimeIndex == null && selectedEndTimeIndex == null
+                                          ? null
+                                          : (val) {
+                                              setState(() {
+                                                selectedEndTime = val;
+                                                selectedEndTimeIndex = selectedEndTime == '7:00 AM'
+                                                    ? 7
+                                                    : selectedEndTime == '7:30 AM'
+                                                        ? 7.5
+                                                        : selectedEndTime == '8:00 AM'
+                                                            ? 8
+                                                            : selectedEndTime == '8:30 AM'
+                                                                ? 8.5
+                                                                : selectedEndTime == '9:00 AM'
+                                                                    ? 9
+                                                                    : selectedEndTime == '9:30 AM'
+                                                                        ? 9.5
+                                                                        : selectedEndTime == '10:00 AM'
+                                                                            ? 10
+                                                                            : selectedEndTime == '10:30 AM'
+                                                                                ? 10.5
+                                                                                : selectedEndTime == '11:00 AM'
+                                                                                    ? 11
+                                                                                    : selectedEndTime == '11:30 AM'
+                                                                                        ? 11.5
+                                                                                        : selectedEndTime == '12:00 PM'
+                                                                                            ? 12
+                                                                                            : selectedEndTime == '12:30 PM'
+                                                                                                ? 12.5
+                                                                                                : selectedEndTime == '1:00 PM'
+                                                                                                    ? 13
+                                                                                                    : selectedEndTime == '1:30 PM'
+                                                                                                        ? 13.5
+                                                                                                        : selectedEndTime == '2:00 PM'
+                                                                                                            ? 14
+                                                                                                            : selectedEndTime == '2:30 PM'
+                                                                                                                ? 14.5
+                                                                                                                : selectedEndTime == '3:00 PM'
+                                                                                                                    ? 15
+                                                                                                                    : selectedEndTime == '3:30 PM'
+                                                                                                                        ? 15.5
+                                                                                                                        : selectedEndTime == '4:00 PM'
+                                                                                                                            ? 16
+                                                                                                                            : selectedEndTime == '4:30 PM'
+                                                                                                                                ? 16.5
+                                                                                                                                : selectedEndTime == '5:00 PM'
+                                                                                                                                    ? 17
+                                                                                                                                    : selectedEndTime ==
+                                                                                                                                            '5:30 PM'
+                                                                                                                                        ? 17.5
+                                                                                                                                        : selectedEndTime ==
+                                                                                                                                                '6:00 PM'
+                                                                                                                                            ? 18
+                                                                                                                                            : selectedEndTime ==
+                                                                                                                                                    '6:30 PM'
+                                                                                                                                                ? 18.5
+                                                                                                                                                : selectedEndTime ==
+                                                                                                                                                        '7:00 PM'
+                                                                                                                                                    ? 19
+                                                                                                                                                    : selectedEndTime ==
+                                                                                                                                                            '7:30 PM'
+                                                                                                                                                        ? 19.5
+                                                                                                                                                        : selectedEndTime ==
+                                                                                                                                                                '8:00 PM'
+                                                                                                                                                            ? 20
+                                                                                                                                                            : selectedEndTime == '8:30 PM'
+                                                                                                                                                                ? 20.5
+                                                                                                                                                                : selectedEndTime == '9:00 PM'
+                                                                                                                                                                    ? 21
+                                                                                                                                                                    : selectedEndTime == '9:30 PM'
+                                                                                                                                                                        ? 21.5
+                                                                                                                                                                        : selectedEndTime == '10:00 PM'
+                                                                                                                                                                            ? 22
+                                                                                                                                                                            : selectedEndTime == '10:30 PM'
+                                                                                                                                                                                ? 22.5
+                                                                                                                                                                                : null;
+                                              });
+                                            },
                                   onTap: () {},
                                   disabledHint: Center(
                                     child: Text(
@@ -916,7 +1019,7 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                         );
                       } else {
                         return Container(
-                          height: 28.h,
+                          height: 40.h,
                           child: Align(
                             alignment: Alignment.center,
                             child: Text(
@@ -929,7 +1032,7 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                     },
                   ),
 
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 40.h),
 
                   //details & payment btn
                   BlocBuilder<FilterBloc, FilterState>(
@@ -959,93 +1062,129 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                       return BlocBuilder<EditProfileCubit, EditProfileState>(
                         builder: (context, profileState) {
                           if (profileState is EditProfileLoadSuccess) {
-                            final bool isMember = profileState.userProfile.verifiedClubs.contains(widget.venue.venueName);
+                            final bool isMember = profileState.userProfile.clubA == widget.venue.venueName ||
+                                profileState.userProfile.clubB == widget.venue.venueName ||
+                                profileState.userProfile.clubC == widget.venue.venueName;
+
+                            //handle price
+                            String priceToDisplay = '';
+                            if (isMember == true) {
+                              if (sportOffered.memberRatesPerHr != 0) {
+                                if (selectedEndTimeIndex != null && selectedBeginTimeIndex != null) {
+                                  final hoursBooked = selectedEndTimeIndex - selectedBeginTimeIndex;
+                                  slotDuration = hoursBooked;
+
+                                  priceToDisplay = (sportOffered.memberRatesPerHr * hoursBooked).toString();
+                                }
+                              } else {
+                                if (selectedEndTimeIndex != null && selectedBeginTimeIndex != null) {
+                                  final hoursBooked = selectedEndTimeIndex - selectedBeginTimeIndex;
+                                  slotDuration = hoursBooked;
+                                  priceToDisplay = (sportOffered.memberRatesPerHr * hoursBooked).toString();
+                                }
+                                priceToDisplay = 'Free';
+                              }
+                            } else {
+                              if (selectedEndTimeIndex != null && selectedBeginTimeIndex != null) {
+                                final hoursBooked = selectedEndTimeIndex - selectedBeginTimeIndex;
+                                slotDuration = hoursBooked;
+                                priceToDisplay = (sportOffered.ratesPerHr * hoursBooked).toString();
+                              }
+                            }
                             return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 //sports and price
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    //sport
-                                    ImageIcon(
-                                      AssetImage(
-                                        sportOffered.sportName == "Football"
-                                            ? 'assets/icons/football_icon.png'
-                                            : sportOffered.sportName == 'Table Tennis'
-                                                ? 'assets/icons/table_tennis_icon.png'
-                                                : sportOffered.sportName == "Badminton"
-                                                    ? 'assets/icons/badminton_icon.png'
-                                                    : sportOffered.sportName == 'Volleyball'
-                                                        ? 'assets/icons/volleyball_icon.png'
-                                                        : sportOffered.sportName == "Handball"
-                                                            ? 'assets/icons/handball_icon.png'
-                                                            : sportOffered.sportName == 'Swimming'
-                                                                ? 'assets/icons/swimming_icon.png'
-                                                                : sportOffered.sportName == 'Tennis'
-                                                                    ? 'assets/icons/tennis_icon.png'
-                                                                    : sportOffered.sportName == 'Rugby'
-                                                                        ? 'assets/icons/rugby_icon.png'
-                                                                        : sportOffered.sportName == 'Cricket'
-                                                                            ? 'assets/icons/cricket_icon.png'
-                                                                            : sportOffered.sportName == "Basketball"
-                                                                                ? 'assets/icons/basketball_icon.png'
-                                                                                : '',
-                                      ),
-                                      color: Color(0xff8FD974),
-                                    ),
-                                    SizedBox(height: 10.h),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        //sport
+                                        ImageIcon(
+                                          AssetImage(
+                                            sportOffered.sportName == "Football"
+                                                ? 'assets/icons/football_icon.png'
+                                                : sportOffered.sportName == 'Table Tennis'
+                                                    ? 'assets/icons/table_tennis_icon.png'
+                                                    : sportOffered.sportName == "Badminton"
+                                                        ? 'assets/icons/badminton_icon.png'
+                                                        : sportOffered.sportName == 'Volleyball'
+                                                            ? 'assets/icons/volleyball_icon.png'
+                                                            : sportOffered.sportName == "Handball"
+                                                                ? 'assets/icons/handball_icon.png'
+                                                                : sportOffered.sportName == 'Swimming'
+                                                                    ? 'assets/icons/swimming_icon.png'
+                                                                    : sportOffered.sportName == 'Tennis'
+                                                                        ? 'assets/icons/tennis_icon.png'
+                                                                        : sportOffered.sportName == 'Rugby'
+                                                                            ? 'assets/icons/rugby_icon.png'
+                                                                            : sportOffered.sportName == 'Cricket'
+                                                                                ? 'assets/icons/cricket_icon.png'
+                                                                                : sportOffered.sportName == "Basketball"
+                                                                                    ? 'assets/icons/basketball_icon.png'
+                                                                                    : '',
+                                          ),
+                                          size: 26.w,
+                                          color: Color(0xff8FD974),
+                                        ),
 
-                                    //price
-                                    Text(
-                                      isMember
-                                          ? sportOffered.memberRatesPerHr != 0
-                                              ? "@ " + sportOffered.memberRatesPerHr.toString() + ' KES/hr'
-                                              : "Free"
-                                          : "@ " + sportOffered.ratesPerHr.toString() + ' KES/hr',
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xff8FD974),
-                                      ),
+                                        SizedBox(width: 10.w),
+                                        //price
+                                        Text(
+                                          priceToDisplay != 'Free' ? priceToDisplay + ' KES Total' : "Free",
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 10.h),
+
+                                    SizedBox(height: 20.h),
 
                                     //venue
-                                    Text(
-                                      "at " + widget.venue.venueName,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xff8FD974),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10.h),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          widget.venue.venueName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: Color(0xffBBBBBC),
+                                          ),
+                                        ),
 
-                                    //date
-                                    Text(
-                                      selectedDate != "null" && selectedDate != '' && selectedDate != null ? 'on ${DateFormat.MMMMEEEEd().format(DateTime.parse(selectedDate))}' : "",
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xff8FD974),
-                                      ),
+                                        SizedBox(width: 10.w),
+                                        //date
+                                        Text(
+                                          selectedDate != "null" && selectedDate != '' && selectedDate != null
+                                              ? '${DateFormat.MMMMEEEEd().format(DateTime.parse(selectedDate))}'
+                                              : "",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: Color(0xffBBBBBC),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 10.h),
-
-                                    //time
-                                    Text(
-                                      selectedBeginTime != null && selectedEndTime != null ? 'from ' + selectedBeginTime + ' to ' + selectedEndTime : "",
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Color(0xff8FD974),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10.h),
                                   ],
                                 ),
 
-                                SizedBox(height: 30.h),
+                                SizedBox(height: 20.h),
 
                                 //lipa na mpesa
                                 isMember && sportOffered.memberRatesPerHr == 0
-                                    ? Container()
+                                    ? SizedBox(height: 30.h)
                                     : Column(
                                         children: [
                                           Padding(
@@ -1057,81 +1196,81 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                                 softWrap: false,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize: 15.sp,
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
                                                   color: Colors.white,
                                                 ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 20.h),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 20.h),
 
-                                          //txtbox
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 32.w, right: 32.w),
-                                            child: Container(
-                                              child: Padding(
-                                                padding: MediaQuery.of(context).viewInsets,
-                                                child: TextFormField(
-                                                  maxLines: 1,
-                                                  keyboardType: TextInputType.number,
-                                                  enabled: isBooked ? false : true,
-                                                  controller: phoneNumber,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 15.sp,
+                                    //txtbox
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 32.w, right: 32.w),
+                                      child: Container(
+                                        child: Padding(
+                                          padding: MediaQuery.of(context).viewInsets,
+                                          child: TextFormField(
+                                            maxLines: 1,
+                                            keyboardType: TextInputType.number,
+                                            enabled: isBooked ? false : true,
+                                            controller: phoneNumber,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15.sp,
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText: '7XXXXXXXX',
+                                              alignLabelWithHint: true,
+                                              isDense: true,
+                                              enabled: true,
+                                              fillColor: Color(0xff31323B),
+                                              filled: true,
+                                              hintStyle: labelStyle,
+                                              labelStyle: labelStyle,
+                                              prefixIcon: Container(
+                                                width: 24.w,
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xff31323B),
+                                                  borderRadius: BorderRadius.only(
+                                                    bottomLeft: Radius.circular(8.r),
+                                                    topLeft: Radius.circular(8.r),
                                                   ),
-                                                  decoration: InputDecoration(
-                                                    hintText: '7XXXXXXXX',
-                                                    alignLabelWithHint: true,
-                                                    isDense: true,
-                                                    enabled: true,
-                                                    fillColor: Color(0xff31323B),
-                                                    filled: true,
-                                                    hintStyle: labelStyle,
-                                                    labelStyle: labelStyle,
-                                                    prefixIcon: Container(
-                                                      width: 24.w,
-                                                      decoration: BoxDecoration(
-                                                        color: Color(0xff31323B),
-                                                        borderRadius: BorderRadius.only(
-                                                          bottomLeft: Radius.circular(8.r),
-                                                          topLeft: Radius.circular(8.r),
-                                                        ),
-                                                      ),
-                                                      margin: EdgeInsets.only(bottom: 2.h),
-                                                      alignment: Alignment.center,
-                                                      child: Text(
-                                                        '+254',
-                                                        style: labelStyle.copyWith(
-                                                          color: Color(0xff9BEB81),
-                                                          fontWeight: FontWeight.w600,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    border: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        style: BorderStyle.none,
-                                                      ),
-                                                      borderRadius: BorderRadius.circular(8.r),
-                                                    ),
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        style: BorderStyle.none,
-                                                      ),
-                                                      borderRadius: BorderRadius.circular(8.r),
-                                                    ),
-                                                    enabledBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        style: BorderStyle.none,
-                                                      ),
-                                                      borderRadius: BorderRadius.circular(8.r),
-                                                    ),
-                                                    disabledBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        style: BorderStyle.none,
-                                                      ),
-                                                      borderRadius: BorderRadius.circular(8.r),
+                                                ),
+                                                margin: EdgeInsets.only(bottom: 2.h),
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  '+254',
+                                                  style: labelStyle.copyWith(
+                                                    color: Color(0xff9BEB81),
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  style: BorderStyle.none,
+                                                ),
+                                                borderRadius: BorderRadius.circular(8.r),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  style: BorderStyle.none,
+                                                ),
+                                                borderRadius: BorderRadius.circular(8.r),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  style: BorderStyle.none,
+                                                ),
+                                                borderRadius: BorderRadius.circular(8.r),
+                                              ),
+                                              disabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  style: BorderStyle.none,
+                                                ),
+                                                borderRadius: BorderRadius.circular(8.r),
                                                     ),
                                                   ),
                                                 ),
@@ -1142,7 +1281,7 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                       ),
 
                                 //pay btn
-                                isMember && sportOffered.memberRatesPerHr == 0 ? SizedBox.shrink() : SizedBox(height: 48.h),
+                                isMember && sportOffered.memberRatesPerHr == 0 ? SizedBox.shrink() : SizedBox(height: 40.h),
 
                                 MaterialButton(
                                   height: 40.h,
@@ -1159,29 +1298,29 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                   focusElevation: 0,
                                   child: isCheckingAvailability == false
                                       ? isMember == true && sportOffered.memberRatesPerHr == 0
-                                          ? Text(
-                                              'Book',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15.sp,
-                                              ),
-                                            )
-                                          : Text(
-                                              'Pay',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15.sp,
-                                              ),
-                                            )
+                                      ? Text(
+                                    'Book',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15.sp,
+                                    ),
+                                  )
+                                      : Text(
+                                    'Pay',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15.sp,
+                                    ),
+                                  )
                                       : Container(
-                                          width: 24.h,
-                                          height: 24.h,
-                                          child: SpinKitRipple(
-                                            color: Colors.black,
-                                          ),
-                                        ),
+                                    width: 24.h,
+                                    height: 24.h,
+                                    child: SpinKitRipple(
+                                      color: Colors.black,
+                                    ),
+                                  ),
                                   onPressed: () async {
                                     //unfocus field
                                     if (!currentFocus.hasPrimaryFocus) {
@@ -1193,18 +1332,32 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                       isCheckingAvailability = true;
                                     });
 
-                                    //push stk
-                                    await startTransaction(amount: 1, phone: "254" + phoneNumber.text);
-
-                                    if (selectedDate.isNotEmpty && selectedDate != "null" && selectedDate != '' && selectedBeginTime != null && isMember == true && sportOffered.memberRatesPerHr == 0) {
+                                    if (selectedDate.isNotEmpty &&
+                                        selectedDate != "null" &&
+                                        selectedDate != '' &&
+                                        selectedBeginTime != null &&
+                                        selectedEndTime != null &&
+                                        isMember == true &&
+                                        sportOffered.memberRatesPerHr == 0) {
                                       updateBookingHistory();
-                                    } else if (selectedDate.isNotEmpty && selectedDate != "null" && selectedDate != '' && selectedBeginTime != null && phoneNumber.text.length == 9 && phoneNumber.text.startsWith('7')) {
+                                    } else if (selectedDate.isNotEmpty &&
+                                        selectedDate != "null" &&
+                                        selectedDate != '' &&
+                                        selectedBeginTime != null &&
+                                        selectedEndTime != null &&
+                                        phoneNumber.text.length == 9 &&
+                                        phoneNumber.text.startsWith('7')) {
+                                      //push stk
+                                      await startTransaction(amount: 1, phone: "254" + phoneNumber.text);
                                       Navigator.of(context).push(
                                         MaterialPageRoute(builder: (BuildContext context) {
                                           return PaymentScreen(
                                             selectedDate: selectedDate,
+                                            pricePaid: priceToDisplay,
                                             venue: widget.venue,
+                                            slotDuration: slotDuration,
                                             selectedBeginTime: selectedBeginTime,
+                                            selectedEndTime: selectedEndTime,
                                             sportBookingInfo: widget.sportBookingInfo,
                                             checkoutId: checkoutId,
                                           );
@@ -1221,8 +1374,6 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                                     }
                                   },
                                 ),
-
-                                SizedBox(height: 20.h),
                               ],
                             );
                           }

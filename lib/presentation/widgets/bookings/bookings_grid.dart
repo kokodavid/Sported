@@ -51,24 +51,24 @@ class BookingsGrid extends StatelessWidget {
                     sportName == "Football"
                         ? 'assets/icons/football_icon.png'
                         : sportName == 'Table Tennis'
-                        ? 'assets/icons/table_tennis_icon.png'
-                        : sportName == "Badminton"
-                        ? 'assets/icons/badminton_icon.png'
-                        : sportName == 'Volleyball'
-                        ? 'assets/icons/volleyball_icon.png'
-                        : sportName == "Handball"
-                        ? 'assets/icons/handball_icon.png'
-                        : sportName == 'Swimming'
-                        ? 'assets/icons/swimming_icon.png'
-                        : sportName == 'Tennis'
-                        ? 'assets/icons/tennis_icon.png'
-                        : sportName == 'Rugby'
-                        ? 'assets/icons/rugby_icon.png'
-                        : sportName == 'Cricket'
-                        ? 'assets/icons/cricket_icon.png'
-                        : sportName == "Basketball"
-                        ? 'assets/icons/basketball_icon.png'
-                        : '',
+                            ? 'assets/icons/table_tennis_icon.png'
+                            : sportName == "Badminton"
+                                ? 'assets/icons/badminton_icon.png'
+                                : sportName == 'Volleyball'
+                                    ? 'assets/icons/volleyball_icon.png'
+                                    : sportName == "Handball"
+                                        ? 'assets/icons/handball_icon.png'
+                                        : sportName == 'Swimming'
+                                            ? 'assets/icons/swimming_icon.png'
+                                            : sportName == 'Tennis'
+                                                ? 'assets/icons/tennis_icon.png'
+                                                : sportName == 'Rugby'
+                                                    ? 'assets/icons/rugby_icon.png'
+                                                    : sportName == 'Cricket'
+                                                        ? 'assets/icons/cricket_icon.png'
+                                                        : sportName == "Basketball"
+                                                            ? 'assets/icons/basketball_icon.png'
+                                                            : '',
                   ),
                   color: Colors.white,
                   size: 72.r,
@@ -138,7 +138,7 @@ class BookingsGrid extends StatelessWidget {
 
                     // time
                     Text(
-                      DateFormat.jm().format(DateTime.parse(userBookingHistory[index].slotBooked.toString())),
+	                    DateFormat.jm().format(DateTime.parse(userBookingHistory[index].slotBeginTime.toString())),
                       style: TextStyle(
                         color: Color(0xff707070),
                         fontSize: 13.sp,
