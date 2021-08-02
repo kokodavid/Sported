@@ -48,11 +48,12 @@ class BookingHistory {
         uid: json["uid"],
       );
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "venueName": venueName,
         "pricePaid": pricePaid,
         "duration": duration,
+        "memberRatesPerHr": memberRatesPerHr,
+        "ratesPerHr": ratesPerHr,
         "dateBooked": dateBooked,
         "slotEndTime": slotEndTime,
         "slotBeginTime": slotBeginTime,

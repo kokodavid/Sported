@@ -52,7 +52,6 @@ dependencies:
   cached_network_image: ^2.5.1
   dio:
   google_sign_in: ^4.5.1
-#  flutter_facebook_login: ^3.0.0
   buttons_tabbar: ^1.2.0
 
 

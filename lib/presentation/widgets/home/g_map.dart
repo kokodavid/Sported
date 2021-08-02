@@ -3,11 +3,16 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
-import 'package:sported_app/presentation/screens/venue_details_screen.dart';
 
 class GMap extends StatefulWidget {
+  final double lat;
+  final double long;
+
+  const GMap({Key key, this.lat, this.long}) : super(key: key);
+
   @override
   _GMapState createState() => _GMapState();
 }
@@ -15,37 +20,18 @@ class GMap extends StatefulWidget {
 class _GMapState extends State<GMap> {
   //markers
   BitmapDescriptor locationIcon;
+  Position position;
   Set<Marker> _locationMarkers = {};
   Completer<GoogleMapController> _completer = Completer();
-  Set<Marker> markers;
+
+  // Set<Marker> markers;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+
   void setCustomMapPin() async {
     locationIcon = await BitmapDescriptor.fromAssetImage(
       ImageConfiguration(size: Size(50.h, 50.h)),
       'assets/icons/group_6655.png',
     );
-  }
-  //
-  // //curr location
-  // Future<LatLng> getUserLocation() async {
-  //   LocationManager.LocationData currentLocation;
-  //   final location = LocationManager.Location();
-  //   try {
-  //     currentLocation = await location.getLocation();
-  //     final lat = currentLocation.latitude;
-  //     final lng = currentLocation.longitude;
-  //     final center = LatLng(lat, lng);
-  //     return center;
-  //   } on Exception {
-  //     currentLocation = null;
-  //     return null;
-  //   }
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-    // getUserLocation();
-    setCustomMapPin();
   }
 
   //on created
@@ -53,10 +39,13 @@ class _GMapState extends State<GMap> {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     final allVenues = await firestore.collection('venues').get().then((value) => value.docs.map((e) => Venue.fromJson(e.data())).toList());
+    final setVenues = allVenues.where((element) => element.venueName != null).toList();
 
-    final jaffery = allVenues.where((element) => element.venueName == "Nairobi Jaffery Sports Club").toList()[0];
-    final agaKhan = allVenues.where((element) => element.venueName == "Aga Khan Sports Club").toList()[0];
+    for (int i = 0; i < setVenues.length; i++) {
+      initMarker(setVenues[i], setVenues[i].venueName);
+    }
 
+    _completer.complete(_controller);
     _controller.setMapStyle('''[
   {
     "elementType": "geometry",
@@ -243,55 +232,38 @@ class _GMapState extends State<GMap> {
     ]
   }
 ]''');
-    _completer.complete(_controller);
-    setState(
-      () {
-        _locationMarkers.add(
-          Marker(
-            markerId: MarkerId('marker1'),
-            position: LatLng(-1.2754225352272903, 36.76830631083326),
-            icon: locationIcon,
+  }
 
-            infoWindow: InfoWindow(
-              title: 'Nairobi Jeffary Sports Club',
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => VenueDetailsScreen(venue: jaffery),
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-        _locationMarkers.add(
-          Marker(
-            markerId: MarkerId('marker2'),
-            position: LatLng(-1.2593830167467919, 36.82361004197738),
-            icon: locationIcon,
+  void initMarker(Venue venue, venueName) {
+    var markerIdVal = venueName;
+    final MarkerId markerId = MarkerId(markerIdVal);
 
-            infoWindow: InfoWindow(
-              title: 'AgaKhan Sports Club',
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => VenueDetailsScreen(venue: agaKhan),
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
+    // creating a new MARKER
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: LatLng(venue.location.latitude, venue.location.longitude),
+      icon: locationIcon,
+      infoWindow: InfoWindow(
+        title: venue.venueName,
+      ),
     );
+
+    setState(() {
+      _locationMarkers.add(marker);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setCustomMapPin();
   }
 
   @override
   Widget build(BuildContext context) {
-    CameraPosition initialLocation = CameraPosition(zoom: 12, target: LatLng(-1.2593830167467919, 36.82361004197738));
     return GoogleMap(
       myLocationEnabled: true,
-      initialCameraPosition: initialLocation,
+      initialCameraPosition: CameraPosition(zoom: 14.5, target: LatLng(widget.lat, widget.long)),
       mapType: MapType.normal,
       zoomGesturesEnabled: true,
       mapToolbarEnabled: false,
