@@ -263,16 +263,18 @@ class FilteredVenues extends StatelessWidget {
                                   minWidth: 69.w,
                                   padding: EdgeInsets.all(0),
                                   elevation: 0.0,
-                                  onPressed: () {
-                                    final sportBookingInfo = venue.sportsOffered.singleWhere((element) => element.sportName == sportToBook);
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => BookSlotScreen(sportBookingInfo: sportBookingInfo, venue: venue),
-                                      ),
-                                    );
-                                  },
+                                  onPressed: venue.description.contains("[NOT_BOOKABLE]")
+                                      ? () {}
+                                      : () {
+                                          final sportBookingInfo = venue.sportsOffered.singleWhere((element) => element.sportName == sportToBook);
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => BookSlotScreen(sportBookingInfo: sportBookingInfo, venue: venue),
+                                            ),
+                                          );
+                                        },
                                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  color: Color(0xff8FD974),
+                                  color: venue.description.contains("[NOT_BOOKABLE]") ? Color(0xff38393e) : Color(0xff8FD974),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(8.r),
@@ -283,7 +285,7 @@ class FilteredVenues extends StatelessWidget {
                                     'Book',
                                     style: TextStyle(
                                       fontSize: 13.sp,
-                                      color: Colors.black,
+                                      color: venue.description.contains("[NOT_BOOKABLE]") ? Colors.white38 : Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
