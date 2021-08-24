@@ -477,42 +477,61 @@ class BookingsHistoryPage extends StatelessWidget {
                       builder: (context, sportState) {
                         if (sportState is FootballLoaded) {
                           final footballHistory = state.userBookingHistory.where((element) => element.sportName == 'Football').toList();
+                          footballHistory.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
                           return BookingsGrid(userBookingHistory: footballHistory);
                         }
                         if (sportState is CricketLoaded) {
                           final cricketHistory = state.userBookingHistory.where((element) => element.sportName == 'Cricket').toList();
+                          cricketHistory.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
                           return BookingsGrid(userBookingHistory: cricketHistory);
                         }
                         if (sportState is BadmintonLoaded) {
                           final badmintonHistory = state.userBookingHistory.where((element) => element.sportName == 'Badminton').toList();
+                          badmintonHistory.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
+
                           return BookingsGrid(userBookingHistory: badmintonHistory);
                         }
                         if (sportState is BasketballLoaded) {
                           final basketballHistory = state.userBookingHistory.where((element) => element.sportName == 'Basketball').toList();
+                          basketballHistory.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
+
                           return BookingsGrid(userBookingHistory: basketballHistory);
                         }
                         if (sportState is TennisLoaded) {
                           final tennisLoaded = state.userBookingHistory.where((element) => element.sportName == 'Tennis').toList();
+                          tennisLoaded.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
+
                           return BookingsGrid(userBookingHistory: tennisLoaded);
                         }
                         if (sportState is SwimmingLoaded) {
                           final swimmingHistory = state.userBookingHistory.where((element) => element.sportName == 'Swimming').toList();
+                          swimmingHistory.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
+
                           return BookingsGrid(userBookingHistory: swimmingHistory);
                         }
                         if (sportState is VolleyballLoaded) {
                           final volleyballLoaded = state.userBookingHistory.where((element) => element.sportName == 'Volleyball').toList();
+                          volleyballLoaded.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
+
                           return BookingsGrid(userBookingHistory: volleyballLoaded);
                         }
                         if (sportState is RugbyLoaded) {
                           final rugbyHistory = state.userBookingHistory.where((element) => element.sportName == 'Rugby').toList();
+                          rugbyHistory.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
+
                           return BookingsGrid(userBookingHistory: rugbyHistory);
                         }
                         if (sportState is TableTennisLoaded) {
                           final tableTennisHistory = state.userBookingHistory.where((element) => element.sportName == 'Table Tennis').toList();
+                          tableTennisHistory.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
+
                           return BookingsGrid(userBookingHistory: tableTennisHistory);
                         }
                         if (sportState is HandballLoaded) {
                           final handballHistory = state.userBookingHistory.where((element) => element.sportName == 'Handball').toList();
+
+                          handballHistory.removeWhere((element) => DateTime.now().isAfter(DateTime.parse(element.dateBooked.toString())));
+
                           return BookingsGrid(userBookingHistory: handballHistory);
                         } else
                           return Container();

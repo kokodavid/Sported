@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:sported_app/presentation/widgets/home/g_map.dart';
 import 'package:sported_app/presentation/widgets/home/home_carousel.dart';
 import 'package:sported_app/presentation/widgets/home/home_page_sports_filter.dart';
@@ -12,8 +12,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<Widget> buildHeavyWidget() async {
-    return GMap();
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -23,19 +43,14 @@ class _HomePageState extends State<HomePage> {
       children: [
         //GMap
         FutureBuilder(
-          future: buildHeavyWidget(),
-          builder: (context, snapshot) {
+          future: _determinePosition(),
+          builder: (context, AsyncSnapshot<Position> snapshot) {
             if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-              return snapshot.data;
+              final lat = snapshot.data.latitude;
+              final long = snapshot.data.longitude;
+              return GMap(lat: lat, long: long);
             }
-            return Container(
-              height: 1.sh,
-              width: 1.sw,
-              color: Colors.black,
-              child: SpinKitRipple(
-                color: Color(0xff8FD974),
-              ),
-            );
+            return Container();
           },
         ),
 

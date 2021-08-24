@@ -14,24 +14,36 @@ class BookingHistory {
   BookingHistory({
     @required this.venueName,
     @required this.pricePaid,
+    @required this.ratesPerHr,
+    @required this.memberRatesPerHr,
     @required this.dateBooked,
-    @required this.slotBooked,
+    @required this.slotEndTime,
+    @required this.slotBeginTime,
+    @required this.duration,
     @required this.sportName,
     @required this.uid,
   });
 
   final String venueName;
   final String pricePaid;
+  final String ratesPerHr;
+  final String memberRatesPerHr;
+  final String slotEndTime;
+  final String slotBeginTime;
+  final double duration;
   final String dateBooked;
-  final String slotBooked;
   final String sportName;
   final String uid;
 
   factory BookingHistory.fromJson(Map<String, dynamic> json) => BookingHistory(
         venueName: json["venueName"],
         pricePaid: json["pricePaid"],
+        memberRatesPerHr: json["memberRatesPerHr"],
+        ratesPerHr: json["ratesPerHr"],
         dateBooked: json["dateBooked"],
-        slotBooked: json["slotBooked"],
+        slotBeginTime: json["slotBeginTime"],
+        slotEndTime: json["slotEndTime"],
+        duration: json["duration"],
         sportName: json["sportName"],
         uid: json["uid"],
       );
@@ -39,8 +51,12 @@ class BookingHistory {
   Map<String, dynamic> toJson() => {
         "venueName": venueName,
         "pricePaid": pricePaid,
+        "duration": duration,
+        "memberRatesPerHr": memberRatesPerHr,
+        "ratesPerHr": ratesPerHr,
         "dateBooked": dateBooked,
-        "slotBooked": slotBooked,
+        "slotEndTime": slotEndTime,
+        "slotBeginTime": slotBeginTime,
         "sportName": sportName,
         "uid": uid,
       };

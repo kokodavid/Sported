@@ -12,16 +12,22 @@ import 'package:sported_app/presentation/widgets/payment/successfully_booked_dia
 class PaymentScreen extends StatefulWidget {
   final String selectedDate;
   final SportsOffered sportBookingInfo;
-  final int selectedSlot;
+  final String selectedBeginTime;
+  final String selectedEndTime;
   final Venue venue;
+  final double slotDuration;
+  final String pricePaid;
   final String checkoutId;
 
   PaymentScreen({
     @required this.selectedDate,
-    @required this.selectedSlot,
+    @required this.selectedBeginTime,
     @required this.venue,
     @required this.sportBookingInfo,
     @required this.checkoutId,
+    @required this.selectedEndTime,
+    @required this.slotDuration,
+    @required this.pricePaid,
   });
 
   @override
@@ -35,45 +41,100 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
   QuerySnapshot payment;
   String navigateBack = 'press confirm';
 
-  updateBookingHistory() {
+  _updateBookingHistory() {
+    final selectedDateTime = DateTime.parse(widget.selectedDate);
+
+    final DateTime bookedBeginDateTime = widget.selectedBeginTime == '6:00 AM'
+        ? selectedDateTime.add(Duration(hours: 6))
+        : widget.selectedBeginTime == '6:30 AM'
+            ? selectedDateTime.add(Duration(hours: 6, minutes: 30))
+            : widget.selectedBeginTime == '7:00 AM'
+                ? selectedDateTime.add(Duration(hours: 7))
+                : widget.selectedBeginTime == '7:30 AM'
+                    ? selectedDateTime.add(Duration(hours: 7, minutes: 30))
+                    : widget.selectedBeginTime == '8:00 AM'
+                        ? selectedDateTime.add(Duration(hours: 8))
+                        : widget.selectedBeginTime == '8:30 AM'
+                            ? selectedDateTime.add(Duration(hours: 8, minutes: 30))
+                            : widget.selectedBeginTime == '9:00 AM'
+                                ? selectedDateTime.add(Duration(hours: 9))
+                                : widget.selectedBeginTime == '9:30 AM'
+                                    ? selectedDateTime.add(Duration(hours: 9, minutes: 30))
+                                    : widget.selectedBeginTime == '10:00 AM'
+                                        ? selectedDateTime.add(Duration(hours: 10))
+                                        : widget.selectedBeginTime == '10:30 AM'
+                                            ? selectedDateTime.add(Duration(hours: 10, minutes: 30))
+                                            : widget.selectedBeginTime == '11:00 AM'
+                                                ? selectedDateTime.add(Duration(hours: 11))
+                                                : widget.selectedBeginTime == '11:30 AM'
+                                                    ? selectedDateTime.add(Duration(hours: 11, minutes: 30))
+                                                    : widget.selectedBeginTime == '12:00 PM'
+                                                        ? selectedDateTime.add(Duration(hours: 12))
+                                                        : widget.selectedBeginTime == '12:30 PM'
+                                                            ? selectedDateTime.add(Duration(hours: 12, minutes: 30))
+                                                            : widget.selectedBeginTime == '1:00 PM'
+                                                                ? selectedDateTime.add(Duration(hours: 13))
+                                                                : widget.selectedBeginTime == '1:30 PM'
+                                                                    ? selectedDateTime.add(Duration(hours: 13, minutes: 30))
+                                                                    : widget.selectedBeginTime == '2:00 PM'
+                                                                        ? selectedDateTime.add(Duration(hours: 14))
+                                                                        : widget.selectedBeginTime == '2:30 PM'
+                                                                            ? selectedDateTime.add(Duration(hours: 14, minutes: 30))
+                                                                            : widget.selectedBeginTime == '3:00 PM'
+                                                                                ? selectedDateTime.add(Duration(hours: 15))
+                                                                                : widget.selectedBeginTime == '3:30 PM'
+                                                                                    ? selectedDateTime.add(Duration(hours: 15, minutes: 30))
+                                                                                    : widget.selectedBeginTime == '4:00 PM'
+                                                                                        ? selectedDateTime.add(Duration(hours: 16))
+                                                                                        : widget.selectedBeginTime == '4:30 PM'
+                                                                                            ? selectedDateTime.add(Duration(hours: 16, minutes: 30))
+                                                                                            : widget.selectedBeginTime == '5:00 PM'
+                                                                                                ? selectedDateTime.add(Duration(hours: 17))
+                                                                                                : widget.selectedBeginTime == '5:30 PM'
+                                                                                                    ? selectedDateTime.add(Duration(hours: 17, minutes: 30))
+                                                                                                    : widget.selectedBeginTime == '6:00 PM'
+                                                                                                        ? selectedDateTime.add(Duration(hours: 18))
+                                                                                                        : widget.selectedBeginTime == '6:30 PM'
+                                                                                                            ? selectedDateTime
+                                                                                                                .add(Duration(hours: 18, minutes: 30))
+                                                                                                            : widget.selectedBeginTime == '7:00 PM'
+                                                                                                                ? selectedDateTime.add(Duration(hours: 19))
+                                                                                                                : widget.selectedBeginTime == '7:30 PM'
+                                                                                                                    ? selectedDateTime
+                                                                                                                        .add(Duration(hours: 19, minutes: 30))
+                                                                                                                    : widget.selectedBeginTime == '8:00 PM'
+                                                                                                                        ? selectedDateTime
+                                                                                                                            .add(Duration(hours: 20))
+                                                                                                                        : widget.selectedBeginTime == '8:30 PM'
+                                                                                                                            ? selectedDateTime.add(Duration(
+                                                                                                                                hours: 20, minutes: 30))
+                                                                                                                            : widget.selectedBeginTime ==
+                                                                                                                                    '9:00 PM'
+                                                                                                                                ? selectedDateTime
+                                                                                                                                    .add(Duration(hours: 21))
+                                                                                                                                : widget.selectedBeginTime ==
+                                                                                                                                        '9:30 PM'
+                                                                                                                                    ? selectedDateTime.add(
+                                                                                                                                        Duration(
+                                                                                                                                            hours: 21,
+                                                                                                                                            minutes: 30))
+                                                                                                                                    : "";
+
+    final DateTime bookedEndDateTime = widget.slotDuration.toString().endsWith('.5')
+        ? bookedBeginDateTime.add(Duration(hours: int.parse(widget.slotDuration.toString().split('.').first), minutes: 30))
+        : bookedBeginDateTime.add(Duration(hours: widget.slotDuration.toInt()));
+
+    print('bookedEndDateTime ------------------------------ | $bookedEndDateTime');
     final uid = FirebaseAuth.instance.currentUser.uid;
     Map<String, dynamic> bookingHistory = {
       "venueName": widget.venue.venueName,
-      "pricePaid": widget.sportBookingInfo.ratesPerHr.toString(),
-      "dateBooked": widget.selectedDate,
-      "slotBooked": widget.selectedSlot == 0
-          ? '0600 hrs'
-          : widget.selectedSlot == 1
-              ? '0700 hrs'
-              : widget.selectedSlot == 2
-                  ? '0800 hrs'
-                  : widget.selectedSlot == 3
-                      ? '0900 hrs'
-                      : widget.selectedSlot == 4
-                          ? '1000 hrs'
-                          : widget.selectedSlot == 5
-                              ? '1100 hrs'
-                              : widget.selectedSlot == 6
-                                  ? '1200 hrs'
-                                  : widget.selectedSlot == 7
-                                      ? '1300 hrs'
-                                      : widget.selectedSlot == 8
-                                          ? '1400 hrs'
-                                          : widget.selectedSlot == 9
-                                              ? '1500 hrs'
-                                              : widget.selectedSlot == 10
-                                                  ? '1600 hrs'
-                                                  : widget.selectedSlot == 11
-                                                      ? '1700 hrs'
-                                                      : widget.selectedSlot == 12
-                                                          ? '1800 hrs'
-                                                          : widget.selectedSlot == 13
-                                                              ? '1900 hrs'
-                                                              : widget.selectedSlot == 14
-                                                                  ? '2000 hrs'
-                                                                  : widget.selectedSlot == 15
-                                                                      ? '2100 hrs'
-                                                                      : null,
+      "pricePaid": widget.pricePaid,
+      "ratesPerHr": widget.sportBookingInfo.ratesPerHr.toString(),
+      "memberRatesPerHr": widget.sportBookingInfo.memberRatesPerHr.toString(),
+      "dateBooked": selectedDateTime.toString(),
+      "slotBeginTime": bookedBeginDateTime.toString(),
+      "slotEndTime": bookedEndDateTime.toString(),
+      "duration": widget.slotDuration,
       "sportName": widget.sportBookingInfo.sportName,
       "uid": uid,
     };
@@ -91,39 +152,7 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
         child: SuccessfulBookDialog(
           // dialogContext:context,
           selectedDate: widget.selectedDate,
-          selectedSlot: widget.selectedSlot == 0
-              ? '0600 hrs'
-              : widget.selectedSlot == 1
-                  ? '0700 hrs'
-                  : widget.selectedSlot == 2
-                      ? '0800 hrs'
-                      : widget.selectedSlot == 3
-                          ? '0900 hrs'
-                          : widget.selectedSlot == 4
-                              ? '1000 hrs'
-                              : widget.selectedSlot == 5
-                                  ? '1100 hrs'
-                                  : widget.selectedSlot == 6
-                                      ? '1200 hrs'
-                                      : widget.selectedSlot == 7
-                                          ? '1300 hrs'
-                                          : widget.selectedSlot == 8
-                                              ? '1400 hrs'
-                                              : widget.selectedSlot == 9
-                                                  ? '1500 hrs'
-                                                  : widget.selectedSlot == 10
-                                                      ? '1600 hrs'
-                                                      : widget.selectedSlot == 11
-                                                          ? '1700 hrs'
-                                                          : widget.selectedSlot == 12
-                                                              ? '1800 hrs'
-                                                              : widget.selectedSlot == 13
-                                                                  ? '1900 hrs'
-                                                                  : widget.selectedSlot == 14
-                                                                      ? '2000 hrs'
-                                                                      : widget.selectedSlot == 15
-                                                                          ? '2100 hrs'
-                                                                          : null,
+          selectedSlot: widget.selectedBeginTime,
         ),
       ),
     );
@@ -131,11 +160,17 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
   }
 
   paymentConfirm() async {
-    if (await FirebaseFirestore.instance.collection("lost_found_receipts").doc("deposit_info").collection("all").doc(widget.checkoutId).get().then((value) => value.exists == true)) {
+    if (await FirebaseFirestore.instance
+        .collection("lost_found_receipts")
+        .doc("deposit_info")
+        .collection("all")
+        .doc(widget.checkoutId)
+        .get()
+        .then((value) => value.exists == true)) {
       setState(() {
         navigateBack = 'do not navigate back';
       });
-      return updateBookingHistory();
+      return _updateBookingHistory();
     } else {
       setState(() {
         navigateBack = 'navigate back';
