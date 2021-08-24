@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sported_app/data/models/venue/venue_model.dart';
+import 'package:sported_app/presentation/screens/venue_details_screen.dart';
 
 class GMap extends StatefulWidget {
   final double lat;
@@ -245,6 +246,13 @@ class _GMapState extends State<GMap> {
       icon: locationIcon,
       infoWindow: InfoWindow(
         title: venue.venueName,
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => VenueDetailsScreen(venue: venue),
+            ),
+          );
+        },
       ),
     );
 
