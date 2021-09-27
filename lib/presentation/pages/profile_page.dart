@@ -291,23 +291,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 size: 32.r,
                                                 color: Colors.amber,
                                               ),
-                                    SizedBox(height: 10.h),
-                                    Text(
-                                      state.userProfile.age == "10-15"
-                                          ? "Early-teens"
-                                          : state.userProfile.age == "15-20"
-                                              ? 'Late-teens'
-                                              : state.userProfile.age == "20-25"
-                                                  ? 'Early-twenties'
-                                                  : state.userProfile.age == "25-30"
-                                                      ? 'Late-twenties'
-                                                      : state.userProfile.age == "30-40"
-                                                          ? 'Thirties'
-                                                          : state.userProfile.age == "above 40"
-                                                              ? 'Above 40'
-                                                              : 'Not Specified',
-                                      style: hintStyle,
-                                    ),
                                   ],
                                 ),
                                 SizedBox(width: 5.w),
@@ -608,7 +591,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         fontWeight: FontWeight.w300,
                                                       ),
                                                     ),
-                                                    state.userProfile.clubA == null || state.userProfile.clubA == 'None' || state.userProfile.clubA == '' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubA == null || state.userProfile.clubA == 'None' || state.userProfile.clubA == ''
+                                                        ? SizedBox.shrink()
+                                                        : SizedBox(height: 10.h),
                                                     state.userProfile.clubA == null || state.userProfile.clubA == 'None' || state.userProfile.clubA == ''
                                                         ? Container()
                                                         : Container(
@@ -623,7 +608,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                                               ),
                                                             ),
                                                           ),
-                                                    state.userProfile.clubB == null || state.userProfile.clubB == 'None' || state.userProfile.clubB == '' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubB == null || state.userProfile.clubB == 'None' || state.userProfile.clubB == ''
+                                                        ? SizedBox.shrink()
+                                                        : SizedBox(height: 10.h),
                                                     state.userProfile.clubB == null || state.userProfile.clubB == 'None' || state.userProfile.clubB == ''
                                                         ? Container()
                                                         : Container(
@@ -639,7 +626,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                                               ),
                                                             ),
                                                           ),
-                                                    state.userProfile.clubC == null || state.userProfile.clubC == 'None' || state.userProfile.clubC == '' ? SizedBox.shrink() : SizedBox(height: 10.h),
+                                                    state.userProfile.clubC == null || state.userProfile.clubC == 'None' || state.userProfile.clubC == ''
+                                                        ? SizedBox.shrink()
+                                                        : SizedBox(height: 10.h),
                                                     state.userProfile.clubC == null || state.userProfile.clubC == 'None' || state.userProfile.clubC == ''
                                                         ? Container()
                                                         : Container(

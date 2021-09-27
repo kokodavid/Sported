@@ -29,8 +29,6 @@ dependencies:
   equatable: ^1.2.6
   location: ^3.2.4
   geolocator: ^6.2.1
-  hive:
-  hive_flutter:
   path_provider:
   intl:
   mpesa_flutter_plugin: ^1.0.0

@@ -136,6 +136,8 @@ class _PaymentScreenState extends State<PaymentScreen> with WidgetsBindingObserv
       "slotEndTime": bookedEndDateTime.toString(),
       "duration": widget.slotDuration,
       "sportName": widget.sportBookingInfo.sportName,
+      "customer_name": "",
+      "receiptNumber": "",
       "uid": uid,
     };
 
