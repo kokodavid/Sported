@@ -256,7 +256,7 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
     final uid = firebase_auth.FirebaseAuth.instance.currentUser.uid;
     Map<String, dynamic> bookingHistory = {
       "venueName": widget.venue.venueName,
-      "pricePaid": "0",
+      "pricePaid": "0.0",
       "ratesPerHr": widget.sportBookingInfo.ratesPerHr.toString(),
       "memberRatesPerHr": widget.sportBookingInfo.memberRatesPerHr.toString(),
       "dateBooked": selectedDateTime.toString(),
@@ -265,6 +265,8 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
       "duration": slotDuration,
       "sportName": widget.sportBookingInfo.sportName,
       "uid": uid,
+      "customer_name": "",
+      "receiptNumber": "",
     };
 
     FirebaseFirestore.instance.collection('booking_history').add(bookingHistory);
